@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
-// todo(handleError): replace with error logging
-
+import logger from '@utils/logger';
 import {
   APIError,
   handleError,
@@ -8,15 +6,19 @@ import {
   HttpStatusCode,
 } from '@utils/errors';
 
+jest.mock('@utils/logger', () => ({
+  error: jest.fn(),
+}));
+
 describe('handleError', () => {
-  const originalConsoleError = console.error;
+  const originalConsoleError = logger.error;
 
   beforeEach(() => {
-    console.error = jest.fn();
+    logger.error = jest.fn();
   });
 
   afterEach(() => {
-    console.error = originalConsoleError;
+    logger.error = originalConsoleError;
   });
 
   it('should log validation error and throw', () => {
@@ -24,7 +26,7 @@ describe('handleError', () => {
     const error = new APIError(message, HttpStatusCode.BAD_REQUEST);
 
     expect(() => handleError(error)).toThrow(APIError);
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       `BadRequest Error (${HttpStatusCode.BAD_REQUEST}):`,
       message,
     );
@@ -35,7 +37,7 @@ describe('handleError', () => {
     const error = new APIError(message, HttpStatusCode.NOT_FOUND);
 
     expect(() => handleError(error)).toThrow(APIError);
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       `NotFound Error (${HttpStatusCode.NOT_FOUND}):`,
       message,
     );
@@ -46,8 +48,8 @@ describe('handleError', () => {
     const error = new APIError(message, HttpStatusCode.FORBIDDEN);
 
     expect(() => handleError(error)).toThrow(APIError);
-    expect(console.error).toHaveBeenCalledWith(
-      `Forbiden Error (${HttpStatusCode.FORBIDDEN}):`,
+    expect(logger.error).toHaveBeenCalledWith(
+      `Forbidden Error (${HttpStatusCode.FORBIDDEN}):`,
       message,
     );
   });
@@ -57,7 +59,7 @@ describe('handleError', () => {
     const error = new APIError(message, HttpStatusCode.UNAUTHORIZED);
 
     expect(() => handleError(error)).toThrow(APIError);
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       `Unauthorized Error (${HttpStatusCode.UNAUTHORIZED}):`,
       message,
     );
@@ -68,11 +70,11 @@ describe('handleError', () => {
     const error = new APIError(message, HttpStatusCode.INTERNAL_SERVER_ERROR);
 
     expect(() => handleError(error)).toThrow(APIError);
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       `Internal Error (${HttpStatusCode.INTERNAL_SERVER_ERROR}):`,
       message,
     );
-    expect(console.error).toHaveBeenCalledWith('Retrying ...');
+    expect(logger.error).toHaveBeenCalledWith('Retrying ...');
   });
 
   it('should log custom error and throw', () => {
@@ -80,7 +82,7 @@ describe('handleError', () => {
     const error = new CustomError(message);
 
     expect(() => handleError(error)).toThrow(CustomError);
-    expect(console.error).toHaveBeenCalledWith('Custom Error:', message);
+    expect(logger.error).toHaveBeenCalledWith('Custom Error:', message);
   });
 
   it('should log unexpected error and throw', () => {
@@ -88,7 +90,7 @@ describe('handleError', () => {
     const error = new Error(message);
 
     expect(() => handleError(error)).toThrow(Error);
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       'An unexpected error occurred:',
       message,
     );

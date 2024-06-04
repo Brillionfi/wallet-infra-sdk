@@ -1,5 +1,9 @@
 import { APIError } from '@utils/errors';
 
+jest.mock('@utils/logger', () => ({
+  error: jest.fn(),
+}));
+
 describe('APIError', () => {
   it('should create an error with a specific message and status code', () => {
     const message = 'This is an API error';
