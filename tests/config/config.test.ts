@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { ConfigKeys, Config } from '@config/index';
+import { Config, ConfigKeys } from '@config/index';
 
 jest.mock('dotenv');
 dotenv.config = jest.fn();

@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 // todo(handleError): replace with error logging
 
-import { handleError } from '@utils/errors/error-handler';
-import { APIError } from '@utils/errors/api-error';
-import { CustomError } from '@utils/errors/custom-error';
-import { HttpStatusCode } from '@utils/errors/http-status-code';
+import {
+  APIError,
+  handleError,
+  CustomError,
+  HttpStatusCode,
+} from '@utils/errors';
 
 describe('handleError', () => {
   const originalConsoleError = console.error;

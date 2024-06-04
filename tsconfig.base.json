@@ -15,7 +15,7 @@
       "@config/*": ["config/*"],
       "@models/*": ["models/*"],
       "@services/*": ["services/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["utils/*"]
     }
   },
   "ts-node": {
