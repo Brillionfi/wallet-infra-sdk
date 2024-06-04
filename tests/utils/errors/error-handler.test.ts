@@ -23,11 +23,8 @@ describe('handleError', () => {
 
     expect(() => handleError(error)).toThrow(APIError);
     expect(console.error).toHaveBeenCalledWith(
-      `API error (${HttpStatusCode.BAD_REQUEST}):`,
+      `BadRequest Error (${HttpStatusCode.BAD_REQUEST}):`,
       message,
-    );
-    expect(console.error).toHaveBeenCalledWith(
-      `Validation error ${HttpStatusCode.BAD_REQUEST}: ${message}`,
     );
   });
 
@@ -37,11 +34,8 @@ describe('handleError', () => {
 
     expect(() => handleError(error)).toThrow(APIError);
     expect(console.error).toHaveBeenCalledWith(
-      `API error (${HttpStatusCode.NOT_FOUND}):`,
+      `NotFound Error (${HttpStatusCode.NOT_FOUND}):`,
       message,
-    );
-    expect(console.error).toHaveBeenCalledWith(
-      `Not found error ${HttpStatusCode.NOT_FOUND}: ${message}`,
     );
   });
 
@@ -51,11 +45,8 @@ describe('handleError', () => {
 
     expect(() => handleError(error)).toThrow(APIError);
     expect(console.error).toHaveBeenCalledWith(
-      `API error (${HttpStatusCode.FORBIDDEN}):`,
+      `Forbiden Error (${HttpStatusCode.FORBIDDEN}):`,
       message,
-    );
-    expect(console.error).toHaveBeenCalledWith(
-      `Forbiden error ${HttpStatusCode.FORBIDDEN}: ${message}`,
     );
   });
 
@@ -65,11 +56,8 @@ describe('handleError', () => {
 
     expect(() => handleError(error)).toThrow(APIError);
     expect(console.error).toHaveBeenCalledWith(
-      `API error (${HttpStatusCode.UNAUTHORIZED}):`,
+      `Unauthorized Error (${HttpStatusCode.UNAUTHORIZED}):`,
       message,
-    );
-    expect(console.error).toHaveBeenCalledWith(
-      `Unauthorized error ${HttpStatusCode.UNAUTHORIZED}: ${message}`,
     );
   });
 
@@ -79,11 +67,8 @@ describe('handleError', () => {
 
     expect(() => handleError(error)).toThrow(APIError);
     expect(console.error).toHaveBeenCalledWith(
-      `API error (${HttpStatusCode.INTERNAL_SERVER_ERROR}):`,
+      `Internal Error (${HttpStatusCode.INTERNAL_SERVER_ERROR}):`,
       message,
-    );
-    expect(console.error).toHaveBeenCalledWith(
-      `Internal Error ${HttpStatusCode.INTERNAL_SERVER_ERROR}: ${message}`,
     );
     expect(console.error).toHaveBeenCalledWith('Retrying ...');
   });
@@ -93,7 +78,7 @@ describe('handleError', () => {
     const error = new CustomError(message);
 
     expect(() => handleError(error)).toThrow(CustomError);
-    expect(console.error).toHaveBeenCalledWith('Custom error:', message);
+    expect(console.error).toHaveBeenCalledWith('Custom Error:', message);
   });
 
   it('should log unexpected error and throw', () => {
