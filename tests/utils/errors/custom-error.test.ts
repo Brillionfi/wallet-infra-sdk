@@ -1,5 +1,9 @@
 import { CustomError } from '@utils/errors';
 
+jest.mock('@utils/logger', () => ({
+  error: jest.fn(),
+}));
+
 describe('CustomError', () => {
   it('should create an error with a specific message', () => {
     const message = 'This is a custom error';
