@@ -17,7 +17,6 @@
     "format": "prettier --write 'src/**/*.{js,ts,json,css,md}'",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prepublish": "yarn lint && yarn format && yarn test && yarn build",
     "prepare": "husky"
   },
   "dependencies": {
