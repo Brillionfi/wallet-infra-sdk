@@ -1,23 +1,29 @@
-/* eslint-disable no-console */
 // todo(handleError): replace with error logging
 // todo(handleError): implement retry mechanism
 
-import {
-  CustomError,
-  ValidationError,
-  NotFoundError,
-  APIError,
-} from '@utils/errors';
+/* eslint-disable no-console */
+import { APIError } from './api-error';
+import { CustomError } from './custom-error';
+import { HttpStatusCode } from './http-status-code';
 
 export const handleError = (error: Error): void => {
-  if (error instanceof ValidationError) {
-    console.error('Validation error:', error.message);
-  } else if (error instanceof NotFoundError) {
-    console.error('Not found error:', error.message);
-  } else if (error instanceof APIError) {
-    console.error(`API error (${error.statusCode}):`, error.message);
-    if (error.statusCode >= 500 && error.statusCode < 600) {
-      console.error('Retrying due to server error...');
+  if (error instanceof APIError) {
+    if (error.statusCode === HttpStatusCode.BAD_REQUEST) {
+      console.error(`BadRequest (${error.statusCode}): ${error.message}`);
+    } else if (error.statusCode === HttpStatusCode.NOT_FOUND) {
+      console.error(`NotFound error (${error.statusCode}): ${error.message}`);
+    } else if (error.statusCode === HttpStatusCode.FORBIDDEN) {
+      console.error(`Forbiden error (${error.statusCode}): ${error.message}`);
+    } else if (error.statusCode === HttpStatusCode.UNAUTHORIZED) {
+      console.error(
+        `Unauthorized error (${error.statusCode}): ${error.message}`,
+      );
+    } else if (
+      error.statusCode >= HttpStatusCode.INTERNAL_SERVER_ERROR &&
+      error.statusCode < 600
+    ) {
+      console.error(`Internal Error ${error.statusCode}: ${error.message}`);
+      console.error('Retrying ...');
     }
   } else if (error instanceof CustomError) {
     console.error('Custom error:', error.message);
