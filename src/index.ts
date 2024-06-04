@@ -1,3 +1,2 @@
-/* eslint-disable no-console */
-// todo: export wallet-infra-sdk
+// eslint-disable-next-line no-console
 console.log('wallet-infra-sdk');
