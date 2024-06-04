@@ -1,0 +1,47 @@
+name: Version Release and NPM Publish
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 20.11.0
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  version-release:
+    name: Version Release Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - uses: mskelton/setup-yarn@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Build Package
+        run: yarn build
+
+      - name: Unit Tests
+        run: yarn test
+
+      - name: Semantic Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # todo: NPM publish step
