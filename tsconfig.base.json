@@ -9,13 +9,16 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "types": ["node", "jest"],
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
-      "@api/*": ["src/api/*"],
-      "@config/*": ["src/config/*"],
-      "@models/*": ["src/models/*"],
-      "@services/*": ["src/services/*"],
+      "@api/*": ["api/*"],
+      "@config/*": ["config/*"],
+      "@models/*": ["models/*"],
+      "@services/*": ["services/*"],
       "@utils/*": ["src/utils/*"]
     }
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }
