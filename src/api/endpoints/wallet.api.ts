@@ -1,5 +1,6 @@
 import { TCreateWalletBody, TCreateWalletResponse } from '@models/wallet';
 import { HttpClient } from '@utils/http-client';
+import logger from '@utils/logger';
 
 export class CreateWallet {
   private httpClient: HttpClient;
@@ -13,6 +14,7 @@ export class CreateWallet {
   public async createWallet(
     data: TCreateWalletBody,
   ): Promise<TCreateWalletResponse> {
+    logger.info('Creating wallet');
     const response = await this.httpClient.post(this.url, data);
     return response.data as TCreateWalletResponse;
   }

@@ -1,4 +1,3 @@
-import { TurnkeyApiTypes } from '@turnkey/http';
 import { z } from 'zod';
 
 // Schemas
@@ -97,7 +96,6 @@ export const CreateSubOrganizationResultSchema = z.object({
 });
 
 // Types
-export type TActivityPollerResult = TurnkeyApiTypes['v1Result'];
 export type TAttestation = z.infer<typeof AttestationSchema>;
 export type TWalletAddressFormat = z.infer<typeof WalletAddressFormatSchema>;
 export type TWallet = z.infer<typeof WalletSchema>;
