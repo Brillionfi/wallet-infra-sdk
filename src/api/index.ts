@@ -1,1 +1,1 @@
-export * from './example.endpoint';
+export * from './example.api';
