@@ -3,10 +3,8 @@ import { HttpClient } from '@utils/http-client';
 import { IExample } from '@models/example.models';
 import logger from '@utils/logger';
 
-// Mock the HttpClient class
 jest.mock('@utils/http-client');
 
-// Mock the logger
 jest.mock('@utils/logger', () => ({
   info: jest.fn(),
 }));
