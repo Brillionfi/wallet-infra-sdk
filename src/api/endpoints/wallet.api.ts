@@ -6,7 +6,7 @@ import {
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 
-export class CreateWallet {
+export class Wallet {
   private httpClient: HttpClient;
   url: string;
 

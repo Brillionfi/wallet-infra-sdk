@@ -1,4 +1,4 @@
-import { CreateWallet } from '@api/endpoints/wallet.api';
+import { Wallet } from '@api/endpoints/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 import {
@@ -13,8 +13,8 @@ jest.mock('@utils/logger', () => ({
   info: jest.fn(),
 }));
 
-describe('CreateWallet', () => {
-  let createWallet: CreateWallet;
+describe('Wallet', () => {
+  let wallet: Wallet;
   let httpClientMock: jest.Mocked<HttpClient>;
 
   const walletName = 'Test wallet';
@@ -44,7 +44,7 @@ describe('CreateWallet', () => {
 
   beforeEach(() => {
     httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
-    createWallet = new CreateWallet(httpClientMock, '/wallets');
+    wallet = new Wallet(httpClientMock, '/wallets');
   });
 
   it('should call post on HttpClient when createWallet is called', async () => {
@@ -69,9 +69,7 @@ describe('CreateWallet', () => {
 
     httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
 
-    const result = (await createWallet.createWallet(
-      data,
-    )) as TCreateWalletResponse;
+    const result = (await wallet.createWallet(data)) as TCreateWalletResponse;
 
     expect(logger.info).toHaveBeenCalledWith('Creating wallet');
     expect(httpClientMock.post).toHaveBeenCalledWith('/wallets', data);
@@ -93,7 +91,7 @@ describe('CreateWallet', () => {
 
     httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
 
-    const result = (await createWallet.getWallets()) as TGetWalletsResponse;
+    const result = (await wallet.getWallets()) as TGetWalletsResponse;
 
     expect(logger.info).toHaveBeenCalledWith('Getting wallets');
     expect(httpClientMock.get).toHaveBeenCalledWith('/wallets');
