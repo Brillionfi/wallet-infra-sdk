@@ -1,7 +1,11 @@
 import { CreateWallet } from '@api/endpoints/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
-import { TCreateWalletBody, TCreateWalletResponse } from '@models/wallet';
+import {
+  TCreateWalletBody,
+  TCreateWalletResponse,
+  TGetWalletsResponse,
+} from '@models/wallet';
 
 jest.mock('@utils/http-client');
 
@@ -43,7 +47,7 @@ describe('CreateWallet', () => {
     createWallet = new CreateWallet(httpClientMock, '/wallets');
   });
 
-  it('should call post on HttpClient when createExample is called', async () => {
+  it('should call post on HttpClient when createWallet is called', async () => {
     const data = {
       walletType: {
         eoa: {
@@ -71,6 +75,28 @@ describe('CreateWallet', () => {
 
     expect(logger.info).toHaveBeenCalledWith('Creating wallet');
     expect(httpClientMock.post).toHaveBeenCalledWith('/wallets', data);
+    expect(result).toEqual(response);
+  });
+
+  it('should call get on HttpClient when getWallets is called', async () => {
+    const response = {
+      body: [
+        {
+          name: 'name',
+          type: 'type',
+          format: 'format',
+          owner: 'owner',
+          address: 'address',
+        },
+      ],
+    };
+
+    httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+    const result = (await createWallet.getWallets()) as TGetWalletsResponse;
+
+    expect(logger.info).toHaveBeenCalledWith('Getting wallets');
+    expect(httpClientMock.get).toHaveBeenCalledWith('/wallets');
     expect(result).toEqual(response);
   });
 });
