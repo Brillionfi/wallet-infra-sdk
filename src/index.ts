@@ -1,3 +1,16 @@
-import logger from '@utils/logger';
+import CreateWallet from '@api/endpoints/wallet';
+import modules from './api';
 
-logger.info('wallet-infra-sdk');
+class WalletInfraSDK {
+  modules: modules;
+
+  constructor(jwt: string) {
+    const createWallet = new CreateWallet('/wallets', jwt);
+
+    this.modules = {
+      createWallet,
+    };
+  }
+}
+
+export default WalletInfraSDK;
