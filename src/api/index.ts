@@ -1,2 +1,2 @@
 export * from './example.api';
-export * from './endpoints/wallet.api';
+export * from './wallet.api';

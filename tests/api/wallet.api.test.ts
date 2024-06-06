@@ -1,4 +1,4 @@
-import { Wallet } from '@api/endpoints/wallet.api';
+import { Wallet } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 import {
