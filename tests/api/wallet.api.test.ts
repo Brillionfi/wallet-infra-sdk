@@ -1,11 +1,7 @@
-import { Wallet } from '@api/wallet.api';
+import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
-import {
-  TCreateWalletBody,
-  TCreateWalletResponse,
-  TGetWalletsResponse,
-} from '@models/wallet';
+import { IWalletAPI } from '@models/wallet.models';
 
 jest.mock('@utils/http-client');
 
@@ -14,7 +10,7 @@ jest.mock('@utils/logger', () => ({
 }));
 
 describe('Wallet', () => {
-  let wallet: Wallet;
+  let wallet: WalletApi;
   let httpClientMock: jest.Mocked<HttpClient>;
 
   const walletName = 'Test wallet';
@@ -44,7 +40,15 @@ describe('Wallet', () => {
 
   beforeEach(() => {
     httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
-    wallet = new Wallet(httpClientMock, '/wallets');
+    wallet = new WalletApi(httpClientMock, '/wallets');
+  });
+
+  it('should throw error if createWallet fails', async () => {
+    httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+    await expect(wallet.createWallet({} as IWalletAPI)).rejects.toThrow(
+      'Failed to create wallet',
+    );
   });
 
   it('should call post on HttpClient when createWallet is called', async () => {
@@ -56,7 +60,7 @@ describe('Wallet', () => {
           authenticationType,
         },
       },
-    } as TCreateWalletBody;
+    } as IWalletAPI;
 
     const response = {
       eoa: {
@@ -69,11 +73,17 @@ describe('Wallet', () => {
 
     httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
 
-    const result = (await wallet.createWallet(data)) as TCreateWalletResponse;
+    const result = await wallet.createWallet(data);
 
     expect(logger.info).toHaveBeenCalledWith('Creating wallet');
     expect(httpClientMock.post).toHaveBeenCalledWith('/wallets', data);
     expect(result).toEqual(response);
+  });
+
+  it('should throw error if getWallets fails', async () => {
+    httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+
+    await expect(wallet.getWallets()).rejects.toThrow('Failed to get wallet');
   });
 
   it('should call get on HttpClient when getWallets is called', async () => {
@@ -91,7 +101,7 @@ describe('Wallet', () => {
 
     httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
 
-    const result = (await wallet.getWallets()) as TGetWalletsResponse;
+    const result = await wallet.getWallets();
 
     expect(logger.info).toHaveBeenCalledWith('Getting wallets');
     expect(httpClientMock.get).toHaveBeenCalledWith('/wallets');

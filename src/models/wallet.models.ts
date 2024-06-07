@@ -15,15 +15,7 @@ export const PasskeyAuthenticationSchema = z.object({
     credentialId: z.string(),
     clientDataJson: z.string(),
     attestationObject: z.string(),
-    transports: z.array(
-      z.enum([
-        'AUTHENTICATOR_TRANSPORT_BLE',
-        'AUTHENTICATOR_TRANSPORT_INTERNAL',
-        'AUTHENTICATOR_TRANSPORT_NFC',
-        'AUTHENTICATOR_TRANSPORT_USB',
-        'AUTHENTICATOR_TRANSPORT_HYBRID',
-      ]),
-    ),
+    transports: z.array(z.string()),
   }),
 });
 
@@ -36,7 +28,7 @@ export const WalletSchema = z.object({
   [WalletKeys.AUTHENTICATION_TYPE]: PasskeyAuthenticationSchema.optional(),
 });
 
-export const APIWalletSchema = z.object({
+export const WalletSchemaAPI = z.object({
   [WalletKeys.WALLET_TYPE]: z.object({
     eoa: z
       .object({
@@ -48,5 +40,16 @@ export const APIWalletSchema = z.object({
   }),
 });
 
+export const WalletsSchemaAPI = z.array(
+  z.object({
+    name: z.string(),
+    type: z.string(),
+    format: z.string(),
+    owner: z.string(),
+    address: z.string(),
+  }),
+);
+
 export type IWallet = z.infer<typeof WalletSchema>;
-export type IAPIWallet = z.infer<typeof APIWalletSchema>;
+export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
+export type IWallets = z.infer<typeof WalletsSchemaAPI>;

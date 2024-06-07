@@ -1,8 +1,9 @@
 import { WalletApi } from '@api/wallet.api';
 import {
-  APIWalletSchema,
-  IAPIWallet,
+  WalletSchemaAPI,
+  IWalletAPI,
   IWallet,
+  IWallets,
   WalletKeys,
 } from '@models/wallet.models';
 import { CustomError } from '@utils/errors';
@@ -16,9 +17,9 @@ export class WalletService {
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
-    let creation: IAPIWallet;
+    let creation: IWalletAPI;
     try {
-      creation = APIWalletSchema.parse({
+      creation = await WalletSchemaAPI.parse({
         [WalletKeys.WALLET_TYPE]: {
           [data.walletType]: {
             [WalletKeys.WALLET_NAME]: data.walletName,
@@ -34,7 +35,16 @@ export class WalletService {
     return this.walletApi.createWallet(creation);
   }
 
-  public async getExample(): Promise<IWallet[]> {
-    return this.walletApi.getWallets();
+  public async getWallets(): Promise<IWallet[]> {
+    const wallets: IWallets = await this.walletApi.getWallets();
+    return wallets.map((wallet) => {
+      return {
+        [WalletKeys.WALLET_NAME]: wallet.name,
+        [WalletKeys.WALLET_TYPE]: wallet.type,
+        [WalletKeys.WALLET_FORMAT]: wallet.format,
+        [WalletKeys.WALLET_OWNER]: wallet.owner,
+        [WalletKeys.WALLET_ADDRESS]: wallet.address,
+      };
+    });
   }
 }
