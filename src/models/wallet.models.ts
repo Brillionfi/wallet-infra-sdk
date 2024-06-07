@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
-export enum AuthenticationKeys {
-  TURNKEY = 'turnkey',
+export enum WalletKeys {
+  WALLET_TYPE = 'walletType',
+  WALLET_ADDRESS = 'walletAddress',
+  WALLET_NAME = 'walletName',
+  WALLET_FORMAT = 'walletFormat',
+  WALLET_OWNER = 'walletOwner',
+  AUTHENTICATION_TYPE = 'authenticationType',
 }
 
 export const PasskeyAuthenticationSchema = z.object({
@@ -22,26 +27,26 @@ export const PasskeyAuthenticationSchema = z.object({
   }),
 });
 
-export const AuthenticationSchema = z.object({
-  [AuthenticationKeys.TURNKEY]: PasskeyAuthenticationSchema,
-});
-
-export enum WalletKeys {
-  WALLET_TYPE = 'walletType',
-  WALLET_ADDRESS = 'walletAddress',
-  WALLET_NAME = 'walletName',
-  WALLET_FORMAT = 'walletFormat',
-  WALLET_OWNER = 'walletOwner',
-  AUTHENTICATION_TYPE = 'authenticationType',
-}
-
 export const WalletSchema = z.object({
   [WalletKeys.WALLET_ADDRESS]: z.string().optional(),
   [WalletKeys.WALLET_TYPE]: z.string(),
   [WalletKeys.WALLET_NAME]: z.string(),
   [WalletKeys.WALLET_FORMAT]: z.string(),
   [WalletKeys.WALLET_OWNER]: z.string().optional(),
-  [WalletKeys.AUTHENTICATION_TYPE]: AuthenticationSchema.optional(),
+  [WalletKeys.AUTHENTICATION_TYPE]: PasskeyAuthenticationSchema.optional(),
+});
+
+export const APIWalletSchema = z.object({
+  [WalletKeys.WALLET_TYPE]: z.object({
+    eoa: z
+      .object({
+        walletName: z.string(),
+        walletFormat: z.string(),
+        authenticationType: PasskeyAuthenticationSchema,
+      })
+      .optional(),
+  }),
 });
 
 export type IWallet = z.infer<typeof WalletSchema>;
+export type IAPIWallet = z.infer<typeof APIWalletSchema>;

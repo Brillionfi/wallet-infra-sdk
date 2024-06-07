@@ -1,17 +1,14 @@
 ### Create wallet
 
 ```ts
-const data: TCreateWalletBody = {
-  walletType: {
-    eoa?: {
-      walletName: string;
-      walletFormat: validAddressFormats,
-      authenticationType: AuthenticationTypeSchema
-    }
-  }
-}
-```
+import { IWallet, PasskeyAuthenticationSchema } from '@models/wallet.models';
 
-```ts
+const data: IWallet = {
+  walletType: "eoa",
+  walletName: "testWallet",
+  walletFormat: "ethereum",
+  authenticationType: PasskeyAuthenticationSchema,
+}
+
 await SDK.wallet.createWallet(data);
 ```

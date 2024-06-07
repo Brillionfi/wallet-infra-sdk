@@ -1,4 +1,5 @@
-import { IWallet } from '@models/wallet.models';
+import { IWallet, IAPIWallet } from '@models/wallet.models';
+import { APIError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 
@@ -11,16 +12,23 @@ export class WalletApi {
     this.url = url;
   }
 
-  public async createWallet(data: IWallet): Promise<IWallet> {
+  public async createWallet(data: IAPIWallet): Promise<IWallet> {
     logger.info('Creating wallet');
-    const response = await this.httpClient.post(this.url, data);
-    return response.data as IWallet;
+    try {
+      const response = await this.httpClient.post(this.url, data);
+      return response.data as IWallet;
+    } catch (error) {
+      throw new APIError('Failed to create wallet', 500);
+    }
   }
 
   public async getWallets(): Promise<IWallet[]> {
     logger.info('Getting wallets');
-    // todo error handling
-    const response = await this.httpClient.get(this.url);
-    return response.data as IWallet[];
+    try {
+      const response = await this.httpClient.get(this.url);
+      return response.data as IWallet[];
+    } catch (error) {
+      throw new APIError('Failed to create wallet', 500);
+    }
   }
 }

@@ -1,5 +1,7 @@
 ### Get wallets
 
 ```ts
-await SDK.wallet.getWallets();
+import { IWallet } from '@models/wallet.models';
+
+const wallets: IWallet[] = await SDK.wallet.getWallets();
 ```
