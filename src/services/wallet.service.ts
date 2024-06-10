@@ -1,10 +1,12 @@
 import { WalletApi } from '@api/wallet.api';
+import { Address, ChainId } from '@models/common.models';
 import {
   WalletSchemaAPI,
   IWalletAPI,
   IWallet,
   IWallets,
   WalletKeys,
+  WalletNonceSchemaAPI,
 } from '@models/wallet.models';
 import { CustomError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -46,5 +48,22 @@ export class WalletService {
         [WalletKeys.WALLET_ADDRESS]: wallet.address,
       };
     });
+  }
+
+  public async getWalletNonce(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<number> {
+    const url = '/wallets/:address/chains/:chainId/nonce'
+      .replace(':address', address)
+      .replace(':chainId', chainId);
+
+    try {
+      const data = await this.walletApi.getWalletNonce(url);
+      const nonce = await WalletNonceSchemaAPI.parse(data);
+      return nonce.nonce;
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
   }
 }

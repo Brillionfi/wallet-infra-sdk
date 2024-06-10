@@ -107,4 +107,26 @@ describe('Wallet', () => {
     expect(httpClientMock.get).toHaveBeenCalledWith('/wallets');
     expect(result).toEqual(response);
   });
+
+  it('should throw error if getWalletNonce fails', async () => {
+    httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+
+    await expect(wallet.getWalletNonce('url')).rejects.toThrow(
+      'Failed to get wallet nonce',
+    );
+  });
+
+  it('should call get on HttpClient when getWalletNonce is called', async () => {
+    const response = {
+      nonce: 1,
+    };
+
+    httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+    const result = await wallet.getWalletNonce('url');
+
+    expect(logger.info).toHaveBeenCalledWith('Getting wallet nonce');
+    expect(httpClientMock.get).toHaveBeenCalledWith('url');
+    expect(result).toEqual(response);
+  });
 });

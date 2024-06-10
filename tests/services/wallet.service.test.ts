@@ -5,8 +5,10 @@ import {
   IWallet,
   IWalletAPI,
   WalletSchemaAPI,
+  IWalletNonceAPI,
 } from '@models/wallet.models';
 import { HttpClient } from '@utils/http-client';
+import { SUPPORTED_CHAINS } from '@models/common.models';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
@@ -125,6 +127,32 @@ describe('WalletService', () => {
 
       expect(walletApi.getWallets).toHaveBeenCalled();
       expect(result).toEqual(exampleService);
+    });
+  });
+
+  describe('getWalletNonce', () => {
+    it('should catch if wrong data structure', async () => {
+      const exampleAPI = {} as IWalletNonceAPI;
+      walletApi.getWalletNonce.mockResolvedValueOnce(exampleAPI);
+      await expect(
+        walletService.getWalletNonce('0x', SUPPORTED_CHAINS.ETHEREUM),
+      ).rejects.toThrow('Failed verify data');
+    });
+
+    it('should get wallet nonce', async () => {
+      const exampleAPI = {
+        nonce: 1,
+      };
+
+      walletApi.getWalletNonce.mockResolvedValueOnce(exampleAPI);
+
+      const result = await walletService.getWalletNonce(
+        '0x',
+        SUPPORTED_CHAINS.ETHEREUM,
+      );
+
+      expect(walletApi.getWalletNonce).toHaveBeenCalled();
+      expect(result).toEqual(1);
     });
   });
 });

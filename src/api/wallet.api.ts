@@ -1,4 +1,9 @@
-import { IWallet, IWalletAPI, IWallets } from '@models/wallet.models';
+import {
+  IWallet,
+  IWalletAPI,
+  IWalletNonceAPI,
+  IWallets,
+} from '@models/wallet.models';
 import { APIError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
@@ -31,6 +36,19 @@ export class WalletApi {
     } catch (error) {
       throw new APIError(
         'Failed to get wallets ' + (error as Error).message,
+        500,
+      );
+    }
+  }
+
+  public async getWalletNonce(url: string): Promise<IWalletNonceAPI> {
+    logger.info('Getting wallet nonce');
+    try {
+      const response = await this.httpClient.get(url);
+      return response.data as IWalletNonceAPI;
+    } catch (error) {
+      throw new APIError(
+        'Failed to get wallet nonce ' + (error as Error).message,
         500,
       );
     }

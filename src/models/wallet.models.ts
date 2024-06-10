@@ -50,6 +50,11 @@ export const WalletsSchemaAPI = z.array(
   }),
 );
 
+export const WalletNonceSchemaAPI = z.object({
+  nonce: z.number(),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWallets = z.infer<typeof WalletsSchemaAPI>;
+export type IWalletNonceAPI = z.infer<typeof WalletNonceSchemaAPI>;
