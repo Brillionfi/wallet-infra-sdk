@@ -6,7 +6,9 @@ The Wallet Infra SDK provides tools and services for managing wallets, transacti
 
 ## Table of Contents
 
-- [Getting Started](docs/getting-started.md)
-- [Modules](docs/modules.md)
-- [Contributing](docs/contributing.md)
-- [License](docs/license.md)
+* [Getting Started](docs/getting-started.md)
+* [Modules](docs/)
+  - [Wallet creation](docs/create-wallet.md)
+  - [Get Wallets](docs/get-wallets.md)
+* [Contributing](docs/contributing.md)
+* [License](docs/license.md)

@@ -5,17 +5,15 @@ import logger from '@utils/logger';
 
 export class WalletApi {
   private httpClient: HttpClient;
-  url: string;
 
-  constructor(httpClient: HttpClient, url: string) {
+  constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
-    this.url = url;
   }
 
   public async createWallet(data: IWalletAPI): Promise<IWallet> {
     logger.info('Creating wallet');
     try {
-      const response = await this.httpClient.post(this.url, data);
+      const response = await this.httpClient.post('/wallets', data);
       return response.data as IWallet;
     } catch (error) {
       throw new APIError(
@@ -28,7 +26,7 @@ export class WalletApi {
   public async getWallets(): Promise<IWallets> {
     logger.info('Getting wallets');
     try {
-      const response = await this.httpClient.get(this.url);
+      const response = await this.httpClient.get('/wallets');
       return response.data as IWallets;
     } catch (error) {
       throw new APIError(

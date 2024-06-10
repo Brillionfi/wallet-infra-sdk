@@ -40,7 +40,7 @@ describe('Wallet', () => {
 
   beforeEach(() => {
     httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
-    wallet = new WalletApi(httpClientMock, '/wallets');
+    wallet = new WalletApi(httpClientMock);
   });
 
   it('should throw error if createWallet fails', async () => {

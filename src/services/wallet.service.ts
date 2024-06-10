@@ -13,13 +13,13 @@ export class WalletService {
   private walletApi: WalletApi;
 
   constructor(httpClient: HttpClient) {
-    this.walletApi = new WalletApi(httpClient, '/wallets');
+    this.walletApi = new WalletApi(httpClient);
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
-    let creation: IWalletAPI;
+    let parsedWalletData: IWalletAPI;
     try {
-      creation = await WalletSchemaAPI.parse({
+      parsedWalletData = await WalletSchemaAPI.parse({
         [WalletKeys.WALLET_TYPE]: {
           [data.walletType]: {
             [WalletKeys.WALLET_NAME]: data.walletName,
@@ -32,7 +32,7 @@ export class WalletService {
       throw new CustomError('Failed verify data');
     }
 
-    return this.walletApi.createWallet(creation);
+    return this.walletApi.createWallet(parsedWalletData);
   }
 
   public async getWallets(): Promise<IWallet[]> {
