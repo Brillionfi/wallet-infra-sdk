@@ -2,7 +2,7 @@ import { HttpClient } from '@utils/http-client';
 import { ExampleService } from '@services/example.service';
 import { WalletService } from '@services/wallet.service';
 
-export class WalletInfraSDK {
+export class WalletInfra {
   private httpClient: HttpClient;
   public example: ExampleService;
   public wallet: WalletService;
