@@ -9,6 +9,8 @@ import {
   WalletNonceResponseSchema,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
+  IWalletSignTransaction,
+  IWalletSignTransactionAPI,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -163,6 +165,21 @@ export class WalletService {
 
     try {
       return await this.walletApi.deleteGasConfiguration(url);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async signTransaction(
+    address: Address,
+    data: IWalletSignTransaction,
+  ): Promise<IWalletSignTransactionAPI> {
+    logger.info(`${this.className}: Setting Wallet gas configuration`);
+
+    const url = '/wallets/:address/sign'.replace(':address', address);
+
+    try {
+      return await this.walletApi.signTransaction(url, data);
     } catch (error) {
       throw new CustomError('Failed verify data');
     }

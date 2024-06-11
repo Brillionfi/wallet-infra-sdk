@@ -257,4 +257,34 @@ describe('Wallet', () => {
       expect(result).toEqual({ status: 'Successfully updated' });
     });
   });
+
+  describe('signTransaction', () => {
+    const data = {
+      walletType: WalletTypes.EOA,
+      walletFormat: WalletFormats.ETHEREUM,
+      unsignedTransaction: '02ea',
+    };
+
+    it('should throw error if signTransaction fails', async () => {
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(wallet.signTransaction('url', data)).rejects.toThrow(
+        'error',
+      );
+    });
+
+    it('should call post on HttpClient when signTransaction is called', async () => {
+      httpClientMock.post = jest
+        .fn()
+        .mockResolvedValue({ data: { signedTransaction: '0x1234' } });
+
+      const result = await wallet.signTransaction('url', data);
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Signing transaction',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith('url', data);
+      expect(result).toEqual({ signedTransaction: '0x1234' });
+    });
+  });
 });

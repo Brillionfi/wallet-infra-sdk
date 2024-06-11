@@ -22,6 +22,10 @@ export const EthereumAddressSchema = z
 
 export const ChainIdSchema = z.enum(SUPPORTED_CHAINS_VALUES);
 
+export const non0xString = z
+  .string()
+  .refine((value) => !value.startsWith('0x'));
+
 // Types
 export type Address = z.infer<typeof EthereumAddressSchema>;
 export type ChainId = z.infer<typeof ChainIdSchema>;

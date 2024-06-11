@@ -313,4 +313,29 @@ describe('WalletService', () => {
       expect(result).toEqual(response);
     });
   });
+
+  describe('signTransaction', () => {
+    const data = {
+      walletType: WalletTypes.EOA,
+      walletFormat: WalletFormats.ETHEREUM,
+      unsignedTransaction: '02ea',
+    };
+
+    it('should catch if wrong response from api', async () => {
+      walletApi.signTransaction.mockRejectedValue('Failed verify data');
+      await expect(walletService.signTransaction(wallet, data)).rejects.toThrow(
+        'Failed verify data',
+      );
+    });
+
+    it('should get wallet nonce', async () => {
+      const response = { signedTransaction: '0x1234' };
+      walletApi.signTransaction.mockResolvedValueOnce(response);
+
+      const result = await walletService.signTransaction(wallet, data);
+
+      expect(walletApi.signTransaction).toHaveBeenCalled();
+      expect(result).toEqual(response);
+    });
+  });
 });

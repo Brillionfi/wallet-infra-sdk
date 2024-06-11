@@ -10,6 +10,9 @@ import {
   WalletGasConfigurationSchema,
   IWalletGasConfigurationAPI,
   WalletGasConfigurationResponseSchema,
+  IWalletSignTransaction,
+  WalletSignTransactionResponseSchema,
+  IWalletSignTransactionAPI,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -100,6 +103,19 @@ export class WalletApi {
     try {
       const response = await this.httpClient.get(url);
       return WalletGasConfigurationSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async signTransaction(
+    url: string,
+    data: IWalletSignTransaction,
+  ): Promise<IWalletSignTransactionAPI> {
+    logger.debug(`${this.className}: Signing transaction`);
+    try {
+      const response = await this.httpClient.post(url, data);
+      return WalletSignTransactionResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
