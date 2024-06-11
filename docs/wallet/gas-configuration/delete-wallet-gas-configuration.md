@@ -1,4 +1,4 @@
-### Get wallets
+### Delete wallet gas configuration
 
 ```ts
 import { Address, ChainId, SUPPORTED_CHAINS } from '@models/common.models';
