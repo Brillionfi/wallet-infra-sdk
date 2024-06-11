@@ -1,16 +1,22 @@
 import { HttpClient } from '@utils/http-client';
 import { ExampleService } from '@services/example.service';
 import { WalletService } from '@services/wallet.service';
+import { Config, ConfigKeys } from './config';
 
 export class WalletInfra {
+  private config: Config;
+  private baseURL: string;
+
   private httpClient: HttpClient;
   public example: ExampleService;
-  public wallet: WalletService;
+  public Wallet: WalletService;
 
-  constructor(baseURL: string, jwt?: string) {
-    this.httpClient = new HttpClient(baseURL, jwt);
+  constructor() {
+    this.config = new Config();
+    this.baseURL = this.config.get(ConfigKeys.BASE_URL);
+
+    this.httpClient = new HttpClient(this.baseURL);
     this.example = new ExampleService(this.httpClient);
-
-    this.wallet = new WalletService(this.httpClient);
+    this.Wallet = new WalletService(this.httpClient);
   }
 }
