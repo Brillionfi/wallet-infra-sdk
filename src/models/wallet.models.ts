@@ -9,6 +9,28 @@ export enum WalletKeys {
   AUTHENTICATION_TYPE = 'authenticationType',
 }
 
+export enum WalletTypes {
+  EOA = 'eoa',
+}
+
+export enum WalletFormats {
+  ETHEREUM = 'ethereum',
+  SOLANA = 'solana',
+  COSMOS = 'cosmos',
+  TRON = 'tron',
+}
+
+export const WalletTypesValues = [WalletTypes.EOA] as const;
+export const WalletTypesSchema = z.enum(WalletTypesValues);
+
+export const WalletFormatsValues = [
+  WalletFormats.ETHEREUM,
+  WalletFormats.SOLANA,
+  WalletFormats.COSMOS,
+  WalletFormats.TRON,
+] as const;
+export const WalletFormatsSchema = z.enum(WalletFormatsValues);
+
 export const PasskeyAuthenticationSchema = z.object({
   challenge: z.string(),
   attestation: z.object({
@@ -21,19 +43,19 @@ export const PasskeyAuthenticationSchema = z.object({
 
 export const WalletSchema = z.object({
   [WalletKeys.ADDRESS]: z.string().optional(),
-  [WalletKeys.TYPE]: z.string(),
+  [WalletKeys.TYPE]: WalletTypesSchema,
   [WalletKeys.NAME]: z.string(),
-  [WalletKeys.FORMAT]: z.string(),
+  [WalletKeys.FORMAT]: WalletFormatsSchema,
   [WalletKeys.OWNER]: z.string().optional(),
   [WalletKeys.AUTHENTICATION_TYPE]: PasskeyAuthenticationSchema.optional(),
 });
 
 export const WalletSchemaAPI = z.object({
   walletType: z.object({
-    eoa: z
+    [WalletTypes.EOA]: z
       .object({
         walletName: z.string(),
-        walletFormat: z.string(),
+        walletFormat: WalletFormatsSchema,
         authenticationType: PasskeyAuthenticationSchema,
       })
       .optional(),
@@ -43,8 +65,8 @@ export const WalletSchemaAPI = z.object({
 export const WalletResponseSchema = z.record(
   z.object({
     walletAddress: z.string(),
-    walletFormat: z.string(),
-    walletType: z.string(),
+    walletFormat: WalletFormatsSchema,
+    walletType: WalletTypesSchema,
     walletName: z.string(),
     authenticationType: PasskeyAuthenticationSchema.optional(),
   }),

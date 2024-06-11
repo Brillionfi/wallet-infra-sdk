@@ -43,7 +43,7 @@ describe('handleError', () => {
     const message = 'This is a validation error';
     const error = createAxiosError(message, HttpStatusCode.BAD_REQUEST);
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       `BadRequest Error (${HttpStatusCode.BAD_REQUEST}):`,
       message,
@@ -54,7 +54,7 @@ describe('handleError', () => {
     const message = 'Resource not found';
     const error = createAxiosError(message, HttpStatusCode.NOT_FOUND);
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       `NotFound Error (${HttpStatusCode.NOT_FOUND}):`,
       message,
@@ -65,7 +65,7 @@ describe('handleError', () => {
     const message = 'Access forbidden';
     const error = createAxiosError(message, HttpStatusCode.FORBIDDEN);
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       `Forbidden Error (${HttpStatusCode.FORBIDDEN}):`,
       message,
@@ -76,7 +76,7 @@ describe('handleError', () => {
     const message = 'Unauthorized access';
     const error = createAxiosError(message, HttpStatusCode.UNAUTHORIZED);
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       `Unauthorized Error (${HttpStatusCode.UNAUTHORIZED}):`,
       message,
@@ -90,7 +90,7 @@ describe('handleError', () => {
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       `Internal Error (${HttpStatusCode.INTERNAL_SERVER_ERROR}):`,
       message,
@@ -103,7 +103,7 @@ describe('handleError', () => {
     const unexpectedStatusCode = 499; // Use a non-standard status code
     const error = createAxiosError(message, unexpectedStatusCode);
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
 
     expect(logger.error).toHaveBeenCalledWith(
       `Unexpected API Error (${unexpectedStatusCode}):`,
@@ -140,7 +140,7 @@ describe('handleError', () => {
     const message = 'No response';
     const error = createAxiosError(message);
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       'Unexpected API Error (undefined):',
       message,
@@ -151,7 +151,7 @@ describe('handleError', () => {
     const message = 'Response without status';
     const error = createAxiosError(message, undefined, {});
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       'Unexpected API Error (undefined):',
       message,
@@ -162,7 +162,7 @@ describe('handleError', () => {
     const message = 'Response without data.message';
     const error = createAxiosError(message, HttpStatusCode.BAD_REQUEST, {});
 
-    expect(() => handleError(error)).toThrowError();
+    expect(() => handleError(error)).toThrow();
     expect(logger.error).toHaveBeenCalledWith(
       `BadRequest Error (${HttpStatusCode.BAD_REQUEST}):`,
       message,
