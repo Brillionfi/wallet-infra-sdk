@@ -113,7 +113,9 @@ describe('Wallet', () => {
   });
 
   it('should throw error if getWalletNonce fails', async () => {
-    httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+    httpClientMock.get = jest
+      .fn()
+      .mockRejectedValue(new Error('Failed to get wallet nonce'));
 
     await expect(wallet.getWalletNonce('url')).rejects.toThrow(
       'Failed to get wallet nonce',

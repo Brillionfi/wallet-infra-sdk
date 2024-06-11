@@ -4,6 +4,7 @@ import {
   IWalletResponse,
   IWalletNonceAPI,
   WalletResponseSchema,
+  WalletNonceResponseSchema,
   WalletSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
@@ -36,7 +37,7 @@ export class WalletApi {
       const wallets = WalletSchema.array().parse(response.data);
       return wallets;
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as APIError);
     }
   }
 
@@ -44,12 +45,9 @@ export class WalletApi {
     logger.info('Getting wallet nonce');
     try {
       const response = await this.httpClient.get(url);
-      return response.data as IWalletNonceAPI;
+      return WalletNonceResponseSchema.parse(response.data);
     } catch (error) {
-      throw new APIError(
-        'Failed to get wallet nonce ' + (error as Error).message,
-        500,
-      );
+      throw handleError(error as APIError);
     }
   }
 }

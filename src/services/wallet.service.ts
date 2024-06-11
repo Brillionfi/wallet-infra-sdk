@@ -6,7 +6,7 @@ import {
   IWallet,
   IWalletResponse,
   WalletKeys,
-  WalletNonceSchemaAPI,
+  WalletNonceResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -87,7 +87,7 @@ export class WalletService {
 
     try {
       const data = await this.walletApi.getWalletNonce(url);
-      const nonce = await WalletNonceSchemaAPI.parse(data);
+      const nonce = await WalletNonceResponseSchema.parse(data);
       return nonce.nonce;
     } catch (error) {
       throw new CustomError('Failed verify data');
