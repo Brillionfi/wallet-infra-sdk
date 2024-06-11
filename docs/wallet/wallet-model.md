@@ -9,8 +9,8 @@ The IWallet model represents a wallet and includes various properties that defin
 
 2. `walletType`
 
-   - Type: `string`
-   - Description: The type of the wallet (e.g., "eoa" for Externally Owned Account).
+   - Type: `WalletTypes`
+   - Description: The type of the wallet (e.g., "WalletTypes.EOA" for Externally Owned Account).
 
 3. `walletName`
 
@@ -19,8 +19,8 @@ The IWallet model represents a wallet and includes various properties that defin
 
 4. `walletFormat`
 
-   - Type: `string`
-   - Description: The format of the wallet (e.g., "ethereum").
+   - Type: `WalletFormats`
+   - Description: The format of the wallet (e.g., "WalletFormats.ETHEREUM").
 
 5. `walletOwner`
 
