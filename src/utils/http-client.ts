@@ -4,15 +4,21 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
+import logger from './logger';
+import { v4 as uuidv4 } from 'uuid';
 
 export class HttpClient {
   private instance: AxiosInstance;
 
-  constructor(baseURL: string) {
+  constructor(baseURL: string, jwt?: string) {
+    logger.debug(`BASE_URL: ${baseURL}`);
+
     this.instance = axios.create({
       baseURL,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt}`,
+        'X-Idempotency-Key': uuidv4(),
       },
     });
 
@@ -34,11 +40,12 @@ export class HttpClient {
     return Promise.reject(error);
   }
 
-  public get<T>(
+  public async get<T>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.get<T>(url, config);
+    const response = await this.instance.get<T>(url, config);
+    return response;
   }
 
   public post<T, D>(
