@@ -4,50 +4,77 @@ import {
   WalletSchemaAPI,
   IWalletAPI,
   IWallet,
-  IWallets,
+  IWalletResponse,
   WalletKeys,
   WalletNonceSchemaAPI,
 } from '@models/wallet.models';
-import { CustomError } from '@utils/errors';
+import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
+import logger from '@utils/logger';
 
 export class WalletService {
+  private readonly className: string;
   private walletApi: WalletApi;
 
   constructor(httpClient: HttpClient) {
+    this.className = this.constructor.name;
     this.walletApi = new WalletApi(httpClient);
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
-    let parsedWalletData: IWalletAPI;
+    logger.info(`${this.className}: Creating wallet`);
     try {
-      parsedWalletData = await WalletSchemaAPI.parse({
-        [WalletKeys.WALLET_TYPE]: {
-          [data.walletType]: {
-            [WalletKeys.WALLET_NAME]: data.walletName,
-            [WalletKeys.WALLET_FORMAT]: data.walletFormat,
-            [WalletKeys.AUTHENTICATION_TYPE]: data.authenticationType,
+      const parsedWalletData = this.parseCreateWalletData(data);
+      const createdWallet = await this.walletApi.createWallet(parsedWalletData);
+      const parsedWallet = this.parseCreateWalletResponse(createdWallet);
+
+      return parsedWallet;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getWallets(): Promise<IWallet[]> {
+    logger.info(`${this.className}: Getting Wallets`);
+    try {
+      const wallets: IWallet[] = await this.walletApi.getWallets();
+      return wallets;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  private parseCreateWalletData(data: IWallet): IWalletAPI {
+    try {
+      return WalletSchemaAPI.parse({
+        walletType: {
+          [data[WalletKeys.TYPE]]: {
+            walletName: data[WalletKeys.NAME],
+            walletFormat: data[WalletKeys.FORMAT],
+            authenticationType: data[WalletKeys.AUTHENTICATION_TYPE],
           },
         },
       });
     } catch (error) {
-      throw new CustomError('Failed verify data');
+      throw new CustomError('Failed to parse create wallet data');
     }
-
-    return this.walletApi.createWallet(parsedWalletData);
   }
 
-  public async getWallets(): Promise<IWallet[]> {
-    const wallets: IWallets = await this.walletApi.getWallets();
-    return wallets.map((wallet) => {
+  private parseCreateWalletResponse(data: IWalletResponse): IWallet {
+    try {
+      const walletTypeKey = Object.keys(data)[0];
+      const walletData = data[walletTypeKey];
+
       return {
-        [WalletKeys.WALLET_NAME]: wallet.name,
-        [WalletKeys.WALLET_TYPE]: wallet.type,
-        [WalletKeys.WALLET_FORMAT]: wallet.format,
-        [WalletKeys.WALLET_OWNER]: wallet.owner,
-        [WalletKeys.WALLET_ADDRESS]: wallet.address,
+        [WalletKeys.TYPE]: walletData.walletType,
+        [WalletKeys.ADDRESS]: walletData.walletAddress,
+        [WalletKeys.FORMAT]: walletData.walletFormat,
+        [WalletKeys.NAME]: walletData.walletName,
+        [WalletKeys.AUTHENTICATION_TYPE]: walletData.authenticationType,
       };
-    });
+    } catch (error) {
+      throw new CustomError('Failed to create wallet response');
+    }
   }
 
   public async getWalletNonce(

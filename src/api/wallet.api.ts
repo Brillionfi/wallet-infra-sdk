@@ -1,43 +1,42 @@
 import {
   IWallet,
   IWalletAPI,
+  IWalletResponse,
   IWalletNonceAPI,
-  IWallets,
+  WalletResponseSchema,
+  WalletSchema,
 } from '@models/wallet.models';
-import { APIError } from '@utils/errors';
+import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 
 export class WalletApi {
+  private readonly className: string;
   private httpClient: HttpClient;
 
   constructor(httpClient: HttpClient) {
+    this.className = this.constructor.name;
     this.httpClient = httpClient;
   }
 
-  public async createWallet(data: IWalletAPI): Promise<IWallet> {
-    logger.info('Creating wallet');
+  public async createWallet(data: IWalletAPI): Promise<IWalletResponse> {
+    logger.debug(`${this.className}: Creating Wallet`);
     try {
       const response = await this.httpClient.post('/wallets', data);
-      return response.data as IWallet;
+      return WalletResponseSchema.parse(response.data);
     } catch (error) {
-      throw new APIError(
-        'Failed to create wallet ' + (error as Error).message,
-        500,
-      );
+      throw handleError(error as APIError);
     }
   }
 
-  public async getWallets(): Promise<IWallets> {
-    logger.info('Getting wallets');
+  public async getWallets(): Promise<IWallet[]> {
+    logger.debug(`${this.className}: Getting Wallets`);
     try {
       const response = await this.httpClient.get('/wallets');
-      return response.data as IWallets;
+      const wallets = WalletSchema.array().parse(response.data);
+      return wallets;
     } catch (error) {
-      throw new APIError(
-        'Failed to get wallets ' + (error as Error).message,
-        500,
-      );
+      throw handleError(error);
     }
   }
 

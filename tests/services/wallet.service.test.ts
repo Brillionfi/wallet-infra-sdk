@@ -4,11 +4,15 @@ import {
   WalletKeys,
   IWallet,
   IWalletAPI,
+  IWalletResponse,
+  WalletTypes,
+  WalletFormats,
   WalletSchemaAPI,
   IWalletNonceAPI,
 } from '@models/wallet.models';
 import { HttpClient } from '@utils/http-client';
 import { SUPPORTED_CHAINS } from '@models/common.models';
+import { CustomError } from '@utils/errors';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
@@ -60,43 +64,95 @@ describe('WalletService', () => {
   });
 
   describe('createWallet', () => {
-    it('should catch if wrong data structure', async () => {
-      const example: IWallet = {
-        [WalletKeys.WALLET_TYPE]: 'eoa',
-        [WalletKeys.WALLET_NAME]: 'name',
-        [WalletKeys.WALLET_FORMAT]: 'format',
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
-      };
-      jest.spyOn(WalletSchemaAPI, 'parse').mockRejectedValue('' as never);
-
-      await expect(walletService.createWallet(example)).rejects.toThrow(
-        'Failed verify data',
-      );
-    });
-
     it('should create a new wallet', async () => {
       const example: IWallet = {
-        [WalletKeys.WALLET_TYPE]: 'eoa',
-        [WalletKeys.WALLET_NAME]: 'name',
-        [WalletKeys.WALLET_FORMAT]: 'format',
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
       };
+
       const data = {
         walletType: {
-          eoa: {
-            [WalletKeys.WALLET_NAME]: 'name',
-            [WalletKeys.WALLET_FORMAT]: 'format',
+          [WalletTypes.EOA]: {
+            walletName: 'name',
+            walletFormat: WalletFormats.ETHEREUM,
             [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
           },
         },
       } as IWalletAPI;
 
-      walletApi.createWallet.mockResolvedValueOnce(example);
+      const response = {
+        eoa: {
+          walletAddress: 'walletAddress',
+          walletFormat: WalletFormats.ETHEREUM,
+          walletType: WalletTypes.EOA,
+          walletName: 'name',
+          authenticationType: authenticationType,
+        },
+      };
+
+      walletApi.createWallet = jest.fn().mockResolvedValue(response);
 
       const result = await walletService.createWallet(example);
 
       expect(walletApi.createWallet).toHaveBeenCalledWith(data);
-      expect(result).toEqual(example);
+      expect(result).toEqual({
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.ADDRESS]: 'walletAddress',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+      });
+    });
+
+    it('should throw an error when parsing data fails', async () => {
+      const example: IWallet = {
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+      };
+
+      jest.spyOn(WalletSchemaAPI, 'parse').mockImplementation(() => {
+        throw new Error('Failed to parse create wallet data');
+      });
+
+      await expect(walletService.createWallet(example)).rejects.toThrow(
+        'Failed to parse create wallet data',
+      );
+    });
+
+    it('should throw an error when createWallet fails', async () => {
+      const example: IWallet = {
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+      };
+
+      const error = new Error('Failed to create wallet');
+      walletApi.createWallet.mockRejectedValueOnce(error);
+
+      await expect(walletService.createWallet(example)).rejects.toThrow(error);
+      expect(walletApi.createWallet).toHaveBeenCalled();
+    });
+
+    it('should throw a custom error when parseCreateWalletResponse fails', async () => {
+      const example: IWallet = {
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+      };
+
+      const invalidResponse = {} as IWalletResponse;
+      walletApi.createWallet.mockResolvedValue(invalidResponse);
+
+      await expect(walletService.createWallet(example)).rejects.toThrow(
+        CustomError,
+      );
+      expect(walletApi.createWallet).toHaveBeenCalled();
     });
   });
 
@@ -105,19 +161,19 @@ describe('WalletService', () => {
       const exampleAPI = [
         {
           name: 'testName',
-          type: 'testType',
-          format: 'testFormat',
+          type: WalletTypes.EOA,
+          format: WalletFormats.ETHEREUM,
           owner: 'testOwner',
           address: '0xtestAddress',
         },
       ];
       const exampleService = [
         {
-          [WalletKeys.WALLET_NAME]: 'testName',
-          [WalletKeys.WALLET_TYPE]: 'testType',
-          [WalletKeys.WALLET_FORMAT]: 'testFormat',
-          [WalletKeys.WALLET_OWNER]: 'testOwner',
-          [WalletKeys.WALLET_ADDRESS]: '0xtestAddress',
+          [WalletKeys.NAME]: 'testName',
+          [WalletKeys.TYPE]: WalletTypes.EOA,
+          [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+          [WalletKeys.OWNER]: 'testOwner',
+          [WalletKeys.ADDRESS]: '0xtestAddress',
         },
       ];
 
@@ -128,6 +184,14 @@ describe('WalletService', () => {
       expect(walletApi.getWallets).toHaveBeenCalled();
       expect(result).toEqual(exampleService);
     });
+  });
+
+  it('should throw an error when walletApi.getWallets fails', async () => {
+    const error = new Error('Failed to fetch wallets');
+    walletApi.getWallets.mockRejectedValueOnce(error);
+
+    await expect(walletService.getWallets()).rejects.toThrow(error);
+    expect(walletApi.getWallets).toHaveBeenCalled();
   });
 
   describe('getWalletNonce', () => {

@@ -1,12 +1,18 @@
 import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
-import { IWalletAPI } from '@models/wallet.models';
+import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
 
 jest.mock('@utils/http-client');
 
 jest.mock('@utils/logger', () => ({
   info: jest.fn(),
+}));
+
+jest.mock('@utils/logger', () => ({
+  info: jest.fn(),
+  debug: jest.fn(),
+  error: jest.fn(),
 }));
 
 describe('Wallet', () => {
@@ -47,26 +53,26 @@ describe('Wallet', () => {
     httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
 
     await expect(wallet.createWallet({} as IWalletAPI)).rejects.toThrow(
-      'Failed to create wallet',
+      'error',
     );
   });
 
   it('should call post on HttpClient when createWallet is called', async () => {
     const data = {
       walletType: {
-        eoa: {
+        [WalletTypes.EOA]: {
           walletName,
-          walletFormat: 'ethereum',
+          walletFormat: WalletFormats.ETHEREUM,
           authenticationType,
         },
       },
     } as IWalletAPI;
 
     const response = {
-      eoa: {
+      [WalletTypes.EOA]: {
         walletName: '1',
-        walletFormat: '2',
-        walletType: '3',
+        walletFormat: WalletFormats.ETHEREUM,
+        walletType: WalletTypes.EOA,
         walletAddress: '4',
       },
     };
@@ -75,7 +81,7 @@ describe('Wallet', () => {
 
     const result = await wallet.createWallet(data);
 
-    expect(logger.info).toHaveBeenCalledWith('Creating wallet');
+    expect(logger.debug).toHaveBeenCalledWith('WalletApi: Creating Wallet');
     expect(httpClientMock.post).toHaveBeenCalledWith('/wallets', data);
     expect(result).toEqual(response);
   });
@@ -83,27 +89,25 @@ describe('Wallet', () => {
   it('should throw error if getWallets fails', async () => {
     httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
 
-    await expect(wallet.getWallets()).rejects.toThrow('Failed to get wallet');
+    await expect(wallet.getWallets()).rejects.toThrow('error');
   });
 
   it('should call get on HttpClient when getWallets is called', async () => {
-    const response = {
-      body: [
-        {
-          name: 'name',
-          type: 'type',
-          format: 'format',
-          owner: 'owner',
-          address: 'address',
-        },
-      ],
-    };
+    const response = [
+      {
+        name: 'name',
+        type: WalletTypes.EOA,
+        format: WalletFormats.ETHEREUM,
+        owner: 'owner',
+        address: 'address',
+      },
+    ];
 
     httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
 
     const result = await wallet.getWallets();
 
-    expect(logger.info).toHaveBeenCalledWith('Getting wallets');
+    expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
     expect(httpClientMock.get).toHaveBeenCalledWith('/wallets');
     expect(result).toEqual(response);
   });
