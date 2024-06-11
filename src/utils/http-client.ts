@@ -60,6 +60,14 @@ export class HttpClient {
     return this.instance.put<T>(url, data, config);
   }
 
+  public patch<T, D>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    return this.instance.patch<T>(url, data, config);
+  }
+
   public delete<T>(
     url: string,
     config?: AxiosRequestConfig,

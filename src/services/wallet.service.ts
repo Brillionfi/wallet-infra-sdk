@@ -7,6 +7,8 @@ import {
   IWalletResponse,
   WalletKeys,
   WalletNonceResponseSchema,
+  IWalletGasConfiguration,
+  IWalletGasConfigurationAPI,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -81,6 +83,8 @@ export class WalletService {
     address: Address,
     chainId: ChainId,
   ): Promise<number> {
+    logger.info(`${this.className}: Getting Wallet nonce`);
+
     const url = '/wallets/:address/chains/:chainId/nonce'
       .replace(':address', address)
       .replace(':chainId', chainId);
@@ -89,6 +93,76 @@ export class WalletService {
       const data = await this.walletApi.getWalletNonce(url);
       const nonce = await WalletNonceResponseSchema.parse(data);
       return nonce.nonce;
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async getGasConfiguration(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletGasConfiguration> {
+    logger.info(`${this.className}: Getting Wallet gas configuration`);
+
+    const url = '/wallets/:address/chains/:chainId/gas-station'
+      .replace(':address', address)
+      .replace(':chainId', chainId);
+
+    try {
+      return await this.walletApi.getGasConfiguration(url);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async setGasConfiguration(
+    address: Address,
+    chainId: ChainId,
+    configuration: IWalletGasConfiguration,
+  ): Promise<IWalletGasConfigurationAPI> {
+    logger.info(`${this.className}: Setting Wallet gas configuration`);
+
+    const url = '/wallets/:address/chains/:chainId/gas-station'
+      .replace(':address', address)
+      .replace(':chainId', chainId);
+
+    try {
+      return await this.walletApi.setGasConfiguration(url, configuration);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async updateGasConfiguration(
+    address: Address,
+    chainId: ChainId,
+    configuration: IWalletGasConfiguration,
+  ): Promise<IWalletGasConfigurationAPI> {
+    logger.info(`${this.className}: Updating Wallet gas configuration`);
+
+    const url = '/wallets/:address/chains/:chainId/gas-station'
+      .replace(':address', address)
+      .replace(':chainId', chainId);
+
+    try {
+      return await this.walletApi.updateGasConfiguration(url, configuration);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async deleteGasConfiguration(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletGasConfigurationAPI> {
+    logger.info(`${this.className}: Deleting Wallet gas configuration`);
+
+    const url = '/wallets/:address/chains/:chainId/gas-station'
+      .replace(':address', address)
+      .replace(':chainId', chainId);
+
+    try {
+      return await this.walletApi.deleteGasConfiguration(url);
     } catch (error) {
       throw new CustomError('Failed verify data');
     }

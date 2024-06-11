@@ -47,6 +47,17 @@ describe('HttpClient', () => {
     expect(response.data).toEqual(data);
   });
 
+  it('should make a PATCH request', async () => {
+    const data = { message: 'success' };
+    const patchData = { name: 'example' };
+    mock.onPatch('http://example.com/test', patchData).reply(200, data);
+
+    const response = await httpClient.patch('/test', patchData);
+
+    expect(response.status).toBe(200);
+    expect(response.data).toEqual(data);
+  });
+
   it('should make a DELETE request', async () => {
     const data = { message: 'success' };
     mock.onDelete('http://example.com/test').reply(200, data);
