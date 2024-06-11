@@ -15,7 +15,7 @@ export const SUPPORTED_CHAINS_VALUES = [
   SUPPORTED_CHAINS.POLYGON_AMOY,
 ] as const;
 
-export const AddressSchema = z
+export const EthereumAddressSchema = z
   .string()
   .refine((value) => isAddress(value))
   .transform((value) => getAddress(value));
@@ -23,5 +23,5 @@ export const AddressSchema = z
 export const ChainIdSchema = z.enum(SUPPORTED_CHAINS_VALUES);
 
 // Types
-export type Address = z.infer<typeof AddressSchema>;
+export type Address = z.infer<typeof EthereumAddressSchema>;
 export type ChainId = z.infer<typeof ChainIdSchema>;
