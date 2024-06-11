@@ -77,6 +77,17 @@ describe('handleError', () => {
     expect(logger.error).toHaveBeenCalledWith('Retrying ...');
   });
 
+  it('should log and rethrow an unexpected API error', () => {
+    const unexpectedAPIError = new APIError('Unexpected error', 499);
+
+    expect(() => handleError(unexpectedAPIError)).toThrow(unexpectedAPIError);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      `Unexpected API Error (499):`,
+      'Unexpected error',
+    );
+  });
+
   it('should log custom error and throw', () => {
     const message = 'This is a custom error';
     const error = new CustomError(message);
@@ -94,5 +105,11 @@ describe('handleError', () => {
       'An unexpected error occurred:',
       message,
     );
+  });
+
+  it('should log unknown error occured', () => {
+    const error = undefined;
+    expect(() => handleError(error)).toThrow();
+    expect(logger.error).toHaveBeenCalledWith('An unknown error occurred');
   });
 });
