@@ -1,1 +1,2 @@
-export * from './example.models';
+export * from './transaction.models';
+export * from './wallet.models';
