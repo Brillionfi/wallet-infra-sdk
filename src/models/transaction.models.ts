@@ -36,9 +36,9 @@ export enum TransactionKeys {
   UPDATED_BY = 'updatedBy',
 }
 
-export const TransactionTypeSchema = z.enum([
-  TransactionTypeKeys.SIGNED,
-  TransactionTypeKeys.UNSIGNED,
+export const TransactionTypeSchema = z.union([
+  z.literal('signed'),
+  z.literal('unsigned'),
 ]);
 
 export const TransactionStatusSchema = z.enum([
@@ -50,10 +50,10 @@ export const TransactionStatusSchema = z.enum([
 ]);
 
 export const TransactionSchema = z.object({
-  [TransactionKeys.TRANSACTION_TYPE]: TransactionTypeSchema,
+  [TransactionKeys.TRANSACTION_TYPE]: TransactionTypeSchema.optional(),
   [TransactionKeys.TRANSACTION_ID]: z.string().uuid(),
   [TransactionKeys.TRANSACTION_HASH]: z.string().optional(),
-  [TransactionKeys.SIGNED_TX]: z.string(),
+  [TransactionKeys.SIGNED_TX]: z.string().optional(),
   [TransactionKeys.FROM]: z.string(),
   [TransactionKeys.TO]: z.string(),
   [TransactionKeys.VALUE]: z.number(),
@@ -73,5 +73,15 @@ export const TransactionSignedSchema = z.object({
   [TransactionKeys.SIGNED_TX]: z.string(),
 });
 
+export const TransactionUnsignedSchema = z.object({
+  [TransactionKeys.TRANSACTION_TYPE]: TransactionTypeSchema,
+  [TransactionKeys.FROM]: z.string(),
+  [TransactionKeys.TO]: z.string(),
+  [TransactionKeys.VALUE]: z.string(),
+  [TransactionKeys.DATA]: z.string(),
+  [TransactionKeys.CHAIN_ID]: z.string(),
+});
+
 export type ITransaction = z.infer<typeof TransactionSchema>;
 export type ITransactionSigned = z.infer<typeof TransactionSignedSchema>;
+export type ITransactionUnsigned = z.infer<typeof TransactionUnsignedSchema>;

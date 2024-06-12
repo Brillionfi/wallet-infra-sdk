@@ -1,7 +1,12 @@
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
-import { handleError } from '@utils/errors';
-import { ITransactionSigned } from '@models/transaction.models';
+import { APIError, handleError } from '@utils/errors';
+import {
+  ITransaction,
+  ITransactionSigned,
+  ITransactionUnsigned,
+  TransactionSchema,
+} from '@models/transaction.models';
 import { AxiosResponse } from 'axios';
 
 export class TransactionApi {
@@ -13,29 +18,32 @@ export class TransactionApi {
     this.httpClient = httpClient;
   }
 
-  public async createSignedTransaction(data: ITransactionSigned) {
-    logger.info('TransactionApi: Create signed transaction');
+  public async createTransaction(
+    data: ITransactionSigned | ITransactionUnsigned,
+  ): Promise<ITransaction> {
+    logger.debug('TransactionApi: Create signed transaction');
     try {
-      logger.debug(`TransactionApi: ${JSON.stringify(data)}`);
-      const response = await this.httpClient.post(`/${this.resource}`, data);
-      logger.debug(`Response: ${JSON.stringify(response)}`);
-      return response;
+      const response: AxiosResponse = await this.httpClient.post(
+        `/${this.resource}`,
+        data,
+      );
+
+      return TransactionSchema.parse(response.data.data);
     } catch (error) {
-      logger.error('TransactionApi: Create signed transaction');
-      handleError(error as Error);
+      throw handleError(error as APIError);
     }
   }
 
-  public async getTransactionById(id: string) {
-    logger.info('TransactionApi: Get transaction by ID');
+  public async getTransactionById(id: string): Promise<ITransaction> {
+    logger.debug('TransactionApi: Get transaction by ID');
     try {
       const response: AxiosResponse = await this.httpClient.get(
         `/${this.resource}/${id}`,
       );
-      return response.data.data;
+
+      return TransactionSchema.parse(response.data.data);
     } catch (error) {
-      logger.error('TransactionApi: Get transaction by ID');
-      handleError(error as Error);
+      throw handleError(error as APIError);
     }
   }
 }
