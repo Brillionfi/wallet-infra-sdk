@@ -15,7 +15,7 @@ export class WalletInfra {
     this.config = new Config();
     this.baseURL = this.config.get(ConfigKeys.BASE_URL);
 
-    this.httpClient = new HttpClient(this.baseURL, jwt);
+    this.httpClient = new HttpClient(this.baseURL);
     this.Transaction = new TransactionService(this.httpClient);
 
     this.Wallet = new WalletService(this.httpClient);
