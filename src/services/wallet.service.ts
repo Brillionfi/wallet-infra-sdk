@@ -166,7 +166,7 @@ export class WalletService {
   ): Promise<IWalletSignTransactionAPI> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
-    const url = '/wallets/:address/sign'.replace(':address', address);
+    const url = `/wallets/${address}/sign`;
 
     try {
       return await this.walletApi.signTransaction(url, data);
