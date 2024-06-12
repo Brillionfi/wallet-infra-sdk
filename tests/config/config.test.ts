@@ -21,13 +21,13 @@ describe('Configuration Tests', () => {
     delete process.env[ConfigKeys.BASE_URL];
     expect(() => {
       config = new Config();
-    }).toThrowError(/Environment variable BASE_URL is not set/);
+    }).toThrow(/Environment variable BASE_URL is not set/);
   });
 
   it('should throw an error if BASE_URL is not a valid URL', () => {
     process.env[ConfigKeys.BASE_URL] = 'invalid-url';
     expect(() => {
       config = new Config();
-    }).toThrowError(/Invalid url/);
+    }).toThrow(/Invalid url/);
   });
 });

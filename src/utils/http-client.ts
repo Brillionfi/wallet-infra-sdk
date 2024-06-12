@@ -4,15 +4,12 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
-import logger from './logger';
 import { v4 as uuidv4 } from 'uuid';
 
 export class HttpClient {
   private instance: AxiosInstance;
 
   constructor(baseURL: string, jwt?: string) {
-    logger.debug(`BASE_URL: ${baseURL}`);
-
     this.instance = axios.create({
       baseURL,
       headers: {

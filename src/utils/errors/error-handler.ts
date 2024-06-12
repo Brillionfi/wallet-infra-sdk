@@ -1,29 +1,53 @@
-// todo(handleError): implement retry mechanism
-import { APIError, CustomError, HttpStatusCode } from '@utils/errors';
+import axios, { AxiosError } from 'axios';
+import { CustomError, HttpStatusCode } from '@utils/errors';
 import logger from '@utils/logger';
 
-export const handleError = (error: Error): void => {
-  if (error instanceof APIError) {
-    if (error.statusCode === HttpStatusCode.BAD_REQUEST) {
-      logger.error(`BadRequest Error (${error.statusCode}):`, error.message);
-    } else if (error.statusCode === HttpStatusCode.NOT_FOUND) {
-      logger.error(`NotFound Error (${error.statusCode}):`, error.message);
-    } else if (error.statusCode === HttpStatusCode.FORBIDDEN) {
-      logger.error(`Forbidden Error (${error.statusCode}):`, error.message);
-    } else if (error.statusCode === HttpStatusCode.UNAUTHORIZED) {
-      logger.error(`Unauthorized Error (${error.statusCode}):`, error.message);
-    } else if (
-      error.statusCode >= HttpStatusCode.INTERNAL_SERVER_ERROR &&
-      error.statusCode < 600
-    ) {
-      logger.error(`Internal Error (${error.statusCode}):`, error.message);
-      logger.error('Retrying ...');
-    }
+export const handleError = (error: unknown): never => {
+  if (axios.isAxiosError(error)) {
+    handleAxiosError(error);
   } else if (error instanceof CustomError) {
     logger.error('Custom Error:', error.message);
-  } else {
+  } else if (error instanceof Error) {
     logger.error('An unexpected error occurred:', error.message);
+  } else {
+    logger.error('An unknown error occurred');
   }
 
   throw error;
+};
+
+const handleAxiosError = (error: AxiosError): void => {
+  const statusCode = error.response?.status;
+  const errorMessage =
+    (error.response?.data as { message?: string })?.message ??
+    error.message ??
+    'Unknown error';
+
+  switch (statusCode) {
+    case HttpStatusCode.BAD_REQUEST:
+      logger.error(`BadRequest Error (${statusCode}):`, errorMessage);
+      break;
+    case HttpStatusCode.NOT_FOUND:
+      logger.error(`NotFound Error (${statusCode}):`, errorMessage);
+      break;
+    case HttpStatusCode.FORBIDDEN:
+      logger.error(`Forbidden Error (${statusCode}):`, errorMessage);
+      break;
+    case HttpStatusCode.UNAUTHORIZED:
+      logger.error(`Unauthorized Error (${statusCode}):`, errorMessage);
+      break;
+    default:
+      if (
+        statusCode &&
+        statusCode >= HttpStatusCode.INTERNAL_SERVER_ERROR &&
+        statusCode < 600
+      ) {
+        logger.error(`Internal Error (${statusCode}):`, errorMessage);
+        logger.error('Retrying ...');
+        // TODO: implement retry mechanism
+      } else {
+        logger.error(`Unexpected API Error (${statusCode}):`, errorMessage);
+      }
+      break;
+  }
 };
