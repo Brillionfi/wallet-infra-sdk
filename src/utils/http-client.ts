@@ -4,15 +4,18 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 export class HttpClient {
   private instance: AxiosInstance;
 
-  constructor(baseURL: string) {
+  constructor(baseURL: string, jwt?: string) {
     this.instance = axios.create({
       baseURL,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt}`,
+        'X-Idempotency-Key': uuidv4(),
       },
     });
 
