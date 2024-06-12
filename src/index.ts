@@ -1,1 +1,1 @@
-export * from './wallet-infra';
+export { WalletInfra } from './wallet-infra';
