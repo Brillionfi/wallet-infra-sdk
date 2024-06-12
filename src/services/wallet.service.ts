@@ -87,9 +87,7 @@ export class WalletService {
   ): Promise<number> {
     logger.info(`${this.className}: Getting Wallet nonce`);
 
-    const url = '/wallets/:address/chains/:chainId/nonce'
-      .replace(':address', address)
-      .replace(':chainId', chainId);
+    const url = `/wallets/${address}/chains/${chainId}/nonce`;
 
     try {
       const data = await this.walletApi.getWalletNonce(url);
@@ -106,9 +104,7 @@ export class WalletService {
   ): Promise<IWalletGasConfiguration> {
     logger.info(`${this.className}: Getting Wallet gas configuration`);
 
-    const url = '/wallets/:address/chains/:chainId/gas-station'
-      .replace(':address', address)
-      .replace(':chainId', chainId);
+    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
 
     try {
       return await this.walletApi.getGasConfiguration(url);
@@ -124,9 +120,7 @@ export class WalletService {
   ): Promise<IWalletGasConfigurationAPI> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
-    const url = '/wallets/:address/chains/:chainId/gas-station'
-      .replace(':address', address)
-      .replace(':chainId', chainId);
+    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
 
     try {
       return await this.walletApi.setGasConfiguration(url, configuration);
@@ -142,9 +136,7 @@ export class WalletService {
   ): Promise<IWalletGasConfigurationAPI> {
     logger.info(`${this.className}: Updating Wallet gas configuration`);
 
-    const url = '/wallets/:address/chains/:chainId/gas-station'
-      .replace(':address', address)
-      .replace(':chainId', chainId);
+    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
 
     try {
       return await this.walletApi.updateGasConfiguration(url, configuration);
@@ -159,9 +151,7 @@ export class WalletService {
   ): Promise<IWalletGasConfigurationAPI> {
     logger.info(`${this.className}: Deleting Wallet gas configuration`);
 
-    const url = '/wallets/:address/chains/:chainId/gas-station'
-      .replace(':address', address)
-      .replace(':chainId', chainId);
+    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
 
     try {
       return await this.walletApi.deleteGasConfiguration(url);
