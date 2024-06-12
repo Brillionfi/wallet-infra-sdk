@@ -37,11 +37,12 @@ export class HttpClient {
     return Promise.reject(error);
   }
 
-  public get<T>(
+  public async get<T>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.get<T>(url, config);
+    const response = await this.instance.get<T>(url, config);
+    return response;
   }
 
   public post<T, D>(
