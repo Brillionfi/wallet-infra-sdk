@@ -1,2 +1,2 @@
-export * from './example.api';
 export * from './wallet.api';
+export * from './transaction.api';

@@ -6,21 +6,17 @@ export enum SUPPORTED_CHAINS {
   ETHEREUM_SEPOLIA = '11155111',
   POLYGON = '137',
   POLYGON_AMOY = '2002',
+  SOLANA = '1399811149',
+  TRON = '728126428',
+  COSMOS = '0',
 }
-
-export const SUPPORTED_CHAINS_VALUES = [
-  SUPPORTED_CHAINS.ETHEREUM,
-  SUPPORTED_CHAINS.ETHEREUM_SEPOLIA,
-  SUPPORTED_CHAINS.POLYGON,
-  SUPPORTED_CHAINS.POLYGON_AMOY,
-] as const;
 
 export const EthereumAddressSchema = z
   .string()
   .refine((value) => isAddress(value))
   .transform((value) => getAddress(value));
 
-export const ChainIdSchema = z.enum(SUPPORTED_CHAINS_VALUES);
+export const ChainIdSchema = z.nativeEnum(SUPPORTED_CHAINS);
 
 export const non0xString = z
   .string()
