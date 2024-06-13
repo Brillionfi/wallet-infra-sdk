@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          ssh-key: ${{secrets.CHECKOUT_SECRET_KEY}}
 
       - uses: mskelton/setup-yarn@v1
         with:
