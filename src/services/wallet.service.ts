@@ -120,38 +120,27 @@ export class WalletService {
     const url = `/wallets/${address}/chains/${chainId}/gas-station`;
 
     try {
+      // deletes configuration if set to 0
+      if (
+        parseInt(configuration.gasLimit) === 0 ||
+        parseInt(configuration.maxFeePerGas) === 0 ||
+        parseInt(configuration.maxPriorityFeePerGas) === 0
+      ) {
+        return await this.walletApi.deleteGasConfiguration(url);
+      }
+
+      const currentConfig = await this.getGasConfiguration(address, chainId);
+      // updates configuration if it already exists
+      if (
+        parseInt(currentConfig.gasLimit) >= 0 ||
+        parseInt(currentConfig.maxFeePerGas) >= 0 ||
+        parseInt(currentConfig.maxPriorityFeePerGas) >= 0
+      ) {
+        return await this.walletApi.updateGasConfiguration(url, configuration);
+      }
+
+      // creates configuration
       return await this.walletApi.setGasConfiguration(url, configuration);
-    } catch (error) {
-      throw new CustomError('Failed verify data');
-    }
-  }
-
-  public async updateGasConfiguration(
-    address: Address,
-    chainId: ChainId,
-    configuration: IWalletGasConfiguration,
-  ): Promise<IWalletGasConfigurationAPI> {
-    logger.info(`${this.className}: Updating Wallet gas configuration`);
-
-    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
-
-    try {
-      return await this.walletApi.updateGasConfiguration(url, configuration);
-    } catch (error) {
-      throw new CustomError('Failed verify data');
-    }
-  }
-
-  public async deleteGasConfiguration(
-    address: Address,
-    chainId: ChainId,
-  ): Promise<IWalletGasConfigurationAPI> {
-    logger.info(`${this.className}: Deleting Wallet gas configuration`);
-
-    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
-
-    try {
-      return await this.walletApi.deleteGasConfiguration(url);
     } catch (error) {
       throw new CustomError('Failed verify data');
     }

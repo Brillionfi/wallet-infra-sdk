@@ -78,7 +78,7 @@ describe('HttpClient', () => {
     const mockResponse = { message: 'success' };
 
     mockAxios
-      .onPatch('http://example.com/test-patch', mockData)
+      .onPatch('http://mocked_base_url/test-patch', mockData)
       .reply(200, mockResponse);
 
     const response = await httpClient.patch(url, mockData);

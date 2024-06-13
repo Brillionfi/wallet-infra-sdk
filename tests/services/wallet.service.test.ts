@@ -233,7 +233,7 @@ describe('WalletService', () => {
       ).rejects.toThrow('Failed verify data');
     });
 
-    it('should get wallet nonce', async () => {
+    it('should get wallet gas configuration', async () => {
       walletApi.getGasConfiguration.mockResolvedValueOnce(gasData);
 
       const result = await walletService.getGasConfiguration(wallet, chainId);
@@ -244,15 +244,23 @@ describe('WalletService', () => {
   });
 
   describe('setGasConfiguration', () => {
+    const emptyGasData = {
+      gasLimit: '',
+      maxFeePerGas: '',
+      maxPriorityFeePerGas: '',
+    };
+
     it('should catch if wrong response from api', async () => {
+      walletApi.getGasConfiguration.mockResolvedValueOnce(emptyGasData);
       walletApi.setGasConfiguration.mockRejectedValue('Failed verify data');
       await expect(
         walletService.setGasConfiguration(wallet, chainId, gasData),
       ).rejects.toThrow('Failed verify data');
     });
 
-    it('should get wallet nonce', async () => {
+    it('should set wallet gas configuration', async () => {
       const response = { status: 'success' };
+      walletApi.getGasConfiguration.mockResolvedValueOnce(emptyGasData);
       walletApi.setGasConfiguration.mockResolvedValueOnce(response);
 
       const result = await walletService.setGasConfiguration(
@@ -268,17 +276,19 @@ describe('WalletService', () => {
 
   describe('updateGasConfiguration', () => {
     it('should catch if wrong response from api', async () => {
+      walletApi.getGasConfiguration.mockResolvedValueOnce(gasData);
       walletApi.updateGasConfiguration.mockRejectedValue('Failed verify data');
       await expect(
-        walletService.updateGasConfiguration(wallet, chainId, gasData),
+        walletService.setGasConfiguration(wallet, chainId, gasData),
       ).rejects.toThrow('Failed verify data');
     });
 
-    it('should get wallet nonce', async () => {
+    it('should update wallet gas configuration', async () => {
       const response = { status: 'updated' };
+      walletApi.getGasConfiguration.mockResolvedValueOnce(gasData);
       walletApi.updateGasConfiguration.mockResolvedValueOnce(response);
 
-      const result = await walletService.updateGasConfiguration(
+      const result = await walletService.setGasConfiguration(
         wallet,
         chainId,
         gasData,
@@ -290,20 +300,27 @@ describe('WalletService', () => {
   });
 
   describe('deleteGasConfiguration', () => {
+    const deleteGasData = {
+      gasLimit: '0',
+      maxFeePerGas: '0',
+      maxPriorityFeePerGas: '0',
+    };
+
     it('should catch if wrong response from api', async () => {
       walletApi.deleteGasConfiguration.mockRejectedValue('Failed verify data');
       await expect(
-        walletService.deleteGasConfiguration(wallet, chainId),
+        walletService.setGasConfiguration(wallet, chainId, deleteGasData),
       ).rejects.toThrow('Failed verify data');
     });
 
-    it('should get wallet nonce', async () => {
+    it('should update wallet gas configuration', async () => {
       const response = { status: 'updated' };
       walletApi.deleteGasConfiguration.mockResolvedValueOnce(response);
 
-      const result = await walletService.deleteGasConfiguration(
+      const result = await walletService.setGasConfiguration(
         wallet,
         chainId,
+        deleteGasData,
       );
 
       expect(walletApi.deleteGasConfiguration).toHaveBeenCalled();
