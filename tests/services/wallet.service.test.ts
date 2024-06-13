@@ -9,7 +9,6 @@ import {
   WalletFormats,
   WalletSchemaAPI,
 } from '@models/wallet.models';
-import { HttpClient } from '@utils/http-client';
 import { CustomError } from '@utils/errors';
 
 jest.mock('@api/wallet.api');
@@ -20,7 +19,6 @@ jest.mock('@utils/logger', () => ({
 }));
 
 describe('WalletService', () => {
-  let httpClient: jest.Mocked<HttpClient>;
   let walletApi: jest.Mocked<WalletApi>;
   let walletService: WalletService;
 
@@ -49,12 +47,11 @@ describe('WalletService', () => {
   };
 
   beforeEach(() => {
-    httpClient = new HttpClient('') as jest.Mocked<HttpClient>;
-    walletApi = new WalletApi(httpClient) as jest.Mocked<WalletApi>;
+    walletApi = new WalletApi() as jest.Mocked<WalletApi>;
 
     (WalletApi as jest.Mock<WalletApi>).mockImplementation(() => walletApi);
 
-    walletService = new WalletService(httpClient);
+    walletService = new WalletService();
   });
 
   afterEach(() => {
@@ -72,7 +69,7 @@ describe('WalletService', () => {
 
       const data = {
         walletType: {
-          [WalletTypes.EOA]: {
+          [WalletTypes.EOA.toLowerCase()]: {
             walletName: 'name',
             walletFormat: WalletFormats.ETHEREUM,
             [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,

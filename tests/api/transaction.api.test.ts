@@ -20,7 +20,9 @@ describe('TransactionApi', () => {
 
   beforeEach(() => {
     httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
-    transaction = new TransactionApi(httpClientMock);
+    transaction = new TransactionApi();
+    // eslint-disable-next-line
+    (transaction as any).httpClient = httpClientMock;
   });
 
   describe('createSignedTransaction', () => {
