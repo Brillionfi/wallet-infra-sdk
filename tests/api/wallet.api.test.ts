@@ -4,11 +4,6 @@ import logger from '@utils/logger';
 import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
 
 jest.mock('@utils/http-client');
-
-jest.mock('@utils/logger', () => ({
-  info: jest.fn(),
-}));
-
 jest.mock('@utils/logger', () => ({
   info: jest.fn(),
   debug: jest.fn(),
@@ -46,7 +41,9 @@ describe('Wallet', () => {
 
   beforeEach(() => {
     httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
-    wallet = new WalletApi(httpClientMock);
+    wallet = new WalletApi();
+    // eslint-disable-next-line
+    (wallet as any).httpClient = httpClientMock;
   });
 
   describe('createWallet', () => {

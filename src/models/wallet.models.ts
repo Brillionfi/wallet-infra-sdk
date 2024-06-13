@@ -11,7 +11,7 @@ export enum WalletKeys {
 }
 
 export enum WalletTypes {
-  EOA = 'eoa',
+  EOA = 'EOA',
 }
 
 export enum WalletFormats {
@@ -53,7 +53,7 @@ export const WalletSchema = z.object({
 
 export const WalletSchemaAPI = z.object({
   walletType: z.object({
-    [WalletTypes.EOA]: z
+    [WalletTypes.EOA.toLocaleLowerCase()]: z
       .object({
         walletName: z.string(),
         walletFormat: WalletFormatsSchema,
