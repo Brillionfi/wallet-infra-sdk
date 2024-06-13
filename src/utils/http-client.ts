@@ -1,3 +1,4 @@
+import { Config, ConfigKeys } from '@config/index';
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -7,11 +8,16 @@ import axios, {
 import { v4 as uuidv4 } from 'uuid';
 
 export class HttpClient {
+  private config: Config;
+  private baseURL: string;
   private instance: AxiosInstance;
 
-  constructor(baseURL: string, jwt?: string) {
+  constructor(jwt?: string) {
+    this.config = new Config();
+    this.baseURL = this.config.get(ConfigKeys.BASE_URL);
+
     this.instance = axios.create({
-      baseURL,
+      baseURL: this.baseURL,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${jwt}`,
@@ -45,34 +51,34 @@ export class HttpClient {
     return response;
   }
 
-  public post<T, D>(
+  public async post<T, D>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.post<T>(url, data, config);
+    return await this.instance.post<T>(url, data, config);
   }
 
-  public put<T, D>(
+  public async put<T, D>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.put<T>(url, data, config);
+    return await this.instance.put<T>(url, data, config);
   }
 
-  public patch<T, D>(
+  public async patch<T, D>(
     url: string,
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.patch<T>(url, data, config);
+    return await this.instance.patch<T>(url, data, config);
   }
 
-  public delete<T>(
+  public async delete<T>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.delete<T>(url, config);
+    return await this.instance.delete<T>(url, config);
   }
 }
