@@ -13,9 +13,9 @@ export class WalletApi {
   private readonly className: string;
   private httpClient: HttpClient;
 
-  constructor(httpClient: HttpClient) {
+  constructor() {
     this.className = this.constructor.name;
-    this.httpClient = httpClient;
+    this.httpClient = new HttpClient();
   }
 
   public async createWallet(data: IWalletAPI): Promise<IWalletResponse> {

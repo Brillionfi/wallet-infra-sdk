@@ -52,7 +52,7 @@ export const WalletSchema = z.object({
 
 export const WalletSchemaAPI = z.object({
   walletType: z.object({
-    [WalletTypes.EOA]: z
+    [WalletTypes.EOA.toLocaleLowerCase()]: z
       .object({
         walletName: z.string(),
         walletFormat: WalletFormatsSchema,

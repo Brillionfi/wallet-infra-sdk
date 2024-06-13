@@ -7,16 +7,15 @@ import {
   IWalletResponse,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
-import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 
 export class WalletService {
   private readonly className: string;
   private walletApi: WalletApi;
 
-  constructor(httpClient: HttpClient) {
+  constructor() {
     this.className = this.constructor.name;
-    this.walletApi = new WalletApi(httpClient);
+    this.walletApi = new WalletApi();
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
@@ -46,7 +45,7 @@ export class WalletService {
     try {
       return WalletSchemaAPI.parse({
         walletType: {
-          [data[WalletKeys.TYPE]]: {
+          [data[WalletKeys.TYPE].toLocaleLowerCase()]: {
             walletName: data[WalletKeys.NAME],
             walletFormat: data[WalletKeys.FORMAT],
             authenticationType: data[WalletKeys.AUTHENTICATION_TYPE],
