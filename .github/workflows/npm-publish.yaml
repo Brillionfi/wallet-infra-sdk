@@ -22,15 +22,19 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: mskelton/setup-yarn@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          run_install: false
+
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install Dependencies
-        run: yarn install
+        run: yarn
 
       - name: Build Package
         run: yarn build
@@ -39,20 +43,9 @@ jobs:
         run: yarn test
 
       - name: Semantic Release
-        id: semantic-release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          CI: true
 
-      - name: Create Pull Request
-        if: failure()
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore(release): ${{ steps.semantic-release.outputs.nextRelease.version }} [skip ci]'
-          branch: 'release-${{ steps.semantic-release.outputs.nextRelease.version }}'
-          base: main
-          title: 'Release ${{ steps.semantic-release.outputs.nextRelease.version }}'
-          body: 'This PR includes the changes for version ${{ steps.semantic-release.outputs.nextRelease.version }}.'
+      # todo: NPM publish step
