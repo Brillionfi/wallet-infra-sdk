@@ -13,15 +13,15 @@ export class TransactionApi {
   private resource: string;
   private httpClient: HttpClient;
 
-  constructor(httpClient: HttpClient) {
+  constructor() {
     this.resource = 'transactions';
-    this.httpClient = httpClient;
+    this.httpClient = new HttpClient();
   }
 
   public async createTransaction(
     data: ITransactionSigned | ITransactionUnsigned,
   ): Promise<ITransaction> {
-    logger.debug('TransactionApi: Create signed transaction');
+    logger.debug('TransactionApi: Create Transaction');
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/${this.resource}`,

@@ -1,6 +1,5 @@
 import { TransactionService } from '@services/transaction.service';
 import { TransactionApi } from '@api/transaction.api';
-import { HttpClient } from '@utils/http-client';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import {
   ITransaction,
@@ -12,26 +11,22 @@ jest.mock('@api/transaction.api');
 jest.mock('@utils/http-client');
 jest.mock('@utils/logger', () => ({
   info: jest.fn(),
+  debug: jest.fn(),
   error: jest.fn(),
 }));
 
 describe('TransactionService', () => {
-  let httpClient: jest.Mocked<HttpClient>;
   let transactionApi: jest.Mocked<TransactionApi>;
   let transactionService: TransactionService;
 
   beforeEach(() => {
-    httpClient = new HttpClient('') as jest.Mocked<HttpClient>;
-
-    transactionApi = new TransactionApi(
-      httpClient,
-    ) as jest.Mocked<TransactionApi>;
+    transactionApi = new TransactionApi() as jest.Mocked<TransactionApi>;
 
     (TransactionApi as jest.Mock<TransactionApi>).mockImplementation(
       () => transactionApi,
     );
 
-    transactionService = new TransactionService(httpClient);
+    transactionService = new TransactionService();
   });
 
   afterEach(() => {

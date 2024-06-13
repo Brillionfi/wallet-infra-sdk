@@ -6,7 +6,7 @@
   "repository": "https://github.com/Brillionfi/wallet-infra-sdk.git",
   "author": "k-kaddal <khaledkaddal@gmail.com>",
   "license": "MIT",
-  "private": false,
+  "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch",
@@ -43,7 +43,7 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.0",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^10.0.5",
+    "@semantic-release/github": "^10.0.6",
     "@semantic-release/npm": "^12.0.1",
     "@semantic-release/release-notes-generator": "^14.0.0",
     "@types/uuid": "^9.0.8",
