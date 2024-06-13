@@ -10,7 +10,7 @@ export enum WalletKeys {
 }
 
 export enum WalletTypes {
-  EOA = 'eoa',
+  EOA = 'EOA',
 }
 
 export enum WalletFormats {
