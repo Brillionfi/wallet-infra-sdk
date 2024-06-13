@@ -3,14 +3,15 @@ import { WalletApi } from '@api/wallet.api';
 import {
   WalletKeys,
   IWallet,
-  IWalletAPI,
   IWalletResponse,
   WalletTypes,
   WalletFormats,
   WalletSchemaAPI,
+  AuthenticationTypes,
 } from '@models/wallet.models';
 import { HttpClient } from '@utils/http-client';
 import { CustomError } from '@utils/errors';
+import Turnkey from '@turnkey/http';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
@@ -67,18 +68,8 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION_TYPE]: AuthenticationTypes.TURNKEY,
       };
-
-      const data = {
-        walletType: {
-          [WalletTypes.EOA]: {
-            walletName: 'name',
-            walletFormat: WalletFormats.ETHEREUM,
-            [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
-          },
-        },
-      } as IWalletAPI;
 
       const response = {
         eoa: {
@@ -86,21 +77,24 @@ describe('WalletService', () => {
           walletFormat: WalletFormats.ETHEREUM,
           walletType: WalletTypes.EOA,
           walletName: 'name',
-          authenticationType: authenticationType,
         },
       };
+
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      jest
+        .spyOn(Turnkey, 'getWebAuthnAttestation')
+        .mockResolvedValue(authenticationType.attestation as any);
 
       walletApi.createWallet = jest.fn().mockResolvedValue(response);
 
       const result = await walletService.createWallet(example);
 
-      expect(walletApi.createWallet).toHaveBeenCalledWith(data);
+      expect(walletApi.createWallet).toHaveBeenCalled();
       expect(result).toEqual({
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.ADDRESS]: 'walletAddress',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.NAME]: 'name',
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
       });
     });
 
@@ -109,7 +103,6 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
       };
 
       jest.spyOn(WalletSchemaAPI, 'parse').mockImplementation(() => {
@@ -121,13 +114,35 @@ describe('WalletService', () => {
       );
     });
 
+    it('should throw an error when passkey generation fails', async () => {
+      const example: IWallet = {
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.AUTHENTICATION_TYPE]: AuthenticationTypes.TURNKEY,
+      };
+
+      jest
+        .spyOn(Turnkey, 'getWebAuthnAttestation')
+        .mockRejectedValue(new Error(''));
+
+      await expect(walletService.createWallet(example)).rejects.toThrow(
+        'Failed to parse create wallet data',
+      );
+    });
+
     it('should throw an error when createWallet fails', async () => {
       const example: IWallet = {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION_TYPE]: AuthenticationTypes.TURNKEY,
       };
+
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      jest
+        .spyOn(Turnkey, 'getWebAuthnAttestation')
+        .mockResolvedValue(authenticationType.attestation as any);
 
       const error = new Error('Failed to create wallet');
       walletApi.createWallet.mockRejectedValueOnce(error);
@@ -141,8 +156,13 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION_TYPE]: AuthenticationTypes.TURNKEY,
       };
+
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      jest
+        .spyOn(Turnkey, 'getWebAuthnAttestation')
+        .mockResolvedValue(authenticationType.attestation as any);
 
       const invalidResponse = {} as IWalletResponse;
       walletApi.createWallet.mockResolvedValue(invalidResponse);

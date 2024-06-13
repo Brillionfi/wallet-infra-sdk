@@ -12,17 +12,8 @@ import {
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
-
-// import {
-//   startAuthentication,
-//   startRegistration,
-// } from "@simplewebauthn/browser";
-// import type {
-//   AuthenticationResponseJSON,
-//   PublicKeyCredentialCreationOptionsJSON,
-//   PublicKeyCredentialRequestOptionsJSON,
-//   RegistrationResponseJSON,
-// } from "@simplewebauthn/typescript-types";
+import { getWebAuthnAttestation } from '@turnkey/http';
+import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 
 export class WalletService {
   private readonly className: string;
@@ -62,6 +53,7 @@ export class WalletService {
         throw new CustomError('Failed to parse create wallet data');
 
       const authentication = await this.generateAuthenticationData(
+        data[WalletKeys.NAME],
         data[WalletKeys.AUTHENTICATION_TYPE],
       );
 
@@ -80,34 +72,45 @@ export class WalletService {
   }
 
   private async generateAuthenticationData(
+    walletName: string,
     authType: IAuthenticationTypes,
   ): Promise<IAuthenticationData> {
     try {
-      let data: IAuthenticationData;
+      let challenge: ArrayBuffer;
+      let authenticatorUserId: ArrayBuffer;
+      let attestation;
 
       switch (authType) {
         case AuthenticationTypes.TURNKEY:
         default:
-          // todo exect webauthn
+          challenge = generateRandomBuffer();
+          authenticatorUserId = generateRandomBuffer();
 
-          // const options:PublicKeyCredentialCreationOptionsJSON = await getRegistrationOptions(username); // todo get from api
-          // const attestation:RegistrationResponseJSON = await startRegistration(options);
-          // const answer:IRegistrationAnswer = await verifyRegistration(attestation, username); // todo verify on api
-
-          data = {
-            challenge: 'options.challenge',
-            attestation: {
-              credentialId: 'attestation.id', // ??
-              clientDataJson: 'attestation.response.clientDataJSON',
-              attestationObject: 'attestation.response.attestationObject',
-              transports: [
-                'AUTHENTICATOR_TRANSPORT_HYBRID',
-                'AUTHENTICATOR_TRANSPORT_INTERNAL',
+          attestation = await getWebAuthnAttestation({
+            publicKey: {
+              rp: {
+                id: 'Brillion-wallet-infra',
+                name: 'Turnkey Federated Passkey Demo',
+              },
+              challenge,
+              pubKeyCredParams: [
+                {
+                  type: 'public-key',
+                  alg: -7,
+                },
               ],
+              user: {
+                id: authenticatorUserId,
+                name: walletName,
+                displayName: walletName,
+              },
             },
-          };
+          });
 
-          return data;
+          return {
+            challenge: base64UrlEncode(challenge),
+            attestation,
+          };
       }
     } catch (error) {
       throw new CustomError('Failed to create authentication data');

@@ -20,6 +20,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@turnkey/http": "^2.10.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.13.0",
     "axios": "^1.7.2",
