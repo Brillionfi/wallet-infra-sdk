@@ -67,14 +67,6 @@ export class HttpClient {
     return await this.instance.put<T>(url, data, config);
   }
 
-  public async patch<T, D>(
-    url: string,
-    data?: D,
-    config?: AxiosRequestConfig,
-  ): Promise<AxiosResponse<T>> {
-    return await this.instance.patch<T>(url, data, config);
-  }
-
   public async delete<T>(
     url: string,
     config?: AxiosRequestConfig,

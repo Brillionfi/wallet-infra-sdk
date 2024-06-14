@@ -1,15 +1,10 @@
+import { Address } from '@models/common.models';
 import {
   IWallet,
   IWalletAPI,
   IWalletResponse,
-  IWalletNonceAPI,
   WalletResponseSchema,
-  WalletNonceResponseSchema,
   WalletSchema,
-  IWalletGasConfiguration,
-  WalletGasConfigurationSchema,
-  IWalletGasConfigurationAPI,
-  WalletGasConfigurationResponseSchema,
   IWalletSignTransaction,
   WalletSignTransactionResponseSchema,
   IWalletSignTransactionAPI,
@@ -48,73 +43,16 @@ export class WalletApi {
     }
   }
 
-  public async getWalletNonce(url: string): Promise<IWalletNonceAPI> {
-    logger.debug(`${this.className}: Getting wallet nonce`);
-    try {
-      const response = await this.httpClient.get(url);
-      return WalletNonceResponseSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
-  public async setGasConfiguration(
-    url: string,
-    data: IWalletGasConfiguration,
-  ): Promise<IWalletGasConfigurationAPI> {
-    logger.debug(`${this.className}: Setting wallet gas configuration`);
-    try {
-      const response = await this.httpClient.post(url, data);
-      return WalletGasConfigurationResponseSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
-  public async updateGasConfiguration(
-    url: string,
-    data: IWalletGasConfiguration,
-  ): Promise<IWalletGasConfigurationAPI> {
-    logger.debug(`${this.className}: Updating wallet gas configuration`);
-    try {
-      const response = await this.httpClient.patch(url, data);
-      return WalletGasConfigurationResponseSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
-  public async deleteGasConfiguration(
-    url: string,
-  ): Promise<IWalletGasConfigurationAPI> {
-    logger.debug(`${this.className}: Deleting wallet gas configuration`);
-    try {
-      const response = await this.httpClient.delete(url);
-      return WalletGasConfigurationResponseSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
-  public async getGasConfiguration(
-    url: string,
-  ): Promise<IWalletGasConfiguration> {
-    logger.debug(`${this.className}: Getting wallet gas configuration`);
-    try {
-      const response = await this.httpClient.get(url);
-      return WalletGasConfigurationSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
   public async signTransaction(
-    url: string,
+    address: Address,
     data: IWalletSignTransaction,
   ): Promise<IWalletSignTransactionAPI> {
     logger.debug(`${this.className}: Signing transaction`);
     try {
-      const response = await this.httpClient.post(url, data);
+      const response = await this.httpClient.post(
+        `/wallets/${address}/sign`,
+        data,
+      );
       return WalletSignTransactionResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
