@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          ssh-key: ${{secrets.CHECKOUT_SECRET_KEY}}
 
       - uses: mskelton/setup-yarn@v1
         with:
@@ -42,10 +44,15 @@ jobs:
       - name: Unit Tests
         run: yarn test
 
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.CHECKOUT_SECRET_KEY }}
+
       - name: Semantic Release
         run: npx semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CHECKOUT_SECRET_KEY }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # todo: NPM publish step
