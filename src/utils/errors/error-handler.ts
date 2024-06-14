@@ -6,9 +6,9 @@ export const handleError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
     handleAxiosError(error);
   } else if (error instanceof CustomError) {
-    logger.error('Custom Error:', error.message);
+    logger.error(`Custom Error: ${error.message}`);
   } else if (error instanceof Error) {
-    logger.error('An unexpected error occurred:', error.message);
+    logger.error(`An unexpected error occurred: ${error.message}`);
   } else {
     logger.error('An unknown error occurred');
   }
