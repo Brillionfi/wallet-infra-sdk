@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ChainIdSchema, EthereumAddressSchema } from './common.models';
 
 export enum WalletKeys {
   TYPE = 'type',
@@ -72,6 +73,18 @@ export const WalletResponseSchema = z.record(
   }),
 );
 
+export const WalletTransactionSchema = z.object({
+  transactionId: z.string(),
+  transactionHash: z.string(),
+  address: EthereumAddressSchema,
+  chainId: ChainIdSchema,
+  walletAddress: EthereumAddressSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  updatedBy: z.string(),
+});
+
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
+export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;

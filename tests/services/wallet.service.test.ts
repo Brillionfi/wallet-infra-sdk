@@ -10,6 +10,7 @@ import {
   WalletSchemaAPI,
 } from '@models/wallet.models';
 import { CustomError } from '@utils/errors';
+import { SUPPORTED_CHAINS } from '@models/common.models';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
@@ -21,6 +22,9 @@ jest.mock('@utils/logger', () => ({
 describe('WalletService', () => {
   let walletApi: jest.Mocked<WalletApi>;
   let walletService: WalletService;
+
+  const address = '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB';
+  const chainId = SUPPORTED_CHAINS.ETHEREUM;
 
   const challenge = 'FsAxSlgRXHR7o-ePTrRreH8gm-OZVix8V3wlSqJQ50w';
 
@@ -187,5 +191,42 @@ describe('WalletService', () => {
 
     await expect(walletService.getWallets()).rejects.toThrow(error);
     expect(walletApi.getWallets).toHaveBeenCalled();
+  });
+
+  describe('getTransactionHistory', () => {
+    it('should throw an error when walletApi.getTransactionHistory fails', async () => {
+      const error = new Error('Failed to fetch wallets');
+      walletApi.getTransactionHistory.mockRejectedValueOnce(error);
+
+      await expect(
+        walletService.getTransactionHistory(address, chainId),
+      ).rejects.toThrow(error);
+      expect(walletApi.getTransactionHistory).toHaveBeenCalled();
+    });
+
+    it('should get wallets', async () => {
+      const example = [
+        {
+          transactionId: 'id',
+          transactionHash: 'hash',
+          address: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+          chainId: SUPPORTED_CHAINS.ETHEREUM,
+          walletAddress: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+          createdAt: '123456',
+          updatedAt: '123456',
+          updatedBy: '123456',
+        },
+      ];
+
+      walletApi.getTransactionHistory.mockResolvedValueOnce(example);
+
+      const result = await walletService.getTransactionHistory(
+        address,
+        chainId,
+      );
+
+      expect(walletApi.getTransactionHistory).toHaveBeenCalled();
+      expect(result).toEqual(example);
+    });
   });
 });

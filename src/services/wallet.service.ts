@@ -1,10 +1,12 @@
 import { WalletApi } from '@api/wallet.api';
+import { Address, ChainId } from '@models/common.models';
 import {
   WalletSchemaAPI,
   IWalletAPI,
   IWallet,
   WalletKeys,
   IWalletResponse,
+  IWalletTransaction,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import logger from '@utils/logger';
@@ -36,6 +38,18 @@ export class WalletService {
     try {
       const wallets: IWallet[] = await this.walletApi.getWallets();
       return wallets;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getTransactionHistory(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletTransaction[]> {
+    logger.info(`${this.className}: Getting Wallet transaction history`);
+    try {
+      return await this.walletApi.getTransactionHistory(address, chainId);
     } catch (error) {
       throw handleError(error);
     }
