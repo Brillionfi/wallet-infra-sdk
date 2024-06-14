@@ -43,6 +43,19 @@ export class WalletService {
     }
   }
 
+  public async getWalletNonce(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<number> {
+    try {
+      const data = await this.walletApi.getWalletNonce(address, chainId);
+      const nonce = await WalletNonceResponseSchema.parse(data);
+      return nonce.nonce;
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
   private parseCreateWalletData(data: IWallet): IWalletAPI {
     try {
       return WalletSchemaAPI.parse({
@@ -73,23 +86,6 @@ export class WalletService {
       };
     } catch (error) {
       throw new CustomError('Failed to create wallet response');
-    }
-  }
-
-  public async getWalletNonce(
-    address: Address,
-    chainId: ChainId,
-  ): Promise<number> {
-    const url = '/wallets/:address/chains/:chainId/nonce'
-      .replace(':address', address)
-      .replace(':chainId', chainId);
-
-    try {
-      const data = await this.walletApi.getWalletNonce(url);
-      const nonce = await WalletNonceResponseSchema.parse(data);
-      return nonce.nonce;
-    } catch (error) {
-      throw new CustomError('Failed verify data');
     }
   }
 }

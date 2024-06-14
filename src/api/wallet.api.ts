@@ -1,3 +1,4 @@
+import { Address, ChainId } from '@models/common.models';
 import {
   IWallet,
   IWalletAPI,
@@ -10,6 +11,7 @@ import {
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
+import { AxiosResponse } from 'axios';
 
 export class WalletApi {
   private readonly className: string;
@@ -41,10 +43,15 @@ export class WalletApi {
     }
   }
 
-  public async getWalletNonce(url: string): Promise<IWalletNonceAPI> {
+  public async getWalletNonce(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletNonceAPI> {
     logger.info('Getting wallet nonce');
     try {
-      const response = await this.httpClient.get(url);
+      const response: AxiosResponse = await this.httpClient.get(
+        `/wallets/${address}/chains/${chainId}/nonce`,
+      );
       return WalletNonceResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
