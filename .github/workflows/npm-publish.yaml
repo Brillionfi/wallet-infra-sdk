@@ -47,7 +47,7 @@ jobs:
       - name: Install SSH Client 🔑
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.CHECKOUT_SECRET_KEY }}
+          ssh-private-key: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Semantic Release
         run: npx semantic-release
