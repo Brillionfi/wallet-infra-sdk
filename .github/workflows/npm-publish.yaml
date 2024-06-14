@@ -44,11 +44,6 @@ jobs:
       - name: Unit Tests
         run: yarn test
 
-      - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.CHECKOUT_SECRET_KEY }}
-
       - name: Semantic Release
         run: npx semantic-release
         env:
