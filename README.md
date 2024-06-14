@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Wallet Infra SDK provides tools and services for managing wallets, transactions and assets within the Wallet Infra API ecosystem
+The Wallet Infra SDK provides tools and services for managing wallets, transactions and assets within the Wallet Infra API ecosystem.
 
 ## Table of Contents
 

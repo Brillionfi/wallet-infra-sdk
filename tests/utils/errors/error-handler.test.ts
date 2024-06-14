@@ -116,7 +116,7 @@ describe('handleError', () => {
     const error = new CustomError(message);
 
     expect(() => handleError(error)).toThrow(CustomError);
-    expect(logger.error).toHaveBeenCalledWith('Custom Error:', message);
+    expect(logger.error).toHaveBeenCalledWith(`Custom Error: ${message}`);
   });
 
   it('should log unexpected error and throw', () => {
@@ -125,8 +125,7 @@ describe('handleError', () => {
 
     expect(() => handleError(error)).toThrow(Error);
     expect(logger.error).toHaveBeenCalledWith(
-      'An unexpected error occurred:',
-      message,
+      `An unexpected error occurred: ${message}`,
     );
   });
 
