@@ -1,3 +1,4 @@
+import { Address, ChainId } from '@models/common.models';
 import {
   IWallet,
   IWalletAPI,
@@ -45,12 +46,16 @@ export class WalletApi {
   }
 
   public async setGasConfiguration(
-    url: string,
+    address: Address,
+    chainId: ChainId,
     data: IWalletGasConfiguration,
   ): Promise<IWalletGasConfigurationAPI> {
     logger.debug(`${this.className}: Setting wallet gas configuration`);
     try {
-      const response: AxiosResponse = await this.httpClient.post(url, data);
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+        data,
+      );
       return WalletGasConfigurationResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -58,12 +63,16 @@ export class WalletApi {
   }
 
   public async updateGasConfiguration(
-    url: string,
+    address: Address,
+    chainId: ChainId,
     data: IWalletGasConfiguration,
   ): Promise<IWalletGasConfigurationAPI> {
     logger.debug(`${this.className}: Updating wallet gas configuration`);
     try {
-      const response: AxiosResponse = await this.httpClient.patch(url, data);
+      const response: AxiosResponse = await this.httpClient.patch(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+        data,
+      );
       return WalletGasConfigurationResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -71,11 +80,14 @@ export class WalletApi {
   }
 
   public async deleteGasConfiguration(
-    url: string,
+    address: Address,
+    chainId: ChainId,
   ): Promise<IWalletGasConfigurationAPI> {
     logger.debug(`${this.className}: Deleting wallet gas configuration`);
     try {
-      const response: AxiosResponse = await this.httpClient.delete(url);
+      const response: AxiosResponse = await this.httpClient.delete(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+      );
       return WalletGasConfigurationResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -83,11 +95,14 @@ export class WalletApi {
   }
 
   public async getGasConfiguration(
-    url: string,
+    address: Address,
+    chainId: ChainId,
   ): Promise<IWalletGasConfiguration> {
     logger.debug(`${this.className}: Getting wallet gas configuration`);
     try {
-      const response: AxiosResponse = await this.httpClient.get(url);
+      const response: AxiosResponse = await this.httpClient.get(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+      );
       return WalletGasConfigurationSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);

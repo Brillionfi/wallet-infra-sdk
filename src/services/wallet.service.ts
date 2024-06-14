@@ -50,10 +50,8 @@ export class WalletService {
   ): Promise<IWalletGasConfiguration> {
     logger.info(`${this.className}: Getting Wallet gas configuration`);
 
-    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
-
     try {
-      return await this.walletApi.getGasConfiguration(url);
+      return await this.walletApi.getGasConfiguration(address, chainId);
     } catch (error) {
       throw new CustomError('Failed verify data');
     }
@@ -66,8 +64,6 @@ export class WalletService {
   ): Promise<IWalletGasConfigurationAPI> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
-    const url = `/wallets/${address}/chains/${chainId}/gas-station`;
-
     try {
       // deletes configuration if set to 0
       if (
@@ -75,7 +71,7 @@ export class WalletService {
         parseInt(configuration.maxFeePerGas) === 0 ||
         parseInt(configuration.maxPriorityFeePerGas) === 0
       ) {
-        return await this.walletApi.deleteGasConfiguration(url);
+        return await this.walletApi.deleteGasConfiguration(address, chainId);
       }
 
       const currentConfig = await this.getGasConfiguration(address, chainId);
@@ -85,11 +81,19 @@ export class WalletService {
         parseInt(currentConfig.maxFeePerGas) >= 0 ||
         parseInt(currentConfig.maxPriorityFeePerGas) >= 0
       ) {
-        return await this.walletApi.updateGasConfiguration(url, configuration);
+        return await this.walletApi.updateGasConfiguration(
+          address,
+          chainId,
+          configuration,
+        );
       }
 
       // creates configuration
-      return await this.walletApi.setGasConfiguration(url, configuration);
+      return await this.walletApi.setGasConfiguration(
+        address,
+        chainId,
+        configuration,
+      );
     } catch (error) {
       throw new CustomError('Failed verify data');
     }

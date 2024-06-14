@@ -2,6 +2,7 @@ import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
+import { SUPPORTED_CHAINS } from '@models/common.models';
 
 jest.mock('@utils/http-client');
 jest.mock('@utils/logger', () => ({
@@ -13,6 +14,9 @@ jest.mock('@utils/logger', () => ({
 describe('Wallet', () => {
   let wallet: WalletApi;
   let httpClientMock: jest.Mocked<HttpClient>;
+
+  const address = '0x1234';
+  const chainId = SUPPORTED_CHAINS.ETHEREUM;
 
   const walletName = 'Test wallet';
   const challenge = 'FsAxSlgRXHR7o-ePTrRreH8gm-OZVix8V3wlSqJQ50w';
@@ -119,9 +123,9 @@ describe('Wallet', () => {
         .fn()
         .mockRejectedValue(new Error('Failed to get wallet nonce'));
 
-      await expect(wallet.getGasConfiguration('url')).rejects.toThrow(
-        'Failed to get wallet nonce',
-      );
+      await expect(
+        wallet.getGasConfiguration(address, chainId),
+      ).rejects.toThrow('Failed to get wallet nonce');
     });
 
     it('should call get on HttpClient when getGasConfiguration is called', async () => {
@@ -133,12 +137,14 @@ describe('Wallet', () => {
 
       httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
 
-      const result = await wallet.getGasConfiguration('url');
+      const result = await wallet.getGasConfiguration(address, chainId);
 
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Getting wallet gas configuration',
       );
-      expect(httpClientMock.get).toHaveBeenCalledWith('url');
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+      );
       expect(result).toEqual(response);
     });
   });
@@ -153,9 +159,9 @@ describe('Wallet', () => {
     it('should throw error if setGasConfiguration fails', async () => {
       httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
 
-      await expect(wallet.setGasConfiguration('url', gasData)).rejects.toThrow(
-        'error',
-      );
+      await expect(
+        wallet.setGasConfiguration(address, chainId, gasData),
+      ).rejects.toThrow('error');
     });
 
     it('should call post on HttpClient when setGasConfiguration is called', async () => {
@@ -163,12 +169,19 @@ describe('Wallet', () => {
         .fn()
         .mockResolvedValue({ data: { status: 'Successfully created' } });
 
-      const result = await wallet.setGasConfiguration('url', gasData);
+      const result = await wallet.setGasConfiguration(
+        address,
+        chainId,
+        gasData,
+      );
 
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Setting wallet gas configuration',
       );
-      expect(httpClientMock.post).toHaveBeenCalledWith('url', gasData);
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+        gasData,
+      );
       expect(result).toEqual({ status: 'Successfully created' });
     });
   });
@@ -184,7 +197,7 @@ describe('Wallet', () => {
       httpClientMock.patch = jest.fn().mockRejectedValue(new Error('error'));
 
       await expect(
-        wallet.updateGasConfiguration('url', gasData),
+        wallet.updateGasConfiguration(address, chainId, gasData),
       ).rejects.toThrow('error');
     });
 
@@ -193,12 +206,19 @@ describe('Wallet', () => {
         .fn()
         .mockResolvedValue({ data: { status: 'Successfully updated' } });
 
-      const result = await wallet.updateGasConfiguration('url', gasData);
+      const result = await wallet.updateGasConfiguration(
+        address,
+        chainId,
+        gasData,
+      );
 
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Updating wallet gas configuration',
       );
-      expect(httpClientMock.patch).toHaveBeenCalledWith('url', gasData);
+      expect(httpClientMock.patch).toHaveBeenCalledWith(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+        gasData,
+      );
       expect(result).toEqual({ status: 'Successfully updated' });
     });
   });
@@ -207,9 +227,9 @@ describe('Wallet', () => {
     it('should throw error if deleteGasConfiguration fails', async () => {
       httpClientMock.delete = jest.fn().mockRejectedValue(new Error('error'));
 
-      await expect(wallet.deleteGasConfiguration('url')).rejects.toThrow(
-        'error',
-      );
+      await expect(
+        wallet.deleteGasConfiguration(address, chainId),
+      ).rejects.toThrow('error');
     });
 
     it('should call delete on HttpClient when deleteGasConfiguration is called', async () => {
@@ -217,12 +237,14 @@ describe('Wallet', () => {
         .fn()
         .mockResolvedValue({ data: { status: 'Successfully updated' } });
 
-      const result = await wallet.deleteGasConfiguration('url');
+      const result = await wallet.deleteGasConfiguration(address, chainId);
 
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Deleting wallet gas configuration',
       );
-      expect(httpClientMock.delete).toHaveBeenCalledWith('url');
+      expect(httpClientMock.delete).toHaveBeenCalledWith(
+        `/wallets/${address}/chains/${chainId}/gas-station`,
+      );
       expect(result).toEqual({ status: 'Successfully updated' });
     });
   });
