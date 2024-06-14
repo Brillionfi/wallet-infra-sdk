@@ -2,9 +2,7 @@ import {
   IWallet,
   IWalletAPI,
   IWalletResponse,
-  IWalletNonceAPI,
   WalletResponseSchema,
-  WalletNonceResponseSchema,
   WalletSchema,
   IWalletGasConfiguration,
   WalletGasConfigurationSchema,
@@ -14,6 +12,7 @@ import {
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
+import { AxiosResponse } from 'axios';
 
 export class WalletApi {
   private readonly className: string;
@@ -45,23 +44,13 @@ export class WalletApi {
     }
   }
 
-  public async getWalletNonce(url: string): Promise<IWalletNonceAPI> {
-    logger.debug(`${this.className}: Getting wallet nonce`);
-    try {
-      const response = await this.httpClient.get(url);
-      return WalletNonceResponseSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
   public async setGasConfiguration(
     url: string,
     data: IWalletGasConfiguration,
   ): Promise<IWalletGasConfigurationAPI> {
     logger.debug(`${this.className}: Setting wallet gas configuration`);
     try {
-      const response = await this.httpClient.post(url, data);
+      const response: AxiosResponse = await this.httpClient.post(url, data);
       return WalletGasConfigurationResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -74,7 +63,7 @@ export class WalletApi {
   ): Promise<IWalletGasConfigurationAPI> {
     logger.debug(`${this.className}: Updating wallet gas configuration`);
     try {
-      const response = await this.httpClient.patch(url, data);
+      const response: AxiosResponse = await this.httpClient.patch(url, data);
       return WalletGasConfigurationResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -86,7 +75,7 @@ export class WalletApi {
   ): Promise<IWalletGasConfigurationAPI> {
     logger.debug(`${this.className}: Deleting wallet gas configuration`);
     try {
-      const response = await this.httpClient.delete(url);
+      const response: AxiosResponse = await this.httpClient.delete(url);
       return WalletGasConfigurationResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -98,7 +87,7 @@ export class WalletApi {
   ): Promise<IWalletGasConfiguration> {
     logger.debug(`${this.className}: Getting wallet gas configuration`);
     try {
-      const response = await this.httpClient.get(url);
+      const response: AxiosResponse = await this.httpClient.get(url);
       return WalletGasConfigurationSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);

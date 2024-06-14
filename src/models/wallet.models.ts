@@ -72,10 +72,6 @@ export const WalletResponseSchema = z.record(
   }),
 );
 
-export const WalletNonceResponseSchema = z.object({
-  nonce: z.number(),
-});
-
 export const WalletGasConfigurationSchema = z.object({
   gasLimit: z.string(),
   maxFeePerGas: z.string(),
@@ -88,7 +84,6 @@ export const WalletGasConfigurationResponseSchema = z.object({
 
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
-export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
 export type IWalletGasConfiguration = z.infer<
   typeof WalletGasConfigurationSchema

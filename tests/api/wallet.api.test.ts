@@ -113,34 +113,6 @@ describe('Wallet', () => {
     });
   });
 
-  describe('getWalletNonce', () => {
-    it('should throw error if getWalletNonce fails', async () => {
-      httpClientMock.get = jest
-        .fn()
-        .mockRejectedValue(new Error('Failed to get wallet nonce'));
-
-      await expect(wallet.getWalletNonce('url')).rejects.toThrow(
-        'Failed to get wallet nonce',
-      );
-    });
-
-    it('should call get on HttpClient when getWalletNonce is called', async () => {
-      const response = {
-        nonce: 1,
-      };
-
-      httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
-
-      const result = await wallet.getWalletNonce('url');
-
-      expect(logger.debug).toHaveBeenCalledWith(
-        'WalletApi: Getting wallet nonce',
-      );
-      expect(httpClientMock.get).toHaveBeenCalledWith('url');
-      expect(result).toEqual(response);
-    });
-  });
-
   describe('getGasConfiguration', () => {
     it('should throw error if getGasConfiguration fails', async () => {
       httpClientMock.get = jest

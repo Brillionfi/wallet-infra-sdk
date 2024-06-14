@@ -6,7 +6,6 @@ import {
   IWallet,
   IWalletResponse,
   WalletKeys,
-  WalletNonceResponseSchema,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
 } from '@models/wallet.models';
@@ -42,56 +41,6 @@ export class WalletService {
       return wallets;
     } catch (error) {
       throw handleError(error);
-    }
-  }
-
-  private parseCreateWalletData(data: IWallet): IWalletAPI {
-    try {
-      return WalletSchemaAPI.parse({
-        walletType: {
-          [data[WalletKeys.TYPE].toLocaleLowerCase()]: {
-            walletName: data[WalletKeys.NAME],
-            walletFormat: data[WalletKeys.FORMAT],
-            authenticationType: data[WalletKeys.AUTHENTICATION_TYPE],
-          },
-        },
-      });
-    } catch (error) {
-      throw new CustomError('Failed to parse create wallet data');
-    }
-  }
-
-  private parseCreateWalletResponse(data: IWalletResponse): IWallet {
-    try {
-      const walletTypeKey = Object.keys(data)[0];
-      const walletData = data[walletTypeKey];
-
-      return {
-        [WalletKeys.TYPE]: walletData.walletType,
-        [WalletKeys.ADDRESS]: walletData.walletAddress,
-        [WalletKeys.FORMAT]: walletData.walletFormat,
-        [WalletKeys.NAME]: walletData.walletName,
-        [WalletKeys.AUTHENTICATION_TYPE]: walletData.authenticationType,
-      };
-    } catch (error) {
-      throw new CustomError('Failed to create wallet response');
-    }
-  }
-
-  public async getWalletNonce(
-    address: Address,
-    chainId: ChainId,
-  ): Promise<number> {
-    logger.info(`${this.className}: Getting Wallet nonce`);
-
-    const url = `/wallets/${address}/chains/${chainId}/nonce`;
-
-    try {
-      const data = await this.walletApi.getWalletNonce(url);
-      const nonce = await WalletNonceResponseSchema.parse(data);
-      return nonce.nonce;
-    } catch (error) {
-      throw new CustomError('Failed verify data');
     }
   }
 
@@ -143,6 +92,39 @@ export class WalletService {
       return await this.walletApi.setGasConfiguration(url, configuration);
     } catch (error) {
       throw new CustomError('Failed verify data');
+    }
+  }
+
+  private parseCreateWalletData(data: IWallet): IWalletAPI {
+    try {
+      return WalletSchemaAPI.parse({
+        walletType: {
+          [data[WalletKeys.TYPE].toLocaleLowerCase()]: {
+            walletName: data[WalletKeys.NAME],
+            walletFormat: data[WalletKeys.FORMAT],
+            authenticationType: data[WalletKeys.AUTHENTICATION_TYPE],
+          },
+        },
+      });
+    } catch (error) {
+      throw new CustomError('Failed to parse create wallet data');
+    }
+  }
+
+  private parseCreateWalletResponse(data: IWalletResponse): IWallet {
+    try {
+      const walletTypeKey = Object.keys(data)[0];
+      const walletData = data[walletTypeKey];
+
+      return {
+        [WalletKeys.TYPE]: walletData.walletType,
+        [WalletKeys.ADDRESS]: walletData.walletAddress,
+        [WalletKeys.FORMAT]: walletData.walletFormat,
+        [WalletKeys.NAME]: walletData.walletName,
+        [WalletKeys.AUTHENTICATION_TYPE]: walletData.authenticationType,
+      };
+    } catch (error) {
+      throw new CustomError('Failed to create wallet response');
     }
   }
 }
