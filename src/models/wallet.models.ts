@@ -83,6 +83,16 @@ export const WalletSignTransactionResponseSchema = z.object({
   signedTransaction: z.string(),
 });
 
+export const WalletGasConfigurationSchema = z.object({
+  gasLimit: z.string(),
+  maxFeePerGas: z.string(),
+  maxPriorityFeePerGas: z.string(),
+});
+
+export const WalletGasConfigurationResponseSchema = z.object({
+  status: z.string(),
+});
+
 export const WalletNonceResponseSchema = z.object({
   nonce: z.number(),
 });
@@ -95,5 +105,11 @@ export type IWalletSignTransaction = z.infer<
 >;
 export type IWalletSignTransactionAPI = z.infer<
   typeof WalletSignTransactionResponseSchema
+>;
+export type IWalletGasConfiguration = z.infer<
+  typeof WalletGasConfigurationSchema
+>;
+export type IWalletGasConfigurationAPI = z.infer<
+  typeof WalletGasConfigurationResponseSchema
 >;
 export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;

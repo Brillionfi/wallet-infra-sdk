@@ -14,6 +14,8 @@ The Wallet Infra SDK provides tools and services for managing wallets, transacti
     - [Get Wallets](docs/wallet/get-wallets.md)
     - [Get Wallet Nonce](docs/wallet/get-wallet-nonce.md)
     - [Sign transaction](docs/wallet/sign-transaction.md)
+    - [Get Wallet Gas Configuration](docs/wallet/gas-configuration/get-wallet-gas-configuration.md)
+    - [Set Wallet Gas Configuration](docs/wallet/gas-configuration/set-wallet-gas-configuration.md)
   - Transaction Module
     - [Create Unsigned Transaction](docs/transaction/create-unsigned-transaction.md)
     - [Create Signed Transaction](docs/transaction/create-signed-transaction.md)
