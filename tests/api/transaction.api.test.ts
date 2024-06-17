@@ -120,4 +120,28 @@ describe('TransactionApi', () => {
       ).rejects.toThrowError(error);
     });
   });
+
+  describe('cancelTransaction', () => {
+    it('should cancel a transaction', async () => {
+      const transactionId = '1234';
+
+      httpClientMock.put.mockResolvedValue({} as AxiosResponse);
+
+      await transaction.cancelTransaction(transactionId);
+      expect(httpClientMock.put).toHaveBeenCalledWith(
+        `/transactions/${transactionId}/canacel`,
+      );
+    });
+
+    it('should handle errors when cancelling a transaction', async () => {
+      const transactionId = '1234';
+
+      const error = new Error('Failed to cancel transaction');
+      httpClientMock.put.mockRejectedValue(error);
+
+      await expect(
+        transaction.cancelTransaction(transactionId),
+      ).rejects.toThrow(error);
+    });
+  });
 });
