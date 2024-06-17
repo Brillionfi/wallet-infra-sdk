@@ -161,4 +161,29 @@ describe('TransactionService', () => {
       ).rejects.toThrow(error);
     });
   });
+
+  describe('cancelTransaction', () => {
+    it('should cancel a transaction successfully', async () => {
+      const transactionId = '0c4b319d-1709-4ee3-b6c3-234f9407e8a5';
+
+      transactionApi.cancelTransaction.mockResolvedValue();
+
+      await transactionService.cancelTransaction(transactionId);
+
+      expect(transactionApi.cancelTransaction).toHaveBeenCalledWith(
+        transactionId,
+      );
+    });
+
+    it('should handle errors thrown by the API', async () => {
+      const transactionId = '12345';
+      const error = new Error('API Error');
+
+      transactionApi.cancelTransaction.mockRejectedValue(error);
+
+      await expect(
+        transactionService.cancelTransaction(transactionId),
+      ).rejects.toThrow(error);
+    });
+  });
 });

@@ -1,13 +1,17 @@
 import { WalletApi } from '@api/wallet.api';
+import { Address, ChainId } from '@models/common.models';
 import {
   WalletSchemaAPI,
   IWalletAPI,
   IWallet,
-  WalletKeys,
   IWalletResponse,
   IAuthenticationTypes,
   AuthenticationTypes,
   IAuthenticationData,
+  WalletKeys,
+  IWalletGasConfiguration,
+  IWalletGasConfigurationAPI,
+  WalletNonceResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import logger from '@utils/logger';
@@ -43,6 +47,74 @@ export class WalletService {
       return wallets;
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async getGasConfiguration(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletGasConfiguration> {
+    logger.info(`${this.className}: Getting Wallet gas configuration`);
+
+    try {
+      return await this.walletApi.getGasConfiguration(address, chainId);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async setGasConfiguration(
+    address: Address,
+    chainId: ChainId,
+    configuration: IWalletGasConfiguration,
+  ): Promise<IWalletGasConfigurationAPI> {
+    logger.info(`${this.className}: Setting Wallet gas configuration`);
+
+    try {
+      // deletes configuration if set to 0
+      if (
+        parseInt(configuration.gasLimit) === 0 ||
+        parseInt(configuration.maxFeePerGas) === 0 ||
+        parseInt(configuration.maxPriorityFeePerGas) === 0
+      ) {
+        return await this.walletApi.deleteGasConfiguration(address, chainId);
+      }
+
+      const currentConfig = await this.getGasConfiguration(address, chainId);
+      // updates configuration if it already exists
+      if (
+        parseInt(currentConfig.gasLimit) >= 0 ||
+        parseInt(currentConfig.maxFeePerGas) >= 0 ||
+        parseInt(currentConfig.maxPriorityFeePerGas) >= 0
+      ) {
+        return await this.walletApi.updateGasConfiguration(
+          address,
+          chainId,
+          configuration,
+        );
+      }
+
+      // creates configuration
+      return await this.walletApi.setGasConfiguration(
+        address,
+        chainId,
+        configuration,
+      );
+    } catch (error) {
+      throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async getWalletNonce(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<number> {
+    try {
+      const data = await this.walletApi.getWalletNonce(address, chainId);
+      const nonce = await WalletNonceResponseSchema.parse(data);
+      return nonce.nonce;
+    } catch (error) {
+      throw new CustomError('Failed verify data');
     }
   }
 
