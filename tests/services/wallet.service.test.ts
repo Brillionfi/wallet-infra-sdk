@@ -8,6 +8,7 @@ import {
   WalletTypes,
   WalletFormats,
   WalletSchemaAPI,
+  IWalletNonceAPI,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { CustomError } from '@utils/errors';
@@ -298,6 +299,32 @@ describe('WalletService', () => {
 
       expect(walletApi.deleteGasConfiguration).toHaveBeenCalled();
       expect(result).toEqual(response);
+    });
+  });
+
+  describe('getWalletNonce', () => {
+    it('should catch if wrong data structure', async () => {
+      const exampleAPI = {} as IWalletNonceAPI;
+      walletApi.getWalletNonce.mockResolvedValueOnce(exampleAPI);
+      await expect(
+        walletService.getWalletNonce('0x', SUPPORTED_CHAINS.ETHEREUM),
+      ).rejects.toThrow('Failed verify data');
+    });
+
+    it('should get wallet nonce', async () => {
+      const exampleAPI = {
+        nonce: 1,
+      };
+
+      walletApi.getWalletNonce.mockResolvedValueOnce(exampleAPI);
+
+      const result = await walletService.getWalletNonce(
+        '0x',
+        SUPPORTED_CHAINS.ETHEREUM,
+      );
+
+      expect(walletApi.getWalletNonce).toHaveBeenCalled();
+      expect(result).toEqual(1);
     });
   });
 });
