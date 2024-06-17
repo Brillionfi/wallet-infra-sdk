@@ -2,6 +2,7 @@ import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
+import { SUPPORTED_CHAINS } from '@models/common.models';
 
 jest.mock('@utils/http-client');
 jest.mock('@utils/logger', () => ({
@@ -144,5 +145,34 @@ describe('Wallet', () => {
       );
       expect(result).toEqual({ signedTransaction: '0x1234' });
     });
+  });
+
+  it('should throw error if getWalletNonce fails', async () => {
+    httpClientMock.get = jest
+      .fn()
+      .mockRejectedValue(new Error('Failed to get wallet nonce'));
+
+    await expect(
+      wallet.getWalletNonce('address', SUPPORTED_CHAINS.ETHEREUM),
+    ).rejects.toThrow('Failed to get wallet nonce');
+  });
+
+  it('should call get on HttpClient when getWalletNonce is called', async () => {
+    const response = {
+      nonce: 1,
+    };
+
+    httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+    const result = await wallet.getWalletNonce(
+      'address',
+      SUPPORTED_CHAINS.ETHEREUM,
+    );
+
+    expect(logger.info).toHaveBeenCalledWith('Getting wallet nonce');
+    expect(httpClientMock.get).toHaveBeenCalledWith(
+      `/wallets/address/chains/${SUPPORTED_CHAINS.ETHEREUM}/nonce`,
+    );
+    expect(result).toEqual(response);
   });
 });

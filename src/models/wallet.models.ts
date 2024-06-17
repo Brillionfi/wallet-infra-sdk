@@ -83,6 +83,10 @@ export const WalletSignTransactionResponseSchema = z.object({
   signedTransaction: z.string(),
 });
 
+export const WalletNonceResponseSchema = z.object({
+  nonce: z.number(),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
@@ -92,3 +96,4 @@ export type IWalletSignTransaction = z.infer<
 export type IWalletSignTransactionAPI = z.infer<
   typeof WalletSignTransactionResponseSchema
 >;
+export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
