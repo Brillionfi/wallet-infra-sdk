@@ -35,4 +35,13 @@ export class TransactionService {
       throw handleError(error);
     }
   }
+
+  public async cancelTransaction(id: string): Promise<void> {
+    logger.info(`${this.className}: Cancelling Transaction ${id}`);
+    try {
+      await this.transactionApi.cancelTransaction(id);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
 }

@@ -72,6 +72,21 @@ describe('HttpClient', () => {
     expect(response.status).toBe(200);
   });
 
+  it('should make a PATCH request', async () => {
+    const url = '/test-patch';
+    const mockData = { name: 'example' };
+    const mockResponse = { message: 'success' };
+
+    mockAxios
+      .onPatch('http://mocked_base_url/test-patch', mockData)
+      .reply(200, mockResponse);
+
+    const response = await httpClient.patch(url, mockData);
+
+    expect(response.data).toEqual(mockResponse);
+    expect(response.status).toBe(200);
+  });
+
   it('should make a DELETE request successfully', async () => {
     const url = '/test-delete';
     const mockResponse = { data: 'test data' };

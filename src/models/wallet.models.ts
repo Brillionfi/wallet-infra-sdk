@@ -84,7 +84,28 @@ export const WalletTransactionSchema = z.object({
   updatedBy: z.string(),
 });
 
-export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
+export const WalletGasConfigurationSchema = z.object({
+  gasLimit: z.string(),
+  maxFeePerGas: z.string(),
+  maxPriorityFeePerGas: z.string(),
+});
+
+export const WalletGasConfigurationResponseSchema = z.object({
+  status: z.string(),
+});
+
+export const WalletNonceResponseSchema = z.object({
+  nonce: z.number(),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
+export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
+export type IWalletGasConfiguration = z.infer<
+  typeof WalletGasConfigurationSchema
+>;
+export type IWalletGasConfigurationAPI = z.infer<
+  typeof WalletGasConfigurationResponseSchema
+>;
+export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;

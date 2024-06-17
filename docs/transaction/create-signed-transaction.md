@@ -12,7 +12,7 @@ import { WalletInfra } from './wallet-infra';
 const walletInfra = new WalletInfra();
 
 const mySingedTransaction: ITransactionSigned = {
-  transactionType: 'signed',
+  transactionType: TransactionTypeKeys.SIGNED,
   signedTx: 'signed-transaction-hash',
 };
 
