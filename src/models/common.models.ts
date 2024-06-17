@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getAddress, isAddress } from 'ethers';
 
 export enum SUPPORTED_CHAINS {
   ETHEREUM = '1',
@@ -10,4 +11,13 @@ export enum SUPPORTED_CHAINS {
   COSMOS = '0',
 }
 
+export const EthereumAddressSchema = z
+  .string()
+  .refine((value) => isAddress(value))
+  .transform((value) => getAddress(value));
+
 export const ChainIdSchema = z.nativeEnum(SUPPORTED_CHAINS);
+
+// Types
+export type Address = z.infer<typeof EthereumAddressSchema>;
+export type ChainId = z.infer<typeof ChainIdSchema>;

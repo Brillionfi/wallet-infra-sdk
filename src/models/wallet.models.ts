@@ -72,6 +72,11 @@ export const WalletResponseSchema = z.record(
   }),
 );
 
-export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
+export const WalletNonceResponseSchema = z.object({
+  nonce: z.number(),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
+export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
+export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
