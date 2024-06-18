@@ -47,7 +47,7 @@ export class WalletApi {
     }
   }
 
-  public async setGasConfig(
+  public async createGasConfig(
     address: Address,
     chainId: ChainId,
     data: IWalletGasConfiguration,

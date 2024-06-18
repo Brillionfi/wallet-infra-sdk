@@ -149,27 +149,27 @@ describe('Wallet', () => {
     });
   });
 
-  describe('setGasConfig', () => {
+  describe('createGasConfig', () => {
     const gasData = {
       gasLimit: '1',
       maxFeePerGas: '1',
       maxPriorityFeePerGas: '1',
     };
 
-    it('should throw error if setGasConfig fails', async () => {
+    it('should throw error if createGasConfig fails', async () => {
       httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
 
       await expect(
-        wallet.setGasConfig(address, chainId, gasData),
+        wallet.createGasConfig(address, chainId, gasData),
       ).rejects.toThrow('error');
     });
 
-    it('should call post on HttpClient when setGasConfig is called', async () => {
+    it('should call post on HttpClient when createGasConfig is called', async () => {
       httpClientMock.post = jest
         .fn()
         .mockResolvedValue({ data: { status: 'Successfully created' } });
 
-      const result = await wallet.setGasConfig(address, chainId, gasData);
+      const result = await wallet.createGasConfig(address, chainId, gasData);
 
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Setting wallet gas configuration',

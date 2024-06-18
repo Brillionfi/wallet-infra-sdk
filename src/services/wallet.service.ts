@@ -64,31 +64,31 @@ export class WalletService {
     configuration: IWalletGasConfiguration,
   ): Promise<IWalletGasConfigurationAPI> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
+
     try {
+      // delete gas configuration if all values are 0
       if (
         parseInt(configuration.gasLimit) === 0 &&
         parseInt(configuration.maxFeePerGas) === 0 &&
         parseInt(configuration.maxPriorityFeePerGas) === 0
       ) {
         return await this.walletApi.deleteGasConfig(address, chainId);
+      } else {
+        // update if gas configuration already exists
+        await this.walletApi.getGasConfig(address, chainId);
+        return await this.walletApi.updateGasConfig(
+          address,
+          chainId,
+          configuration,
+        );
       }
     } catch (error) {
-      throw handleError(error);
-    }
-
-    try {
-      await this.getGasConfig(address, chainId);
-      return await this.walletApi.updateGasConfig(
-        address,
-        chainId,
-        configuration,
-      );
-    } catch (error) {
+      // if not found create new gas configuration
       if (
         error instanceof AxiosError &&
         error.response?.status === HttpStatusCode.NotFound
       ) {
-        return await this.walletApi.setGasConfig(
+        return await this.walletApi.createGasConfig(
           address,
           chainId,
           configuration,

@@ -2,10 +2,12 @@
 import { AxiosError } from 'axios';
 import logger from '@utils/logger';
 import { handleError, CustomError, HttpStatusCode } from '@utils/errors';
+import { ZodError } from 'zod';
 
 jest.mock('@utils/logger', () => ({
   error: jest.fn(),
 }));
+jest.mock('zod');
 
 describe('handleError', () => {
   const originalConsoleError = logger.error;
@@ -127,6 +129,13 @@ describe('handleError', () => {
     expect(logger.error).toHaveBeenCalledWith(
       `An unexpected error occurred: ${message}`,
     );
+  });
+
+  it('should log Zod error and throw', () => {
+    const error = new ZodError([]);
+
+    expect(() => handleError(error)).toThrow(ZodError);
+    expect(logger.error).toHaveBeenCalledWith(expect.any(String));
   });
 
   it('should log unknown error occurred', () => {
