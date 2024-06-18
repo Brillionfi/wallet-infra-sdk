@@ -135,7 +135,7 @@ describe('handleError', () => {
     const error = new ZodError([]);
 
     expect(() => handleError(error)).toThrow(ZodError);
-    expect(logger.error).toHaveBeenCalledWith(expect.any(String));
+    expect(logger.error).toHaveBeenCalledWith('Zod Error:', error.message);
   });
 
   it('should log unknown error occurred', () => {
