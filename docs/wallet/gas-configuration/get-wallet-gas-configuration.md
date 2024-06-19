@@ -4,11 +4,15 @@
 import { Address, ChainId, SUPPORTED_CHAINS } from '@models/common.models';
 import { IWalletGasConfiguration } from '@models/wallet.models';
 
-const wallet: Address = "0x123";
+const wallet: Address = '0x123';
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
 
-const data: IWalletGasConfiguration = await SDK.wallet.getGasConfiguration(wallet, chainId);
+const data: IWalletGasConfiguration = await SDK.wallet.getGasConfig(
+  wallet,
+  chainId,
+);
 ```
+
 Notes:
 
 - `wallet`: The wallet address.

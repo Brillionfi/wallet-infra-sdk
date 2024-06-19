@@ -3,10 +3,10 @@
 ```ts
 import { Address, ChainId, SUPPORTED_CHAINS } from '@models/common.models';
 
-const wallet: Address = "0x123";
+const wallet: Address = '0x123';
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
 
-const nonce: number = await SDK.wallet.getWalletNonce(wallet, chainId);
+const nonce: number = await SDK.wallet.getNonce(wallet, chainId);
 ```
 
 Notes:
