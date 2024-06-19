@@ -13,6 +13,7 @@ import {
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import logger from '@utils/logger';
+import { AxiosError, HttpStatusCode } from 'axios';
 
 export class WalletService {
   private readonly className: string;
@@ -58,20 +59,19 @@ export class WalletService {
     }
   }
 
-  public async getGasConfiguration(
+  public async getGasConfig(
     address: Address,
     chainId: ChainId,
   ): Promise<IWalletGasConfiguration> {
     logger.info(`${this.className}: Getting Wallet gas configuration`);
-
     try {
-      return await this.walletApi.getGasConfiguration(address, chainId);
+      return await this.walletApi.getGasConfig(address, chainId);
     } catch (error) {
-      throw new CustomError('Failed verify data');
+      throw handleError(error);
     }
   }
 
-  public async setGasConfiguration(
+  public async setGasConfig(
     address: Address,
     chainId: ChainId,
     configuration: IWalletGasConfiguration,
@@ -79,50 +79,46 @@ export class WalletService {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
     try {
-      // deletes configuration if set to 0
+      // delete gas configuration if all values are 0
       if (
-        parseInt(configuration.gasLimit) === 0 ||
-        parseInt(configuration.maxFeePerGas) === 0 ||
+        parseInt(configuration.gasLimit) === 0 &&
+        parseInt(configuration.maxFeePerGas) === 0 &&
         parseInt(configuration.maxPriorityFeePerGas) === 0
       ) {
-        return await this.walletApi.deleteGasConfiguration(address, chainId);
-      }
-
-      const currentConfig = await this.getGasConfiguration(address, chainId);
-      // updates configuration if it already exists
-      if (
-        parseInt(currentConfig.gasLimit) >= 0 ||
-        parseInt(currentConfig.maxFeePerGas) >= 0 ||
-        parseInt(currentConfig.maxPriorityFeePerGas) >= 0
-      ) {
-        return await this.walletApi.updateGasConfiguration(
+        return await this.walletApi.deleteGasConfig(address, chainId);
+      } else {
+        // update if gas configuration already exists
+        await this.walletApi.getGasConfig(address, chainId);
+        return await this.walletApi.updateGasConfig(
           address,
           chainId,
           configuration,
         );
       }
-
-      // creates configuration
-      return await this.walletApi.setGasConfiguration(
-        address,
-        chainId,
-        configuration,
-      );
     } catch (error) {
-      throw new CustomError('Failed verify data');
+      // if not found create new gas configuration
+      if (
+        error instanceof AxiosError &&
+        error.response?.status === HttpStatusCode.NotFound
+      ) {
+        return await this.walletApi.createGasConfig(
+          address,
+          chainId,
+          configuration,
+        );
+      } else {
+        throw handleError(error);
+      }
     }
   }
 
-  public async getWalletNonce(
-    address: Address,
-    chainId: ChainId,
-  ): Promise<number> {
+  public async getNonce(address: Address, chainId: ChainId): Promise<number> {
     try {
-      const data = await this.walletApi.getWalletNonce(address, chainId);
+      const data = await this.walletApi.getNonce(address, chainId);
       const nonce = await WalletNonceResponseSchema.parse(data);
       return nonce.nonce;
     } catch (error) {
-      throw new CustomError('Failed verify data');
+      throw handleError(error);
     }
   }
 

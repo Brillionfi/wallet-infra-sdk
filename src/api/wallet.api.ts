@@ -52,7 +52,7 @@ export class WalletApi {
     }
   }
 
-  public async setGasConfiguration(
+  public async createGasConfig(
     address: Address,
     chainId: ChainId,
     data: IWalletGasConfiguration,
@@ -69,7 +69,7 @@ export class WalletApi {
     }
   }
 
-  public async updateGasConfiguration(
+  public async updateGasConfig(
     address: Address,
     chainId: ChainId,
     data: IWalletGasConfiguration,
@@ -86,7 +86,7 @@ export class WalletApi {
     }
   }
 
-  public async deleteGasConfiguration(
+  public async deleteGasConfig(
     address: Address,
     chainId: ChainId,
   ): Promise<IWalletGasConfigurationAPI> {
@@ -101,7 +101,7 @@ export class WalletApi {
     }
   }
 
-  public async getGasConfiguration(
+  public async getGasConfig(
     address: Address,
     chainId: ChainId,
   ): Promise<IWalletGasConfiguration> {
@@ -116,7 +116,7 @@ export class WalletApi {
     }
   }
 
-  public async getWalletNonce(
+  public async getNonce(
     address: Address,
     chainId: ChainId,
   ): Promise<IWalletNonceAPI> {
