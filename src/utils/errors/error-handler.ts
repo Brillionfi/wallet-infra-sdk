@@ -1,6 +1,7 @@
-import axios, { AxiosError } from 'axios';
-import { CustomError, HttpStatusCode } from '@utils/errors';
+import axios, { AxiosError, HttpStatusCode } from 'axios';
+import { CustomError } from '@utils/errors';
 import logger from '@utils/logger';
+import { ZodError } from 'zod';
 
 export const handleError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
@@ -9,6 +10,8 @@ export const handleError = (error: unknown): never => {
     logger.error(`Custom Error: ${error.message}`);
   } else if (error instanceof Error) {
     logger.error(`An unexpected error occurred: ${error.message}`);
+  } else if (error instanceof ZodError) {
+    logger.error('Zod Error:', error.errors);
   } else {
     logger.error('An unknown error occurred');
   }
@@ -24,22 +27,22 @@ const handleAxiosError = (error: AxiosError): void => {
     'Unknown error';
 
   switch (statusCode) {
-    case HttpStatusCode.BAD_REQUEST:
+    case HttpStatusCode.BadRequest:
       logger.error(`BadRequest Error (${statusCode}):`, errorMessage);
       break;
-    case HttpStatusCode.NOT_FOUND:
+    case HttpStatusCode.NotFound:
       logger.error(`NotFound Error (${statusCode}):`, errorMessage);
       break;
-    case HttpStatusCode.FORBIDDEN:
+    case HttpStatusCode.Forbidden:
       logger.error(`Forbidden Error (${statusCode}):`, errorMessage);
       break;
-    case HttpStatusCode.UNAUTHORIZED:
+    case HttpStatusCode.Unauthorized:
       logger.error(`Unauthorized Error (${statusCode}):`, errorMessage);
       break;
     default:
       if (
         statusCode &&
-        statusCode >= HttpStatusCode.INTERNAL_SERVER_ERROR &&
+        statusCode >= HttpStatusCode.InternalServerError &&
         statusCode < 600
       ) {
         logger.error(`Internal Error (${statusCode}):`, errorMessage);
