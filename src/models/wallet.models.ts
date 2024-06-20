@@ -12,7 +12,6 @@ export enum WalletKeys {
 export enum WalletTypes {
   EOA = 'EOA',
 }
-export const WalletTypesSchema = z.nativeEnum(WalletTypes);
 
 export enum WalletFormats {
   ETHEREUM = 'ethereum',
@@ -20,14 +19,19 @@ export enum WalletFormats {
   COSMOS = 'cosmos',
   TRON = 'tron',
 }
-export const WalletFormatsSchema = z.nativeEnum(WalletFormats);
 
-export enum AuthenticationTypes {
-  TURNKEY = 'turnkey',
-}
-export const AuthenticationTypesSchema = z.nativeEnum(AuthenticationTypes);
+export const WalletTypesValues = [WalletTypes.EOA] as const;
+export const WalletTypesSchema = z.enum(WalletTypesValues);
 
-export const TurnkeyAuthenticationSchema = z.object({
+export const WalletFormatsValues = [
+  WalletFormats.ETHEREUM,
+  WalletFormats.SOLANA,
+  WalletFormats.COSMOS,
+  WalletFormats.TRON,
+] as const;
+export const WalletFormatsSchema = z.enum(WalletFormatsValues);
+
+export const PasskeyAuthenticationSchema = z.object({
   challenge: z.string(),
   attestation: z.object({
     credentialId: z.string(),
@@ -37,15 +41,13 @@ export const TurnkeyAuthenticationSchema = z.object({
   }),
 });
 
-export const AuthenticationDataSchema = TurnkeyAuthenticationSchema; // z.union when more auth types are added
-
 export const WalletSchema = z.object({
   [WalletKeys.ADDRESS]: z.string().optional(),
   [WalletKeys.TYPE]: WalletTypesSchema,
   [WalletKeys.NAME]: z.string(),
   [WalletKeys.FORMAT]: WalletFormatsSchema,
   [WalletKeys.OWNER]: z.string().optional(),
-  [WalletKeys.AUTHENTICATION_TYPE]: AuthenticationTypesSchema.optional(),
+  [WalletKeys.AUTHENTICATION_TYPE]: PasskeyAuthenticationSchema.optional(),
 });
 
 export const WalletSchemaAPI = z.object({
@@ -54,7 +56,7 @@ export const WalletSchemaAPI = z.object({
       .object({
         walletName: z.string(),
         walletFormat: WalletFormatsSchema,
-        authenticationType: TurnkeyAuthenticationSchema,
+        authenticationType: PasskeyAuthenticationSchema,
       })
       .optional(),
   }),
@@ -66,6 +68,7 @@ export const WalletResponseSchema = z.record(
     walletFormat: WalletFormatsSchema,
     walletType: WalletTypesSchema,
     walletName: z.string(),
+    authenticationType: PasskeyAuthenticationSchema.optional(),
   }),
 );
 
@@ -85,8 +88,6 @@ export const WalletNonceResponseSchema = z.object({
 
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
-export type IAuthenticationTypes = z.infer<typeof AuthenticationTypesSchema>;
-export type IAuthenticationData = z.infer<typeof AuthenticationDataSchema>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
 export type IWalletGasConfiguration = z.infer<
   typeof WalletGasConfigurationSchema
