@@ -5,6 +5,7 @@ import {
   IWalletAPI,
   IWallet,
   IWalletResponse,
+  IWalletTransaction,
   WalletKeys,
   IWalletSignTransaction,
   IWalletSignTransactionAPI,
@@ -58,6 +59,18 @@ export class WalletService {
       return await this.walletApi.signTransaction(address, data);
     } catch (error) {
       throw new CustomError('Failed verify data');
+    }
+  }
+
+  public async getTransactionHistory(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletTransaction[]> {
+    logger.info(`${this.className}: Getting Wallet transaction history`);
+    try {
+      return await this.walletApi.getTransactionHistory(address, chainId);
+    } catch (error) {
+      throw handleError(error);
     }
   }
 

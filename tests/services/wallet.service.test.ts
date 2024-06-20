@@ -226,6 +226,40 @@ describe('WalletService', () => {
     });
   });
 
+  describe('getTransactionHistory', () => {
+    it('should throw an error when walletApi.getTransactionHistory fails', async () => {
+      const error = new Error('Failed to fetch wallets');
+      walletApi.getTransactionHistory.mockRejectedValueOnce(error);
+
+      await expect(
+        walletService.getTransactionHistory(wallet, chainId),
+      ).rejects.toThrow(error);
+      expect(walletApi.getTransactionHistory).toHaveBeenCalled();
+    });
+
+    it('should get wallets', async () => {
+      const example = [
+        {
+          transactionId: 'id',
+          transactionHash: 'hash',
+          address: wallet,
+          chainId: SUPPORTED_CHAINS.ETHEREUM,
+          walletAddress: wallet,
+          createdAt: '123456',
+          updatedAt: '123456',
+          updatedBy: '123456',
+        },
+      ];
+
+      walletApi.getTransactionHistory.mockResolvedValueOnce(example);
+
+      const result = await walletService.getTransactionHistory(wallet, chainId);
+
+      expect(walletApi.getTransactionHistory).toHaveBeenCalled();
+      expect(result).toEqual(example);
+    });
+  });
+
   describe('getGasConfig', () => {
     it('should catch if wrong response from api', async () => {
       walletApi.getGasConfig.mockRejectedValueOnce(

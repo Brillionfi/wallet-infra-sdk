@@ -1,5 +1,6 @@
 import { Address, ChainId } from '@models/common.models';
 import {
+  IWalletTransaction,
   IWallet,
   IWalletAPI,
   IWalletResponse,
@@ -10,6 +11,7 @@ import {
   IWalletSignTransaction,
   WalletSignTransactionResponseSchema,
   IWalletSignTransactionAPI,
+  WalletTransactionSchema,
   IWalletGasConfiguration,
   WalletGasConfigurationSchema,
   IWalletGasConfigurationAPI,
@@ -32,7 +34,10 @@ export class WalletApi {
   public async createWallet(data: IWalletAPI): Promise<IWalletResponse> {
     logger.debug(`${this.className}: Creating Wallet`);
     try {
-      const response = await this.httpClient.post('/wallets', data);
+      const response: AxiosResponse = await this.httpClient.post(
+        '/wallets',
+        data,
+      );
       return WalletResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
@@ -42,7 +47,7 @@ export class WalletApi {
   public async getWallets(): Promise<IWallet[]> {
     logger.debug(`${this.className}: Getting Wallets`);
     try {
-      const response = await this.httpClient.get('/wallets');
+      const response: AxiosResponse = await this.httpClient.get('/wallets');
       const wallets = WalletSchema.array().parse(response.data);
       return wallets;
     } catch (error) {
@@ -142,6 +147,22 @@ export class WalletApi {
       return WalletNonceResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
+    }
+  }
+
+  public async getTransactionHistory(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletTransaction[]> {
+    logger.debug(`${this.className}: Getting Wallets`);
+    try {
+      const response: AxiosResponse = await this.httpClient.get(
+        `wallets/${address}/chains/${chainId}/transactions`,
+      );
+      const wallets = WalletTransactionSchema.array().parse(response.data);
+      return wallets;
+    } catch (error) {
+      throw handleError(error);
     }
   }
 }
