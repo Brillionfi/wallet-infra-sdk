@@ -3,6 +3,9 @@ import { CustomError } from '@utils/errors';
 import logger from '@utils/logger';
 import { ZodError } from 'zod';
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
 export const handleError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
     handleAxiosError(error);
@@ -19,7 +22,7 @@ export const handleError = (error: unknown): never => {
   throw error;
 };
 
-const handleAxiosError = (error: AxiosError): void => {
+const handleAxiosError = (error: AxiosError, retries = MAX_RETRIES): void => {
   const statusCode = error.response?.status;
   const errorMessage =
     (error.response?.data as { message?: string })?.message ??
@@ -46,8 +49,16 @@ const handleAxiosError = (error: AxiosError): void => {
         statusCode < 600
       ) {
         logger.error(`Internal Error (${statusCode}):`, errorMessage);
-        logger.error('Retrying ...');
-        // TODO: implement retry mechanism
+        if (retries > 0) {
+          logger.error(
+            `Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`,
+          );
+          setTimeout(() => {
+            handleAxiosError(error, retries - 1);
+          }, RETRY_DELAY);
+        } else {
+          logger.error('Max retries reached. Giving up.');
+        }
       } else {
         logger.error(`Unexpected API Error (${statusCode}):`, errorMessage);
       }

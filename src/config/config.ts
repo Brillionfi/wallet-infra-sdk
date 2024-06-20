@@ -21,10 +21,16 @@ class Config {
   private loadConfig(): IConfig {
     return ConfigSchema.parse({
       [ConfigKeys.BASE_URL]: this.getEnvVariable(ConfigKeys.BASE_URL),
+      [ConfigKeys.MAX_RETRIES]: parseInt(
+        this.getEnvVariable(ConfigKeys.MAX_RETRIES),
+      ),
+      [ConfigKeys.RETRY_DELAY]: parseInt(
+        this.getEnvVariable(ConfigKeys.RETRY_DELAY),
+      ),
     });
   }
 
-  public get(key: ConfigKeys): string {
+  public get(key: ConfigKeys): string | number | undefined {
     return this.config[key];
   }
 }
