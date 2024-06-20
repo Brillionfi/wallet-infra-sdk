@@ -5,6 +5,7 @@ import {
   IWalletAPI,
   IWallet,
   IWalletResponse,
+  IWalletTransaction,
   WalletKeys,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
@@ -41,6 +42,18 @@ export class WalletService {
     try {
       const wallets: IWallet[] = await this.walletApi.getWallets();
       return wallets;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getTransactionHistory(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletTransaction[]> {
+    logger.info(`${this.className}: Getting Wallet transaction history`);
+    try {
+      return await this.walletApi.getTransactionHistory(address, chainId);
     } catch (error) {
       throw handleError(error);
     }

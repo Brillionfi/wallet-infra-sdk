@@ -15,7 +15,7 @@ describe('Wallet', () => {
   let wallet: WalletApi;
   let httpClientMock: jest.Mocked<HttpClient>;
 
-  const address = '0x1234';
+  const address = '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB';
   const chainId = SUPPORTED_CHAINS.ETHEREUM;
 
   const walletName = 'Test wallet';
@@ -263,6 +263,39 @@ describe('Wallet', () => {
     expect(logger.info).toHaveBeenCalledWith('Getting wallet nonce');
     expect(httpClientMock.get).toHaveBeenCalledWith(
       `/wallets/address/chains/${SUPPORTED_CHAINS.ETHEREUM}/nonce`,
+    );
+    expect(result).toEqual(response);
+  });
+
+  it('should throw error if getTransactionHistory fails', async () => {
+    httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+
+    await expect(
+      wallet.getTransactionHistory(address, chainId),
+    ).rejects.toThrow('error');
+  });
+
+  it('should call get on HttpClient when getTransactionHistory is called', async () => {
+    const response = [
+      {
+        transactionId: 'id',
+        transactionHash: 'hash',
+        address: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+        chainId: SUPPORTED_CHAINS.ETHEREUM,
+        walletAddress: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+        createdAt: '123456',
+        updatedAt: '123456',
+        updatedBy: '123456',
+      },
+    ];
+
+    httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+    const result = await wallet.getTransactionHistory(address, chainId);
+
+    expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
+    expect(httpClientMock.get).toHaveBeenCalledWith(
+      `wallets/${address}/chains/${chainId}/transactions`,
     );
     expect(result).toEqual(response);
   });
