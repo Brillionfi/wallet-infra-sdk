@@ -12,19 +12,21 @@ export class HttpClient {
   private baseURL: string;
   private instance: AxiosInstance;
 
-  constructor(public jwt?: string) {
+  constructor() {
     this.config = new Config();
     this.baseURL = this.config.get(ConfigKeys.BASE_URL);
     this.instance = axios.create({
       baseURL: this.baseURL,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${jwt}`,
-        'X-Idempotency-Key': uuidv4(),
       },
     });
 
     this.initializeResponseInterceptor();
+  }
+
+  public authorize(jwt: string) {
+    this.instance.defaults.headers.Authorization = `Bearer ${jwt}`;
   }
 
   private initializeResponseInterceptor() {
@@ -55,6 +57,7 @@ export class HttpClient {
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
+    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
     return await this.instance.post<T>(url, data, config);
   }
 
@@ -63,6 +66,7 @@ export class HttpClient {
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
+    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
     return await this.instance.put<T>(url, data, config);
   }
 
@@ -71,6 +75,7 @@ export class HttpClient {
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
+    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
     return await this.instance.patch<T>(url, data, config);
   }
 
@@ -78,6 +83,7 @@ export class HttpClient {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
+    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
     return await this.instance.delete<T>(url, config);
   }
 }

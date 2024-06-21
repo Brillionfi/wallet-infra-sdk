@@ -25,10 +25,6 @@ export class WalletService {
     this.walletApi = new WalletApi(httpClient);
   }
 
-  public setJwt(jwt: string): void {
-    this.walletApi.setJwt(jwt);
-  }
-
   public async createWallet(data: IWallet): Promise<IWallet> {
     logger.info(`${this.className}: Creating wallet`);
     try {

@@ -26,14 +26,6 @@ export class WalletApi {
     this.className = this.constructor.name;
   }
 
-  public setJwt(jwt: string): void {
-    this.httpClient.jwt = jwt;
-  }
-
-  public getGoogleAuthUrl(): string {
-    return 'https://accounts.google.com/o/oauth2/v2/auth';
-  }
-
   public async createWallet(data: IWalletAPI): Promise<IWalletResponse> {
     logger.debug(`${this.className}: Creating Wallet`);
     try {
