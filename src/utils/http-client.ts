@@ -12,10 +12,9 @@ export class HttpClient {
   private baseURL: string;
   private instance: AxiosInstance;
 
-  constructor(jwt?: string) {
+  constructor(public jwt?: string) {
     this.config = new Config();
     this.baseURL = this.config.get(ConfigKeys.BASE_URL);
-
     this.instance = axios.create({
       baseURL: this.baseURL,
       headers: {

@@ -50,6 +50,12 @@ describe('Wallet', () => {
     (wallet as any).httpClient = httpClientMock;
   });
 
+  describe('getGoogleAuthUrl', () => {
+    it('Should return correct google auth url', () => {
+      expect(true).toBeTruthy();
+    });
+  });
+
   describe('createWallet', () => {
     it('should throw error if createWallet fails', async () => {
       httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));

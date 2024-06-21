@@ -21,11 +21,17 @@ import { AxiosResponse } from 'axios';
 
 export class WalletApi {
   private readonly className: string;
-  private httpClient: HttpClient;
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.className = this.constructor.name;
-    this.httpClient = new HttpClient();
+  }
+
+  public setJwt(jwt: string): void {
+    this.httpClient.jwt = jwt;
+  }
+
+  public getGoogleAuthUrl(): string {
+    return 'https://accounts.google.com/o/oauth2/v2/auth';
   }
 
   public async createWallet(data: IWalletAPI): Promise<IWalletResponse> {
