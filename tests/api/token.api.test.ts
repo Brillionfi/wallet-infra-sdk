@@ -15,7 +15,7 @@ describe('Token API', () => {
   let httpClientMock: jest.Mocked<HttpClient>;
 
   beforeEach(() => {
-    httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
+    httpClientMock = new HttpClient() as jest.Mocked<HttpClient>;
     token = new TokenApi();
     // eslint-disable-next-line
     (token as any).httpClient = httpClientMock;
