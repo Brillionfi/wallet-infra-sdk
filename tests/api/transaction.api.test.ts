@@ -19,8 +19,8 @@ describe('TransactionApi', () => {
   let httpClientMock: jest.Mocked<HttpClient>;
 
   beforeEach(() => {
-    httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
-    transaction = new TransactionApi();
+    httpClientMock = new HttpClient() as jest.Mocked<HttpClient>;
+    transaction = new TransactionApi(new HttpClient());
     // eslint-disable-next-line
     (transaction as any).httpClient = httpClientMock;
   });

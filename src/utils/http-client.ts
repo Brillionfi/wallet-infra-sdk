@@ -44,10 +44,15 @@ export class HttpClient {
     return Promise.reject(error);
   }
 
+  private renewIdemPotency(): void {
+    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
+  }
+
   public async get<T>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
+    this.renewIdemPotency();
     const response = await this.instance.get<T>(url, config);
     return response;
   }
@@ -57,7 +62,7 @@ export class HttpClient {
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
+    this.renewIdemPotency();
     return await this.instance.post<T>(url, data, config);
   }
 
@@ -66,7 +71,7 @@ export class HttpClient {
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
+    this.renewIdemPotency();
     return await this.instance.put<T>(url, data, config);
   }
 
@@ -75,7 +80,7 @@ export class HttpClient {
     data?: D,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
+    this.renewIdemPotency();
     return await this.instance.patch<T>(url, data, config);
   }
 
@@ -83,7 +88,7 @@ export class HttpClient {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    this.instance.defaults.headers['X-Idempotency-Key'] = uuidv4();
+    this.renewIdemPotency();
     return await this.instance.delete<T>(url, config);
   }
 }
