@@ -10,10 +10,10 @@ export class TokenApi {
   private readonly resource: string;
   private httpClient: HttpClient;
 
-  constructor() {
+  constructor(httpClient: HttpClient) {
     this.resource = 'tokens';
     this.className = this.constructor.name;
-    this.httpClient = new HttpClient();
+    this.httpClient = httpClient;
   }
 
   public async getTokens(chainId: ChainId): Promise<IToken[]> {

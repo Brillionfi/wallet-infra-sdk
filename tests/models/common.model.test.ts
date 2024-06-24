@@ -1,5 +1,5 @@
+import { AuthProvider } from '@models/auth.models';
 import { EthereumAddressSchema } from '@models/common.models';
-import { CredentialsProvider } from '@models/wallet.models';
 
 describe('Common Schemas', () => {
   it('should throw an error if address is not valid', () => {
@@ -14,6 +14,6 @@ describe('Common Schemas', () => {
   });
 
   it('Should have the correct casing for login methods', () => {
-    expect(CredentialsProvider.GOOGLE).toBe('Google');
+    expect(AuthProvider.GOOGLE).toBe('Google');
   });
 });
