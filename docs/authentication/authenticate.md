@@ -8,8 +8,10 @@ The authentication pattern looks like this:
 ```ts
 import { WalletInfra } from './wallet-infra';
 
+const app_id = 'f9e7f099-bd95-433b-9365-de8b73e72824';
+
 const walletInfra = new WalletInfra(app_id);
-const authUrl = walletInfra.generateAuthUrl(redirectUrl, credentialsProvider);
+const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
 // The user can be redirected to `authUrl` and verify his identity.
 ```
 

@@ -1,10 +1,6 @@
 import { z } from 'zod';
 import { ChainIdSchema, EthereumAddressSchema } from './common.models';
 
-export enum CredentialsProvider {
-  GOOGLE = 'Google',
-}
-
 export enum WalletKeys {
   TYPE = 'type',
   ADDRESS = 'address',
