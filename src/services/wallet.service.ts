@@ -12,6 +12,7 @@ import {
   WalletNonceResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
+import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 import { AxiosError, HttpStatusCode } from 'axios';
 
@@ -19,9 +20,9 @@ export class WalletService {
   private readonly className: string;
   private walletApi: WalletApi;
 
-  constructor() {
+  constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
-    this.walletApi = new WalletApi();
+    this.walletApi = new WalletApi(httpClient);
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {

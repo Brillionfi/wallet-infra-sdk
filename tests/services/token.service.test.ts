@@ -2,6 +2,7 @@ import { TokenService } from '@services/token.service';
 import { TokenApi } from '@api/token.api';
 import { ChainId, SUPPORTED_CHAINS } from '@models/common.models';
 import { TokenStatusKeys, TokenTypeKeys } from '@models/token.model';
+import { HttpClient } from '@utils/http-client';
 
 jest.mock('@api/token.api');
 jest.mock('@utils/http-client');
@@ -16,11 +17,11 @@ describe('TokenService', () => {
   let tokenService: TokenService;
 
   beforeEach(() => {
-    tokenApi = new TokenApi() as jest.Mocked<TokenApi>;
+    tokenApi = new TokenApi(new HttpClient()) as jest.Mocked<TokenApi>;
 
     (TokenApi as jest.Mock<TokenApi>).mockImplementation(() => tokenApi);
 
-    tokenService = new TokenService();
+    tokenService = new TokenService(new HttpClient());
   });
 
   afterEach(() => {

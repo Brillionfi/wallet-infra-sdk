@@ -1,3 +1,4 @@
+import { AuthProvider } from '@models/auth.models';
 import { EthereumAddressSchema } from '@models/common.models';
 
 describe('Common Schemas', () => {
@@ -10,5 +11,9 @@ describe('Common Schemas', () => {
     const example = '0xe6d0c561728eFeA5EEFbCdF0A5d0C945e3697bEA';
     const data = EthereumAddressSchema.parse(example);
     expect(data).toBeDefined();
+  });
+
+  it('Should have the correct casing for login methods', () => {
+    expect(AuthProvider.GOOGLE).toBe('Google');
   });
 });

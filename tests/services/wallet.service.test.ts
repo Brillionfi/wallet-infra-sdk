@@ -14,6 +14,7 @@ import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
 import { ZodError } from 'zod';
 import { AxiosError, AxiosResponse, HttpStatusCode } from 'axios';
+import { HttpClient } from '@utils/http-client';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
@@ -61,11 +62,11 @@ describe('WalletService', () => {
   };
 
   beforeEach(() => {
-    walletApi = new WalletApi() as jest.Mocked<WalletApi>;
+    walletApi = new WalletApi(new HttpClient()) as jest.Mocked<WalletApi>;
 
     (WalletApi as jest.Mock<WalletApi>).mockImplementation(() => walletApi);
 
-    walletService = new WalletService();
+    walletService = new WalletService(new HttpClient());
   });
 
   afterEach(() => {
