@@ -6,6 +6,7 @@ import {
   TransactionStatusKeys,
   TransactionTypeKeys,
 } from '@models/transaction.models';
+import { HttpClient } from '@utils/http-client';
 
 jest.mock('@api/transaction.api');
 jest.mock('@utils/http-client');
@@ -20,13 +21,15 @@ describe('TransactionService', () => {
   let transactionService: TransactionService;
 
   beforeEach(() => {
-    transactionApi = new TransactionApi() as jest.Mocked<TransactionApi>;
+    transactionApi = new TransactionApi(
+      new HttpClient(),
+    ) as jest.Mocked<TransactionApi>;
 
     (TransactionApi as jest.Mock<TransactionApi>).mockImplementation(
       () => transactionApi,
     );
 
-    transactionService = new TransactionService();
+    transactionService = new TransactionService(new HttpClient());
   });
 
   afterEach(() => {

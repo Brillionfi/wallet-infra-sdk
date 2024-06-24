@@ -5,15 +5,16 @@ import {
   ITransactionUnsigned,
 } from '@models/transaction.models';
 import { handleError } from '@utils/errors';
+import { HttpClient } from '@utils/http-client';
 import logger from '@utils/logger';
 
 export class TransactionService {
   public readonly className: string;
   private transactionApi: TransactionApi;
 
-  constructor() {
+  constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
-    this.transactionApi = new TransactionApi();
+    this.transactionApi = new TransactionApi(httpClient);
   }
 
   public async createTransaction(
