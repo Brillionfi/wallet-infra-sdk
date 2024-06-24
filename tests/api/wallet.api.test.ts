@@ -241,62 +241,104 @@ describe('Wallet', () => {
     });
   });
 
-  it('should throw error if getNonce fails', async () => {
-    httpClientMock.get = jest
-      .fn()
-      .mockRejectedValue(new Error('Failed to get wallet nonce'));
+  describe('getNonce', () => {
+    it('should throw error if getNonce fails', async () => {
+      httpClientMock.get = jest
+        .fn()
+        .mockRejectedValue(new Error('Failed to get wallet nonce'));
 
-    await expect(
-      wallet.getNonce('address', SUPPORTED_CHAINS.ETHEREUM),
-    ).rejects.toThrow('Failed to get wallet nonce');
+      await expect(
+        wallet.getNonce('address', SUPPORTED_CHAINS.ETHEREUM),
+      ).rejects.toThrow('Failed to get wallet nonce');
+    });
+
+    it('should call get on HttpClient when getNonce is called', async () => {
+      const response = {
+        nonce: 1,
+      };
+
+      httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+      const result = await wallet.getNonce(
+        'address',
+        SUPPORTED_CHAINS.ETHEREUM,
+      );
+
+      expect(logger.info).toHaveBeenCalledWith('Getting wallet nonce');
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `/wallets/address/chains/${SUPPORTED_CHAINS.ETHEREUM}/nonce`,
+      );
+      expect(result).toEqual(response);
+    });
   });
 
-  it('should call get on HttpClient when getNonce is called', async () => {
-    const response = {
-      nonce: 1,
-    };
+  describe('transactionHistory', () => {
+    it('should throw error if getTransactionHistory fails', async () => {
+      httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
 
-    httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+      await expect(
+        wallet.getTransactionHistory(address, chainId),
+      ).rejects.toThrow('error');
+    });
 
-    const result = await wallet.getNonce('address', SUPPORTED_CHAINS.ETHEREUM);
+    it('should call get on HttpClient when getTransactionHistory is called', async () => {
+      const response = [
+        {
+          transactionId: 'id',
+          transactionHash: 'hash',
+          address: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+          chainId: SUPPORTED_CHAINS.ETHEREUM,
+          walletAddress: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+          createdAt: '123456',
+          updatedAt: '123456',
+          updatedBy: '123456',
+        },
+      ];
 
-    expect(logger.info).toHaveBeenCalledWith('Getting wallet nonce');
-    expect(httpClientMock.get).toHaveBeenCalledWith(
-      `/wallets/address/chains/${SUPPORTED_CHAINS.ETHEREUM}/nonce`,
-    );
-    expect(result).toEqual(response);
+      httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+      const result = await wallet.getTransactionHistory(address, chainId);
+
+      expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `wallets/${address}/chains/${chainId}/transactions`,
+      );
+      expect(result).toEqual(response);
+    });
   });
 
-  it('should throw error if getTransactionHistory fails', async () => {
-    httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+  describe('recovery', () => {
+    it('should throw error if recovery fails', async () => {
+      const publicKey = 'public-key-value';
 
-    await expect(
-      wallet.getTransactionHistory(address, chainId),
-    ).rejects.toThrow('error');
-  });
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
 
-  it('should call get on HttpClient when getTransactionHistory is called', async () => {
-    const response = [
-      {
-        transactionId: 'id',
-        transactionHash: 'hash',
-        address: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
-        chainId: SUPPORTED_CHAINS.ETHEREUM,
-        walletAddress: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
-        createdAt: '123456',
-        updatedAt: '123456',
-        updatedBy: '123456',
-      },
-    ];
+      await expect(wallet.recover(publicKey)).rejects.toThrow('error');
+    });
 
-    httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+    it('should call post on HttpClient when recovery is called', async () => {
+      const publicKey = 'public-key-value';
 
-    const result = await wallet.getTransactionHistory(address, chainId);
+      const response = {
+        data: {
+          eoa: {
+            organizationId: '44d9a7f9-f745-4b10-ae66-028bc2fc45c0',
+            userId: 'fab988c5-62bf-4ea8-9201-dbf670c42626',
+          },
+        },
+      };
 
-    expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
-    expect(httpClientMock.get).toHaveBeenCalledWith(
-      `wallets/${address}/chains/${chainId}/transactions`,
-    );
-    expect(result).toEqual(response);
+      httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
+
+      const result = await wallet.recover(publicKey);
+
+      expect(logger.debug).toHaveBeenCalledWith('WalletApi: Wallet Recovery');
+      expect(httpClientMock.post).toHaveBeenCalledWith(`/wallets/recovery`, {
+        eoa: {
+          targetPublicKey: publicKey,
+        },
+      });
+      expect(result).toEqual(response.data);
+    });
   });
 });
