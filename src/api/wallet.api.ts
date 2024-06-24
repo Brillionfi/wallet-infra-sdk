@@ -1,6 +1,6 @@
 import { Address, ChainId } from '@models/common.models';
+import { ITransaction, TransactionSchema } from '@models/transaction.models';
 import {
-  IWalletTransaction,
   IWallet,
   IWalletAPI,
   IWalletResponse,
@@ -8,7 +8,6 @@ import {
   WalletResponseSchema,
   WalletNonceResponseSchema,
   WalletSchema,
-  WalletTransactionSchema,
   IWalletGasConfiguration,
   WalletGasConfigurationSchema,
   IWalletGasConfigurationAPI,
@@ -132,13 +131,13 @@ export class WalletApi {
   public async getTransactionHistory(
     address: Address,
     chainId: ChainId,
-  ): Promise<IWalletTransaction[]> {
+  ): Promise<ITransaction[]> {
     logger.debug(`${this.className}: Getting Wallets`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
         `wallets/${address}/chains/${chainId}/transactions`,
       );
-      const wallets = WalletTransactionSchema.array().parse(response.data);
+      const wallets = TransactionSchema.array().parse(response.data);
       return wallets;
     } catch (error) {
       throw handleError(error);

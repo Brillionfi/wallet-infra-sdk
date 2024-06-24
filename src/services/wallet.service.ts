@@ -1,11 +1,11 @@
 import { WalletApi } from '@api/wallet.api';
 import { Address, ChainId } from '@models/common.models';
+import { ITransaction } from '@models/transaction.models';
 import {
   WalletSchemaAPI,
   IWalletAPI,
   IWallet,
   IWalletResponse,
-  IWalletTransaction,
   WalletKeys,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
@@ -51,7 +51,7 @@ export class WalletService {
   public async getTransactionHistory(
     address: Address,
     chainId: ChainId,
-  ): Promise<IWalletTransaction[]> {
+  ): Promise<ITransaction[]> {
     logger.info(`${this.className}: Getting Wallet transaction history`);
     try {
       return await this.walletApi.getTransactionHistory(address, chainId);

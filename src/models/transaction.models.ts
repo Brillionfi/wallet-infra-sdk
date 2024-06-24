@@ -34,6 +34,8 @@ export enum TransactionKeys {
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
   UPDATED_BY = 'updatedBy',
+  AUTHENTICATED_BY = 'authenticatedBy',
+  AUTHENTICATED_METHOD = 'authenticationMethod',
 }
 
 export const TransactionTypeSchema = z.union([
@@ -66,6 +68,8 @@ export const TransactionSchema = z.object({
   [TransactionKeys.MESSAGE_ID]: z.string().optional(),
   [TransactionKeys.RECEIPT_HANDLE]: z.string().optional(),
   [TransactionKeys.STATUS]: TransactionStatusSchema.optional(),
+  [TransactionKeys.AUTHENTICATED_BY]: z.string().optional(),
+  [TransactionKeys.AUTHENTICATED_METHOD]: z.string().optional(),
 });
 
 export const TransactionSignedSchema = z.object({
