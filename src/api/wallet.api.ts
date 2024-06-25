@@ -1,18 +1,23 @@
 import { Address, ChainId } from '@models/common.models';
-import {
+import type {
   IWalletTransaction,
   IWallet,
   IWalletAPI,
   IWalletResponse,
   IWalletNonceAPI,
+  IWalletGasConfiguration,
+  IWalletGasConfigurationAPI,
+  IWalletGasEstimation,
+  IGetGasFeesParameters,
+} from '@models/wallet.models';
+import {
   WalletResponseSchema,
   WalletNonceResponseSchema,
   WalletSchema,
   WalletTransactionSchema,
-  IWalletGasConfiguration,
   WalletGasConfigurationSchema,
-  IWalletGasConfigurationAPI,
   WalletGasConfigurationResponseSchema,
+  WalletGasEstimationSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -111,6 +116,28 @@ export class WalletApi {
         `/wallets/${address}/chains/${chainId}/gas-station`,
       );
       return WalletGasConfigurationSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async getGasFees({
+    chainId,
+    from,
+    to,
+    value,
+    data,
+  }: IGetGasFeesParameters): Promise<IWalletGasEstimation> {
+    logger.debug(`${this.className}: Getting transaction gas estimation`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/transactions/estimate`,
+        {
+          chainId,
+          raw: { from, to, value, data },
+        },
+      );
+      return WalletGasEstimationSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
