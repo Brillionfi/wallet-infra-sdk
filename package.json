@@ -2,8 +2,15 @@
   "name": "@brillionfi/wallet-infra-sdk",
   "version": "0.0.0",
   "description": "an sdk for wallet-infra-api",
-  "main": "index.js",
-  "repository": "https://github.com/Brillionfi/wallet-infra-sdk.git",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brillionfi/wallet-infra-sdk.git"
+  },
   "author": "k-kaddal <khaledkaddal@gmail.com>",
   "license": "MIT",
   "private": true,
@@ -17,7 +24,8 @@
     "format": "prettier --write 'src/**/*.{js,ts,json,css,md}'",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-changelog": "semantic-release -e ./.releaserc-changelog.js"
   },
   "dependencies": {
     "@types/jest": "^29.5.12",
@@ -42,6 +50,7 @@
     "@eslint/js": "^9.4.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.0.6",
     "@semantic-release/npm": "^12.0.1",
