@@ -128,7 +128,7 @@ export class WalletApi {
     value,
     data,
   }: IGetGasFeesParameters): Promise<IWalletGasEstimation> {
-    logger.debug(`${this.className}: Getting transaction gas estimation`);
+    logger.info(`${this.className}: Getting transaction gas estimation`);
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/transactions/estimate`,
