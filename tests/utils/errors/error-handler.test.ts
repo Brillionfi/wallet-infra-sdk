@@ -4,7 +4,7 @@ import logger from 'loglevel';
 import { handleError, CustomError, HttpStatusCode } from '@utils/errors';
 import { ZodError } from 'zod';
 
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   error: jest.fn(),
 }));
 jest.mock('zod');

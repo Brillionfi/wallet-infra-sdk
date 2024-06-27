@@ -6,7 +6,7 @@ import { HttpClient } from '@utils/http-client';
 
 jest.mock('@api/token.api');
 jest.mock('@utils/http-client');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),

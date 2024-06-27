@@ -4,7 +4,7 @@ import { Config } from '@config/index';
 import { HttpClient } from '@utils/index';
 
 jest.mock('@config/index');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),

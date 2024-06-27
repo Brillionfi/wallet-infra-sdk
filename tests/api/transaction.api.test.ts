@@ -8,7 +8,7 @@ import { AxiosResponse } from 'axios';
 import { TransactionApi } from '@api/transaction.api';
 
 jest.mock('@utils/http-client');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),
