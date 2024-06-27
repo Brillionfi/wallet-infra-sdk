@@ -1,4 +1,4 @@
-name: Check Package Version on PR
+name: I didn't forget to bump the version
 
 on:
   pull_request:
