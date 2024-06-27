@@ -23,23 +23,7 @@ export class TokenApi {
         `/${this.resource}/${chainId}`,
       );
 
-      return TokenSchema.array().parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
-  public async getTokenById(
-    chainId: ChainId,
-    tokenId: string,
-  ): Promise<IToken> {
-    logger.debug(`${this.className}: Get token by ID`);
-    try {
-      const response: AxiosResponse = await this.httpClient.get(
-        `/${this.resource}/${chainId}/${tokenId}`,
-      );
-
-      return TokenSchema.parse(response.data);
+      return TokenSchema.array().parse(response.data.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
