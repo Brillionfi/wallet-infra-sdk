@@ -1,6 +1,6 @@
 {
   "name": "@brillionfi/wallet-infra-sdk",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "an sdk for wallet-infra-api",
   "main": "dist/index.js",
   "files": [
