@@ -3,7 +3,7 @@ import { ChainId } from '@models/common.models';
 import { IToken } from '@models/token.model';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 
 export class TokenService {
   public readonly className: string;

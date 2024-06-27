@@ -2,7 +2,7 @@ import { ChainId } from '@models/common.models';
 import { IToken, TokenSchema } from '@models/token.model';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { AxiosResponse } from 'axios';
 
 export class TokenApi {

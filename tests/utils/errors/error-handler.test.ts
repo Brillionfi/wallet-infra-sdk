@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosError } from 'axios';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { handleError, CustomError, HttpStatusCode } from '@utils/errors';
 import { ZodError } from 'zod';
 
