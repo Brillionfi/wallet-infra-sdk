@@ -3,7 +3,7 @@
   "version": "0.0.5",
   "description": "an sdk for wallet-infra-api",
   "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
