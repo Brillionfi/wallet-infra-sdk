@@ -1,11 +1,11 @@
 import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 
 jest.mock('@utils/http-client');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),

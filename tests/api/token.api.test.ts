@@ -4,7 +4,7 @@ import { HttpClient } from '@utils/index';
 import { AxiosResponse } from 'axios';
 
 jest.mock('@utils/http-client');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),

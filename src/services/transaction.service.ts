@@ -6,7 +6,7 @@ import {
 } from '@models/transaction.models';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 
 export class TransactionService {
   public readonly className: string;

@@ -1,6 +1,6 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios';
 import { CustomError } from '@utils/errors';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { ZodError } from 'zod';
 
 export const handleError = (error: unknown): never => {

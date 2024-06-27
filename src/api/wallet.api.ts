@@ -16,7 +16,7 @@ import {
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { AxiosResponse } from 'axios';
 
 export class WalletApi {

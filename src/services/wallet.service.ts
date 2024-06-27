@@ -13,7 +13,7 @@ import {
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { AxiosError, HttpStatusCode } from 'axios';
 
 export class WalletService {
