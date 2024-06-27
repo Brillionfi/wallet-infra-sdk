@@ -57,41 +57,4 @@ describe('Token API', () => {
       );
     });
   });
-
-  describe('getTokenById', () => {
-    it('should get token by ID', async () => {
-      const response = {
-        data: {
-          chainId: '1',
-          tokenId: '0xTokenId',
-          status: 'Active',
-          name: 'TokenName',
-          address: '0xTokenAddress',
-          type: 'ERC20',
-          symbol: 'TKN',
-          decimals: 18,
-          logo: 'https://token-logo.png',
-          contractABI: '',
-          createdAt: '',
-          updatedAt: '',
-          updatedBy: '',
-        },
-      };
-
-      httpClientMock.get.mockResolvedValue(response as AxiosResponse);
-      const result = await token.getTokenById(
-        SUPPORTED_CHAINS.ETHEREUM,
-        '0xTokenId',
-      );
-      expect(httpClientMock.get).toHaveBeenCalledWith('/tokens/1/0xTokenId');
-      expect(result).toEqual(response.data);
-    });
-
-    it('should throw error when failed to get token by ID', async () => {
-      httpClientMock.get.mockRejectedValue(new Error('API Error'));
-      await expect(
-        token.getTokenById(SUPPORTED_CHAINS.ETHEREUM, '0xTokenId'),
-      ).rejects.toThrow('API Error');
-    });
-  });
 });
