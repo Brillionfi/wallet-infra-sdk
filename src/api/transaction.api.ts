@@ -1,5 +1,5 @@
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { APIError, handleError } from '@utils/errors';
 import {
   ITransaction,

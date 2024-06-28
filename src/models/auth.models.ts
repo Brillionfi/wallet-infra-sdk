@@ -1,4 +1,5 @@
 import z from 'zod';
+
 export enum AuthProvider {
   GOOGLE = 'Google',
 }

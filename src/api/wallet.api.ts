@@ -16,10 +16,12 @@ import {
   WalletGasConfigurationSchema,
   IWalletGasConfigurationAPI,
   WalletGasConfigurationResponseSchema,
+  WalletRecoverySchema,
+  IWalletRecovery,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { AxiosResponse } from 'axios';
 
 export class WalletApi {
@@ -161,6 +163,25 @@ export class WalletApi {
       return wallets;
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async recover(targetPublicKey: string): Promise<IWalletRecovery> {
+    logger.debug(`${this.className}: Wallet Recovery`);
+    try {
+      const body = {
+        eoa: {
+          targetPublicKey,
+        },
+      };
+      const response: AxiosResponse = await this.httpClient.post(
+        '/wallets/recovery',
+        body,
+      );
+
+      return WalletRecoverySchema.parse(response.data.data);
+    } catch (error) {
+      throw handleError(error as APIError);
     }
   }
 }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { JSDOM } from 'jsdom';
 import { WalletService } from '@services/wallet.service';
 import { WalletApi } from '@api/wallet.api';
 import {
@@ -9,17 +11,19 @@ import {
   WalletFormats,
   WalletSchemaAPI,
   IWalletNonceAPI,
+  IWalletRecovery,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
 import { ZodError } from 'zod';
 import { AxiosError, AxiosResponse, HttpStatusCode } from 'axios';
 import { HttpClient } from '@utils/http-client';
+import logger from 'loglevel';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
 jest.mock('@utils/http-client');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),
@@ -194,12 +198,14 @@ describe('WalletService', () => {
       expect(walletApi.getWallets).toHaveBeenCalled();
       expect(result).toEqual(exampleService);
     });
-  });
 
-  it('should throw an error when walletApi.getWallets fails', async () => {
-    walletApi.getWallets.mockRejectedValueOnce(new APIError('BadRequest', 400));
-    await expect(walletService.getWallets()).rejects.toThrow(APIError);
-    expect(walletApi.getWallets).toHaveBeenCalled();
+    it('should throw an error when walletApi.getWallets fails', async () => {
+      walletApi.getWallets.mockRejectedValueOnce(
+        new APIError('BadRequest', 400),
+      );
+      await expect(walletService.getWallets()).rejects.toThrow(APIError);
+      expect(walletApi.getWallets).toHaveBeenCalled();
+    });
   });
 
   describe('signTransaction', () => {
@@ -391,6 +397,197 @@ describe('WalletService', () => {
 
       expect(walletApi.getNonce).toHaveBeenCalled();
       expect(result).toEqual(1);
+    });
+  });
+
+  describe('generateTargetPublicKey', () => {
+    let iframeContainer: HTMLElement;
+    const iframeUrl = 'https://example.com/iframe';
+    const iframeElementId = 'myIframe';
+    let addEventListenerSpy: jest.SpyInstance;
+    let removeEventListenerSpy: jest.SpyInstance;
+    let postMessageSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      const dom = new JSDOM('<!DOCTYPE html><div id="container"></div>');
+      global.document = dom.window.document;
+      global.window = dom.window as unknown as Window & typeof globalThis;
+
+      iframeContainer = document.getElementById('container')!;
+
+      addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+      removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+      postMessageSpy = jest.spyOn(window, 'postMessage');
+    });
+
+    afterEach(() => {
+      addEventListenerSpy.mockRestore();
+      removeEventListenerSpy.mockRestore();
+      postMessageSpy.mockRestore();
+    });
+
+    it('should resolve with the public key when PUBLIC_KEY_READY event is received', async () => {
+      const publicKey = 'public-key-value';
+
+      addEventListenerSpy.mockImplementation((event, handler) => {
+        if (event === 'message') {
+          handler({
+            origin: 'https://example.com',
+            data: { type: 'PUBLIC_KEY_READY', value: publicKey },
+          } as MessageEvent);
+        }
+      });
+
+      const result = await walletService.generateTargetPublicKey(
+        iframeUrl,
+        iframeElementId,
+        iframeContainer,
+      );
+      expect(result).toBe(publicKey);
+    });
+
+    it('should reject with an error when ERROR event is received', async () => {
+      const errorMessage = 'error-value';
+
+      addEventListenerSpy.mockImplementation((event, handler) => {
+        if (event === 'message') {
+          handler({
+            origin: 'https://example.com',
+            data: { type: 'ERROR', value: errorMessage },
+          } as MessageEvent);
+        }
+      });
+
+      await expect(
+        walletService.generateTargetPublicKey(
+          iframeUrl,
+          iframeElementId,
+          iframeContainer,
+        ),
+      ).rejects.toBe(errorMessage);
+    });
+
+    it('should handle other message types correctly', async () => {
+      addEventListenerSpy.mockImplementation((event, handler) => {
+        if (event === 'message') {
+          handler({
+            origin: 'https://example.com',
+            data: { type: 'OTHER_TYPE', value: 'some-value' },
+          } as MessageEvent);
+        }
+      });
+
+      const promise = walletService.generateTargetPublicKey(
+        iframeUrl,
+        iframeElementId,
+        iframeContainer,
+      );
+
+      await expect(
+        Promise.race([promise, Promise.resolve('not-resolved')]),
+      ).resolves.toBe('not-resolved');
+      expect(removeEventListenerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error if iframe container is not found', async () => {
+      await expect(
+        walletService.generateTargetPublicKey(
+          iframeUrl,
+          iframeElementId,
+          null as any,
+        ),
+      ).rejects.toThrow('Iframe container cannot be found');
+    });
+
+    it('should throw an error if an iframe with the same ID already exists', async () => {
+      const existingIframe = document.createElement('iframe');
+      existingIframe.id = iframeElementId;
+      iframeContainer.appendChild(existingIframe);
+
+      await expect(
+        walletService.generateTargetPublicKey(
+          iframeUrl,
+          iframeElementId,
+          iframeContainer,
+        ),
+      ).rejects.toThrow(
+        `Iframe element with ID ${iframeElementId} already exists`,
+      );
+    });
+
+    it('should throw an error if not in a browser environment', async () => {
+      const originalWindow = global.window;
+      delete (global as any).window;
+
+      try {
+        await expect(
+          walletService.generateTargetPublicKey(
+            iframeUrl,
+            iframeElementId,
+            iframeContainer,
+          ),
+        ).rejects.toThrow(
+          'Cannot initialize iframe in non-browser environment',
+        );
+      } finally {
+        global.window = originalWindow;
+      }
+    });
+
+    it('should ignore messages from different origins', async () => {
+      const publicKey = 'public-key-value';
+
+      addEventListenerSpy.mockImplementation((event, handler) => {
+        if (event === 'message') {
+          handler({
+            origin: 'https://different-origin.com',
+            data: { type: 'PUBLIC_KEY_READY', value: publicKey },
+          } as MessageEvent);
+        }
+      });
+
+      const promise = walletService.generateTargetPublicKey(
+        iframeUrl,
+        iframeElementId,
+        iframeContainer,
+      );
+
+      await expect(
+        Promise.race([promise, Promise.resolve('not-resolved')]),
+      ).resolves.toBe('not-resolved');
+      expect(removeEventListenerSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('recover', () => {
+    const privateKey = 'mock-private-key';
+
+    it('should recover wallet successfully', async () => {
+      const recoveryData: IWalletRecovery = {
+        eoa: {
+          organizationId: '44d9a7f9-f745-4b10-ae66-028bc2fc45c0',
+          userId: 'fab988c5-62bf-4ea8-9201-dbf670c42626',
+        },
+      };
+
+      walletApi.recover.mockResolvedValue(recoveryData);
+
+      const result = await walletService.recover(privateKey);
+
+      expect(walletApi.recover).toHaveBeenCalledWith(privateKey);
+      expect(result).toEqual(recoveryData);
+      expect(logger.info).toHaveBeenCalledWith(
+        'WalletService: Recovering wallet',
+      );
+    });
+
+    it('should throw an error when recovery api fails', async () => {
+      const privateKey = 'mock-private-key';
+
+      walletApi.recover.mockRejectedValueOnce(new Error());
+
+      await expect(walletService.recover(privateKey)).rejects.toThrow(Error);
+      expect(walletApi.recover).toHaveBeenCalled();
     });
   });
 });
