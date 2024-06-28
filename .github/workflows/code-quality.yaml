@@ -1,4 +1,4 @@
-name: Code Quality
+name: My code is pristine
 
 on:
   push:

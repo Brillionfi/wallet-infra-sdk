@@ -41,3 +41,6 @@ yarn-error.log*
 
 coverage
 *.lcov
+
+# sample tests messages to run cicd locally
+.github/workflows/.tests

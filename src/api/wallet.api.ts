@@ -14,23 +14,26 @@ import {
   WalletResponseSchema,
   WalletNonceResponseSchema,
   WalletSchema,
+  IWalletSignTransaction,
+  WalletSignTransactionResponseSchema,
+  IWalletSignTransactionAPI,
   WalletTransactionSchema,
   WalletGasConfigurationSchema,
   WalletGasConfigurationResponseSchema,
   WalletGasEstimationSchema,
+  WalletRecoverySchema,
+  IWalletRecovery,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { AxiosResponse } from 'axios';
 
 export class WalletApi {
   private readonly className: string;
-  private httpClient: HttpClient;
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.className = this.constructor.name;
-    this.httpClient = new HttpClient();
   }
 
   public async createWallet(data: IWalletAPI): Promise<IWalletResponse> {
@@ -52,6 +55,22 @@ export class WalletApi {
       const response: AxiosResponse = await this.httpClient.get('/wallets');
       const wallets = WalletSchema.array().parse(response.data);
       return wallets;
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async signTransaction(
+    address: Address,
+    data: IWalletSignTransaction,
+  ): Promise<IWalletSignTransactionAPI> {
+    logger.debug(`${this.className}: Signing transaction`);
+    try {
+      const response = await this.httpClient.post(
+        `/wallets/${address}/sign`,
+        data,
+      );
+      return WalletSignTransactionResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
@@ -171,6 +190,25 @@ export class WalletApi {
       return wallets;
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async recover(targetPublicKey: string): Promise<IWalletRecovery> {
+    logger.debug(`${this.className}: Wallet Recovery`);
+    try {
+      const body = {
+        eoa: {
+          targetPublicKey,
+        },
+      };
+      const response: AxiosResponse = await this.httpClient.post(
+        '/wallets/recovery',
+        body,
+      );
+
+      return WalletRecoverySchema.parse(response.data.data);
+    } catch (error) {
+      throw handleError(error as APIError);
     }
   }
 }

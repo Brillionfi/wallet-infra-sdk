@@ -7,21 +7,25 @@ import {
   IWalletResponse,
   IWalletTransaction,
   WalletKeys,
+  IWalletSignTransaction,
+  IWalletSignTransactionAPI,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
   WalletNonceResponseSchema,
+  IWalletRecovery,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
-import logger from '@utils/logger';
+import { HttpClient } from '@utils/http-client';
+import logger from 'loglevel';
 import { AxiosError, HttpStatusCode } from 'axios';
 
 export class WalletService {
   private readonly className: string;
   private walletApi: WalletApi;
 
-  constructor() {
+  constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
-    this.walletApi = new WalletApi();
+    this.walletApi = new WalletApi(httpClient);
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
@@ -44,6 +48,19 @@ export class WalletService {
       return wallets;
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async signTransaction(
+    address: Address,
+    data: IWalletSignTransaction,
+  ): Promise<IWalletSignTransactionAPI> {
+    logger.info(`${this.className}: Setting Wallet gas configuration`);
+
+    try {
+      return await this.walletApi.signTransaction(address, data);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
     }
   }
 
@@ -120,6 +137,64 @@ export class WalletService {
     } catch (error) {
       throw handleError(error);
     }
+  }
+
+  public async recover(privateKey: string): Promise<IWalletRecovery> {
+    logger.info(`${this.className}: Recovering wallet`);
+    try {
+      return await this.walletApi.recover(privateKey);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async generateTargetPublicKey(
+    iframeUrl: string,
+    iframeElementId: string,
+    iframeContainer: HTMLElement,
+  ): Promise<string> {
+    if (typeof window === 'undefined') {
+      throw new Error('Cannot initialize iframe in non-browser environment');
+    }
+
+    if (!iframeContainer) {
+      throw new Error('Iframe container cannot be found');
+    }
+
+    if (iframeContainer.querySelector(`#${iframeElementId}`)) {
+      throw new Error(
+        `Iframe element with ID ${iframeElementId} already exists`,
+      );
+    }
+
+    const iframe = window.document.createElement('iframe');
+
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+
+    // Set the iframe ID and source URL
+    iframe.id = iframeElementId;
+    iframe.src = iframeUrl;
+
+    const iframeOrigin = new URL(iframeUrl).origin;
+    iframeContainer.appendChild(iframe);
+
+    return new Promise((resolve, reject) => {
+      window.addEventListener('message', function onMessage(event) {
+        if (event.origin !== iframeOrigin) {
+          return;
+        }
+
+        if (event.data?.type === 'PUBLIC_KEY_READY') {
+          resolve(event.data['value']);
+          window.removeEventListener('message', onMessage);
+        }
+
+        if (event.data?.type === 'ERROR') {
+          reject(event.data['value']);
+          window.removeEventListener('message', onMessage);
+        }
+      });
+    });
   }
 
   private parseCreateWalletData(data: IWallet): IWalletAPI {

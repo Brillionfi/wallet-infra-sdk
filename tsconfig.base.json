@@ -9,6 +9,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "types": ["node", "jest"],
+    "declaration": true,
     "baseUrl": "./src",
     "paths": {
       "@api/*": ["api/*"],
