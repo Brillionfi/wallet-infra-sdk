@@ -3,6 +3,7 @@ import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
 import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
+import { v4 as uuidv4 } from 'uuid';
 
 jest.mock('@utils/http-client');
 jest.mock('loglevel', () => ({
@@ -317,14 +318,16 @@ describe('Wallet', () => {
     it('should call get on HttpClient when getTransactionHistory is called', async () => {
       const response = [
         {
-          transactionId: 'id',
-          transactionHash: 'hash',
-          address: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+          transactionId: uuidv4(),
+          from: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
           chainId: SUPPORTED_CHAINS.ETHEREUM,
-          walletAddress: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
-          createdAt: '123456',
-          updatedAt: '123456',
-          updatedBy: '123456',
+          to: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+          value: 1,
+          gasLimit: 1,
+          maxFeePerGas: 1,
+          maxPriorityFeePerGas: 1,
+          nonce: 1,
+          data: '0x',
         },
       ];
 

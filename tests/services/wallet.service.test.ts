@@ -18,6 +18,7 @@ import { APIError, CustomError } from '@utils/errors';
 import { ZodError } from 'zod';
 import { AxiosError, AxiosResponse, HttpStatusCode } from 'axios';
 import { HttpClient } from '@utils/http-client';
+import { v4 as uuidv4 } from 'uuid';
 import logger from 'loglevel';
 
 jest.mock('@api/wallet.api');
@@ -247,11 +248,16 @@ describe('WalletService', () => {
     it('should get wallets', async () => {
       const example = [
         {
-          transactionId: 'id',
-          transactionHash: 'hash',
-          address: wallet,
+          transactionId: uuidv4(),
+          from: wallet,
           chainId: SUPPORTED_CHAINS.ETHEREUM,
-          walletAddress: wallet,
+          to: wallet,
+          value: 1,
+          gasLimit: 1,
+          maxFeePerGas: 1,
+          maxPriorityFeePerGas: 1,
+          nonce: 1,
+          data: '0x',
           createdAt: '123456',
           updatedAt: '123456',
           updatedBy: '123456',
