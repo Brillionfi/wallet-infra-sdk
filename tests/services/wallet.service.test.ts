@@ -18,7 +18,7 @@ import { APIError, CustomError } from '@utils/errors';
 import { ZodError } from 'zod';
 import { AxiosError, AxiosResponse, HttpStatusCode } from 'axios';
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
