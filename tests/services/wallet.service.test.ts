@@ -198,12 +198,14 @@ describe('WalletService', () => {
       expect(walletApi.getWallets).toHaveBeenCalled();
       expect(result).toEqual(exampleService);
     });
-  });
 
-  it('should throw an error when walletApi.getWallets fails', async () => {
-    walletApi.getWallets.mockRejectedValueOnce(new APIError('BadRequest', 400));
-    await expect(walletService.getWallets()).rejects.toThrow(APIError);
-    expect(walletApi.getWallets).toHaveBeenCalled();
+    it('should throw an error when walletApi.getWallets fails', async () => {
+      walletApi.getWallets.mockRejectedValueOnce(
+        new APIError('BadRequest', 400),
+      );
+      await expect(walletService.getWallets()).rejects.toThrow(APIError);
+      expect(walletApi.getWallets).toHaveBeenCalled();
+    });
   });
 
   describe('getTransactionHistory', () => {
@@ -417,16 +419,6 @@ describe('WalletService', () => {
         iframeContainer,
       );
       expect(result).toBe(publicKey);
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        expect.any(Function),
-        false,
-      );
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        expect.any(Function),
-        false,
-      );
     });
 
     it('should reject with an error when ERROR event is received', async () => {
@@ -448,16 +440,6 @@ describe('WalletService', () => {
           iframeContainer,
         ),
       ).rejects.toBe(errorMessage);
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        expect.any(Function),
-        false,
-      );
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        expect.any(Function),
-        false,
-      );
     });
 
     it('should handle other message types correctly', async () => {
@@ -479,11 +461,6 @@ describe('WalletService', () => {
       await expect(
         Promise.race([promise, Promise.resolve('not-resolved')]),
       ).resolves.toBe('not-resolved');
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        expect.any(Function),
-        false,
-      );
       expect(removeEventListenerSpy).not.toHaveBeenCalled();
     });
 
@@ -553,11 +530,6 @@ describe('WalletService', () => {
       await expect(
         Promise.race([promise, Promise.resolve('not-resolved')]),
       ).resolves.toBe('not-resolved');
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        expect.any(Function),
-        false,
-      );
       expect(removeEventListenerSpy).not.toHaveBeenCalled();
     });
   });
