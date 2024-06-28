@@ -98,6 +98,13 @@ export const WalletNonceResponseSchema = z.object({
   nonce: z.number(),
 });
 
+export const WalletRecoverySchema = z.object({
+  eoa: z.object({
+    organizationId: z.string(),
+    userId: z.string(),
+  }),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
@@ -109,3 +116,4 @@ export type IWalletGasConfigurationAPI = z.infer<
 >;
 export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
+export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;

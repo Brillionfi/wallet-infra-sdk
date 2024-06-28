@@ -6,7 +6,7 @@ import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
 
 export class TokenService {
-  public readonly className: string;
+  private readonly className: string;
   private tokenApi: TokenApi;
 
   constructor(httpClient: HttpClient) {
