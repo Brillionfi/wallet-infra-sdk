@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { non0xString } from './common.models';
+import { ChainIdSchema, EthereumAddressSchema } from './common.models';
 
 export enum WalletKeys {
   TYPE = 'type',
@@ -72,6 +74,27 @@ export const WalletResponseSchema = z.record(
   }),
 );
 
+export const WalletSignTransactionSchema = z.object({
+  walletFormat: WalletFormatsSchema,
+  walletType: WalletTypesSchema,
+  unsignedTransaction: non0xString,
+});
+
+export const WalletSignTransactionResponseSchema = z.object({
+  signedTransaction: z.string(),
+});
+
+export const WalletTransactionSchema = z.object({
+  transactionId: z.string(),
+  transactionHash: z.string(),
+  address: EthereumAddressSchema,
+  chainId: ChainIdSchema,
+  walletAddress: EthereumAddressSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  updatedBy: z.string(),
+});
+
 export const WalletGasConfigurationSchema = z.object({
   gasLimit: z.string(),
   maxFeePerGas: z.string(),
@@ -86,9 +109,22 @@ export const WalletNonceResponseSchema = z.object({
   nonce: z.number(),
 });
 
+export const WalletRecoverySchema = z.object({
+  eoa: z.object({
+    organizationId: z.string(),
+    userId: z.string(),
+  }),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
+export type IWalletSignTransaction = z.infer<
+  typeof WalletSignTransactionSchema
+>;
+export type IWalletSignTransactionAPI = z.infer<
+  typeof WalletSignTransactionResponseSchema
+>;
 export type IWalletGasConfiguration = z.infer<
   typeof WalletGasConfigurationSchema
 >;
@@ -96,3 +132,5 @@ export type IWalletGasConfigurationAPI = z.infer<
   typeof WalletGasConfigurationResponseSchema
 >;
 export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
+export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
+export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;

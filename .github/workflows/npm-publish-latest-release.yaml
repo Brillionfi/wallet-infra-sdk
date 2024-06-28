@@ -1,0 +1,39 @@
+name: NPM Publish latest release
+
+on:
+  release:
+    types: [published]
+
+env:
+  NODE_VERSION: 20.11.0
+
+jobs:
+  version-release:
+    name: Version Release Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Build Package
+        run: yarn build
+
+      - name: Unit Tests
+        run: yarn test
+
+      - name: Authenticate with npm registry 
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc 
+
+      - name: Publish to NPM registry
+        run : npm publish --access public
