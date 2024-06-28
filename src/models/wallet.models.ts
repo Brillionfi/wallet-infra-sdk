@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { non0xString } from './common.models';
 import { ChainIdSchema, EthereumAddressSchema } from './common.models';
 
 export enum WalletKeys {
@@ -73,6 +74,16 @@ export const WalletResponseSchema = z.record(
   }),
 );
 
+export const WalletSignTransactionSchema = z.object({
+  walletFormat: WalletFormatsSchema,
+  walletType: WalletTypesSchema,
+  unsignedTransaction: non0xString,
+});
+
+export const WalletSignTransactionResponseSchema = z.object({
+  signedTransaction: z.string(),
+});
+
 export const WalletTransactionSchema = z.object({
   transactionId: z.string(),
   transactionHash: z.string(),
@@ -108,6 +119,12 @@ export const WalletRecoverySchema = z.object({
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
+export type IWalletSignTransaction = z.infer<
+  typeof WalletSignTransactionSchema
+>;
+export type IWalletSignTransactionAPI = z.infer<
+  typeof WalletSignTransactionResponseSchema
+>;
 export type IWalletGasConfiguration = z.infer<
   typeof WalletGasConfigurationSchema
 >;

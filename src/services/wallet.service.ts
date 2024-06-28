@@ -7,6 +7,8 @@ import {
   IWalletResponse,
   IWalletTransaction,
   WalletKeys,
+  IWalletSignTransaction,
+  IWalletSignTransactionAPI,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
   WalletNonceResponseSchema,
@@ -46,6 +48,19 @@ export class WalletService {
       return wallets;
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async signTransaction(
+    address: Address,
+    data: IWalletSignTransaction,
+  ): Promise<IWalletSignTransactionAPI> {
+    logger.info(`${this.className}: Setting Wallet gas configuration`);
+
+    try {
+      return await this.walletApi.signTransaction(address, data);
+    } catch (error) {
+      throw new CustomError('Failed verify data');
     }
   }
 

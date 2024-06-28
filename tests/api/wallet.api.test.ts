@@ -117,6 +117,39 @@ describe('Wallet', () => {
     });
   });
 
+  describe('signTransaction', () => {
+    const data = {
+      walletType: WalletTypes.EOA,
+      walletFormat: WalletFormats.ETHEREUM,
+      unsignedTransaction: '02ea',
+    };
+
+    it('should throw error if signTransaction fails', async () => {
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(wallet.signTransaction('address', data)).rejects.toThrow(
+        'error',
+      );
+    });
+
+    it('should call post on HttpClient when signTransaction is called', async () => {
+      httpClientMock.post = jest
+        .fn()
+        .mockResolvedValue({ data: { signedTransaction: '0x1234' } });
+
+      const result = await wallet.signTransaction('address', data);
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Signing transaction',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        '/wallets/address/sign',
+        data,
+      );
+      expect(result).toEqual({ signedTransaction: '0x1234' });
+    });
+  });
+
   describe('getGasConfig', () => {
     it('should throw error if getGasConfig fails', async () => {
       httpClientMock.get = jest

@@ -8,6 +8,9 @@ import {
   WalletResponseSchema,
   WalletNonceResponseSchema,
   WalletSchema,
+  IWalletSignTransaction,
+  WalletSignTransactionResponseSchema,
+  IWalletSignTransactionAPI,
   WalletTransactionSchema,
   IWalletGasConfiguration,
   WalletGasConfigurationSchema,
@@ -47,6 +50,22 @@ export class WalletApi {
       const response: AxiosResponse = await this.httpClient.get('/wallets');
       const wallets = WalletSchema.array().parse(response.data);
       return wallets;
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async signTransaction(
+    address: Address,
+    data: IWalletSignTransaction,
+  ): Promise<IWalletSignTransactionAPI> {
+    logger.debug(`${this.className}: Signing transaction`);
+    try {
+      const response = await this.httpClient.post(
+        `/wallets/${address}/sign`,
+        data,
+      );
+      return WalletSignTransactionResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
