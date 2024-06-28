@@ -22,16 +22,4 @@ export class TokenService {
       throw handleError(error);
     }
   }
-
-  public async getTokenById(
-    chainId: ChainId,
-    tokenId: string,
-  ): Promise<IToken> {
-    logger.info(`${this.className}: Getting token by ID`);
-    try {
-      return await this.tokenApi.getTokenById(chainId, tokenId);
-    } catch (error) {
-      throw handleError(error);
-    }
-  }
 }
