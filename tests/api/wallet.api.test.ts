@@ -338,6 +338,70 @@ describe('Wallet', () => {
       );
       expect(result).toEqual(response);
     });
+
+    it('should throw error if getTransactionHistory fails', async () => {
+      httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+    });
+  });
+
+  describe('getGasFees', () => {
+    it('should throw error if getGasFees fails', async () => {
+      httpClientMock.post = jest
+        .fn()
+        .mockRejectedValue(new Error('Estimation failed'));
+
+      await expect(
+        wallet.getGasFees({
+          from: 'address',
+          chainId: SUPPORTED_CHAINS.ETHEREUM,
+          to: 'to',
+          data: '',
+          value: '',
+        }),
+      ).rejects.toThrow('Estimation failed');
+    });
+
+    it('should call post on HttpClient when getGasFees is called', async () => {
+      const response = {
+        gasLimit: 'string',
+        gasFee: 'string',
+        maxGasFee: 'string',
+        gasPrice: 'string',
+        maxFeePerGas: 'string',
+        maxPriorityFeePerGas: 'string',
+        totalCostString: 'string',
+        totalMaxCostString: 'string',
+      };
+
+      httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
+
+      const request = {
+        from: 'address',
+        chainId: SUPPORTED_CHAINS.ETHEREUM,
+        to: 'to',
+        data: '',
+        value: '',
+      };
+
+      const result = await wallet.getGasFees(request);
+
+      expect(logger.info).toHaveBeenCalledWith(
+        'WalletApi: Getting transaction gas estimation',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/transactions/estimate`,
+        {
+          chainId: request.chainId,
+          raw: {
+            from: request.from,
+            to: request.to,
+            value: request.value,
+            data: request.data,
+          },
+        },
+      );
+      expect(result).toEqual(response);
+    });
   });
 
   describe('recovery', () => {
