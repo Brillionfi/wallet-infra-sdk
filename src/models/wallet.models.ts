@@ -1,6 +1,11 @@
 import { z } from 'zod';
+import {
+  type Address,
+  type ChainId,
+  ChainIdSchema,
+  EthereumAddressSchema,
+} from './common.models';
 import { non0xString } from './common.models';
-import { ChainIdSchema, EthereumAddressSchema } from './common.models';
 
 export enum WalletKeys {
   TYPE = 'type',
@@ -109,6 +114,25 @@ export const WalletNonceResponseSchema = z.object({
   nonce: z.number(),
 });
 
+export const WalletGasEstimationSchema = z.object({
+  gasLimit: z.string(),
+  gasFee: z.string(),
+  maxGasFee: z.string(),
+  gasPrice: z.string(),
+  maxFeePerGas: z.string(),
+  maxPriorityFeePerGas: z.string(),
+  totalCostString: z.string(),
+  totalMaxCostString: z.string(),
+});
+
+export interface IGetGasFeesParameters {
+  chainId: ChainId;
+  from: Address;
+  to: Address;
+  value: string;
+  data: string;
+}
+
 export const WalletRecoverySchema = z.object({
   eoa: z.object({
     organizationId: z.string(),
@@ -133,4 +157,5 @@ export type IWalletGasConfigurationAPI = z.infer<
 >;
 export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
+export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
