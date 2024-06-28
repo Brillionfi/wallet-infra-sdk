@@ -24,30 +24,32 @@ describe('Token API', () => {
   describe('getTokens', () => {
     it('should get all tokens', async () => {
       const response = {
-        data: [
-          {
-            chainId: '1',
-            tokenId: '0xTokenId',
-            status: 'Active',
-            name: 'TokenName',
-            address: '0xTokenAddress',
-            type: 'ERC20',
-            symbol: 'TKN',
-            decimals: 18,
-            logo: 'https://token-logo.png',
-            contractABI: '',
-            createdAt: '',
-            updatedAt: '',
-            updatedBy: '',
-          },
-        ],
+        data: {
+          data: [
+            {
+              chainId: '1',
+              tokenId: '0xTokenId',
+              status: 'Active',
+              name: 'TokenName',
+              address: '0xTokenAddress',
+              type: 'ERC20',
+              symbol: 'TKN',
+              decimals: 18,
+              logo: 'https://token-logo.png',
+              contractABI: '',
+              createdAt: '',
+              updatedAt: '',
+              updatedBy: '',
+            },
+          ],
+        },
       };
 
       httpClientMock.get.mockResolvedValue(response as AxiosResponse);
 
       const result = await token.getTokens(SUPPORTED_CHAINS.ETHEREUM);
       expect(httpClientMock.get).toHaveBeenCalledWith('/tokens/1');
-      expect(result).toEqual(response.data);
+      expect(result).toEqual(response.data.data);
     });
 
     it('should throw error when failed to get all tokens', async () => {
