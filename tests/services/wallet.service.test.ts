@@ -67,11 +67,11 @@ describe('WalletService', () => {
   };
 
   beforeEach(() => {
-    walletApi = new WalletApi(new HttpClient()) as jest.Mocked<WalletApi>;
+    walletApi = new WalletApi(new HttpClient('')) as jest.Mocked<WalletApi>;
 
     (WalletApi as jest.Mock<WalletApi>).mockImplementation(() => walletApi);
 
-    walletService = new WalletService(new HttpClient());
+    walletService = new WalletService(new HttpClient(''));
   });
 
   afterEach(() => {

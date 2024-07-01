@@ -22,14 +22,14 @@ describe('TransactionService', () => {
 
   beforeEach(() => {
     transactionApi = new TransactionApi(
-      new HttpClient(),
+      new HttpClient(''),
     ) as jest.Mocked<TransactionApi>;
 
     (TransactionApi as jest.Mock<TransactionApi>).mockImplementation(
       () => transactionApi,
     );
 
-    transactionService = new TransactionService(new HttpClient());
+    transactionService = new TransactionService(new HttpClient(''));
   });
 
   afterEach(() => {

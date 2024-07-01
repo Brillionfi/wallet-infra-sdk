@@ -9,7 +9,7 @@ import {
 } from '@models/transaction.models';
 import { WalletInfra } from './wallet-infra';
 
-const walletInfra = new WalletInfra();
+const walletInfra = new WalletInfra(appId, baseUrl);
 
 const myUnsignedTransaction: ITransactionUnsigned = {
   transactionType: TransactionTypeKeys.UNSIGNED,

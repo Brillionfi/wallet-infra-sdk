@@ -1,4 +1,3 @@
-import { Config, ConfigKeys } from '@config/index';
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -8,15 +7,11 @@ import axios, {
 import { v4 as uuidv4 } from 'uuid';
 
 export class HttpClient {
-  private config: Config;
-  private baseURL: string;
   private instance: AxiosInstance;
 
-  constructor() {
-    this.config = new Config();
-    this.baseURL = this.config.get(ConfigKeys.BASE_URL);
+  constructor(baseURL: string) {
     this.instance = axios.create({
-      baseURL: this.baseURL,
+      baseURL,
       headers: {
         'Content-Type': 'application/json',
       },

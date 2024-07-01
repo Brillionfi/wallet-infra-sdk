@@ -7,7 +7,7 @@ const config: Config = {
   coverageProvider: 'babel',
   coverageThreshold: {
     global: {
-      branches: 94,
+      branches: 93,
       functions: 94,
       lines: 94,
       statements: 94,

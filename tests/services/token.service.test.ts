@@ -17,11 +17,11 @@ describe('TokenService', () => {
   let tokenService: TokenService;
 
   beforeEach(() => {
-    tokenApi = new TokenApi(new HttpClient()) as jest.Mocked<TokenApi>;
+    tokenApi = new TokenApi(new HttpClient('')) as jest.Mocked<TokenApi>;
 
     (TokenApi as jest.Mock<TokenApi>).mockImplementation(() => tokenApi);
 
-    tokenService = new TokenService(new HttpClient());
+    tokenService = new TokenService(new HttpClient(''));
   });
 
   afterEach(() => {

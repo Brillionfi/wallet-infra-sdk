@@ -10,7 +10,7 @@ import { WalletInfra } from './wallet-infra';
 
 const app_id = 'f9e7f099-bd95-433b-9365-de8b73e72824';
 
-const walletInfra = new WalletInfra(app_id);
+const walletInfra = new WalletInfra(app_id, baseUrl);
 const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
 // The user can be redirected to `authUrl` and verify his identity.
 ```
@@ -20,6 +20,6 @@ Now in your redirect endpoint, you parse the answer to read the jwt and pass it 
 ```ts
 import { WalletInfra } from './wallet-infra';
 
-const walletInfra = new WalletInfra(app_id);
+const walletInfra = new WalletInfra(app_id, baseUrl);
 await walletInfra.authenticateUser(jwt);
 ```
