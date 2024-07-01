@@ -10,7 +10,7 @@ import logger from '@utils/logger';
 import { WalletInfra } from 'wallet-infra';
 
 const appId = 'f9e7f099-bd95-433b-9365-de8b73e72824';
-const walletInfra = new WalletInfra(appId);
+const walletInfra = new WalletInfra(appId, baseUrl);
 
 const iframeUrl = 'Turnkey Iframe url';
 const iframeContainer = document.getElementById('turnkey-iframe-container');

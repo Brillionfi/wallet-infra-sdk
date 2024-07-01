@@ -11,7 +11,7 @@ import {
 } from '@models/transaction.models';
 import { WalletInfra } from './wallet-infra';
 
-const walletInfra = new WalletInfra();
+const walletInfra = new WalletInfra(appId, baseUrl);
 const transactionId: string = '46debf23-5e81-4d38-8100-c4f683c634d1';
 
 await walletInfra.Transaction.cancelTransaction(transactionId);

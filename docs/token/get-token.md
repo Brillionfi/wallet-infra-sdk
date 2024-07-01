@@ -5,7 +5,7 @@ This section guides you through the process of retrieving a token by its ID and 
 ```ts
 import { WalletInfra } from './wallet-infra';
 
-const walletInfra = new WalletInfra();
+const walletInfra = new WalletInfra(appId, baseUrl);
 
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
 const tokenId: string = '0x123';

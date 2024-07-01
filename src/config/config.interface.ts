@@ -1,11 +1,7 @@
 import { z } from 'zod';
 
-export enum ConfigKeys {
-  BASE_URL = 'BASE_URL',
-}
+export enum ConfigKeys {}
 
-export const ConfigSchema = z.object({
-  [ConfigKeys.BASE_URL]: z.string().url(),
-});
+export const ConfigSchema = z.object({});
 
 export type IConfig = z.infer<typeof ConfigSchema>;

@@ -14,8 +14,8 @@ npm install @brillionfi/wallet-infra-sdk
 
 To generate an SDK instance:
 
-```sh
-import WalletInfraSDK from '@brillionfi/wallet-infra-sdk';
+```ts
+import { WalletInfra } from '@brillionfi/wallet-infra-sdk';
 
-const SDK = await new WalletInfraSDK(baseURL, jwt?); 
+const SDK = await new WalletInfra(appId, baseURL);
 ```

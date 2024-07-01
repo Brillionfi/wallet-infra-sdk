@@ -45,8 +45,8 @@ describe('Wallet', () => {
   };
 
   beforeEach(() => {
-    httpClientMock = new HttpClient() as jest.Mocked<HttpClient>;
-    wallet = new WalletApi(new HttpClient());
+    httpClientMock = new HttpClient('') as jest.Mocked<HttpClient>;
+    wallet = new WalletApi(new HttpClient(''));
     // eslint-disable-next-line
     (wallet as any).httpClient = httpClientMock;
   });

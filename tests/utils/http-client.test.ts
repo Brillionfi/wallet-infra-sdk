@@ -22,7 +22,7 @@ describe('HttpClient', () => {
     (Config as jest.Mock<Config>).mockImplementation(() => config);
     config.get = jest.fn().mockReturnValue('http://mocked_base_url');
 
-    httpClient = new HttpClient();
+    httpClient = new HttpClient('http://mocked_base_url');
   });
 
   afterEach(() => {
