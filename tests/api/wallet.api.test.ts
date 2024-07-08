@@ -453,9 +453,11 @@ describe('Wallet', () => {
 
     it('should call get on HttpClient when getPortfolio is called', async () => {
       const response = {
-        address: address,
-        chainId: SUPPORTED_CHAINS.ETHEREUM,
-        portfolio: [],
+        data: {
+          address: address,
+          chainId: SUPPORTED_CHAINS.ETHEREUM,
+          portfolio: [],
+        },
       };
 
       httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
