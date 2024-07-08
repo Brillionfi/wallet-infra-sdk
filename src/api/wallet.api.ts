@@ -22,6 +22,7 @@ import {
   WalletGasEstimationSchema,
   WalletRecoverySchema,
   IWalletRecovery,
+  WalletPortfolioSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -208,6 +209,19 @@ export class WalletApi {
       return WalletRecoverySchema.parse(response.data.data);
     } catch (error) {
       throw handleError(error as APIError);
+    }
+  }
+
+  public async getPortfolio(address: Address, chainId: ChainId) {
+    logger.debug(`${this.className}: Get Wallet Portfolio`);
+    try {
+      const response: AxiosResponse = await this.httpClient.get(
+        `/wallets/portfolio/${address}/${chainId}`,
+      );
+      const portfolio = WalletPortfolioSchema.parse(response.data.data);
+      return portfolio;
+    } catch (error) {
+      throw handleError(error);
     }
   }
 }

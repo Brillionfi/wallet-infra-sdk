@@ -441,4 +441,34 @@ describe('Wallet', () => {
       expect(result).toEqual(response.data);
     });
   });
+
+  describe('getPortfolio', () => {
+    it('should throw error if getPortfolio fails', async () => {
+      httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(wallet.getPortfolio(address, chainId)).rejects.toThrow(
+        'error',
+      );
+    });
+
+    it('should call get on HttpClient when getPortfolio is called', async () => {
+      const response = {
+        address: address,
+        chainId: SUPPORTED_CHAINS.ETHEREUM,
+        portfolio: [],
+      };
+
+      httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
+
+      const result = await wallet.getPortfolio(address, chainId);
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Get Wallet Portfolio',
+      );
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        `/wallets/portfolio/${address}/${chainId}`,
+      );
+      expect(result).toEqual(response);
+    });
+  });
 });
