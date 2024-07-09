@@ -218,6 +218,7 @@ export class WalletApi {
       const response: AxiosResponse = await this.httpClient.get(
         `/wallets/portfolio/${address}/${chainId}`,
       );
+
       const portfolio = WalletPortfolioSchema.parse(response.data.data);
       return portfolio;
     } catch (error) {
