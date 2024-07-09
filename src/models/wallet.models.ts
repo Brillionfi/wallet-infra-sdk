@@ -143,7 +143,15 @@ export const WalletRecoverySchema = z.object({
 export const WalletPortfolioSchema = z.object({
   address: z.string(),
   chainId: ChainIdSchema,
-  portfolio: z.array(z.object({})),
+  portfolio: z.array(
+    z.object({
+      tokenId: z.string(),
+      balance: z.string(),
+      decimals: z.number().optional(),
+      address: z.string().optional(),
+      tokenPriceUsd: z.string().optional(),
+    }),
+  ),
 });
 
 export type IWallet = z.infer<typeof WalletSchema>;
