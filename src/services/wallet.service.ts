@@ -13,6 +13,7 @@ import {
   IWalletGasConfigurationAPI,
   WalletNonceResponseSchema,
   IWalletRecovery,
+  IWalletPortfolio,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -71,6 +72,18 @@ export class WalletService {
     logger.info(`${this.className}: Getting Wallet transaction history`);
     try {
       return await this.walletApi.getTransactionHistory(address, chainId);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getPortfolio(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletPortfolio> {
+    logger.info(`${this.className}: Getting Wallet portfolio`);
+    try {
+      return await this.walletApi.getPortfolio(address, chainId);
     } catch (error) {
       throw handleError(error);
     }

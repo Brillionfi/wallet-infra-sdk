@@ -140,6 +140,12 @@ export const WalletRecoverySchema = z.object({
   }),
 });
 
+export const WalletPortfolioSchema = z.object({
+  address: z.string(),
+  chainId: ChainIdSchema,
+  portfolio: z.array(z.object({})),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
@@ -159,3 +165,4 @@ export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
 export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
+export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;

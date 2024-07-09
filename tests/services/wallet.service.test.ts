@@ -596,4 +596,31 @@ describe('WalletService', () => {
       expect(walletApi.recover).toHaveBeenCalled();
     });
   });
+
+  describe('getPortfolio', () => {
+    it('should get portfolio', async () => {
+      const exampleAPI = {
+        address: '0xtestAddress',
+        chainId: SUPPORTED_CHAINS.ETHEREUM,
+        portfolio: [],
+      };
+
+      walletApi.getPortfolio.mockResolvedValueOnce(exampleAPI);
+
+      const result = await walletService.getPortfolio(wallet, chainId);
+
+      expect(walletApi.getPortfolio).toHaveBeenCalled();
+      expect(result).toEqual(exampleAPI);
+    });
+
+    it('should throw an error when walletApi.getPortfolio fails', async () => {
+      walletApi.getPortfolio.mockRejectedValueOnce(
+        new APIError('BadRequest', 400),
+      );
+      await expect(walletService.getPortfolio(wallet, chainId)).rejects.toThrow(
+        APIError,
+      );
+      expect(walletApi.getPortfolio).toHaveBeenCalled();
+    });
+  });
 });
