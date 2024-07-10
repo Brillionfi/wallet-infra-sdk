@@ -13,10 +13,14 @@ describe('handleError', () => {
   const originalConsoleError = logger.error;
 
   beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    jest.useFakeTimers();
     logger.error = jest.fn();
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     logger.error = originalConsoleError;
   });
 
@@ -97,7 +101,15 @@ describe('handleError', () => {
       `Internal Error (${HttpStatusCode.INTERNAL_SERVER_ERROR}):`,
       message,
     );
-    expect(logger.error).toHaveBeenCalledWith('Retrying ...');
+    expect(logger.error).toHaveBeenCalledWith('Retrying... (1/3)');
+    jest.advanceTimersByTime(1000);
+    expect(logger.error).toHaveBeenCalledWith('Retrying... (2/3)');
+    jest.advanceTimersByTime(1000);
+    expect(logger.error).toHaveBeenCalledWith('Retrying... (3/3)');
+    jest.advanceTimersByTime(1000);
+    expect(logger.error).toHaveBeenCalledWith(
+      'Max retries reached. Giving up.',
+    );
   });
 
   it('should log and rethrow an unexpected API error', () => {
@@ -135,7 +147,7 @@ describe('handleError', () => {
     const error = new ZodError([]);
 
     expect(() => handleError(error)).toThrow(ZodError);
-    expect(logger.error).toHaveBeenCalledWith('Zod Error:', error.message);
+    expect(logger.error).toHaveBeenCalledWith('Zod Error:', error.errors);
   });
 
   it('should log unknown error occurred', () => {

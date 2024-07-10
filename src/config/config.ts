@@ -27,8 +27,6 @@ class Config {
     });
   }
 
-  // The type of 'key' should be 'ConfigKeys' here, however
-  // it creates a TS issue because we don't have a value there now.
   public get(key: string): string {
     return (this.config as never)[key];
   }
