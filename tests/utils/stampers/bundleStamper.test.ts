@@ -55,7 +55,7 @@ describe('BundleStamper', () => {
     jest
       .spyOn(util, 'uncompressRawPublicKey')
       .mockReturnValue(new Uint8Array());
-    jest.spyOn(util, 'importCredential').mockResolvedValue(new CryptoKey());
+    jest.spyOn(util, 'importCredential').mockResolvedValue({} as CryptoKey);
     jest.spyOn(crypto.subtle, 'sign').mockResolvedValue(new ArrayBuffer(1));
     jest
       .spyOn(crypto.subtle, 'exportKey')
