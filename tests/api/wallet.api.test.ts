@@ -424,6 +424,9 @@ describe('Wallet', () => {
           eoa: {
             organizationId: '44d9a7f9-f745-4b10-ae66-028bc2fc45c0',
             userId: 'fab988c5-62bf-4ea8-9201-dbf670c42626',
+            needsApproval: false,
+            fingerprint: 'fingerprint',
+            activityId: 'activityId',
           },
         },
       };
