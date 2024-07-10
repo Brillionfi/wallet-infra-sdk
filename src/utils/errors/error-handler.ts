@@ -4,7 +4,7 @@ import logger from 'loglevel';
 import { ZodError } from 'zod';
 
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+const RETRY_DELAY = 1000;
 
 export const handleError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
