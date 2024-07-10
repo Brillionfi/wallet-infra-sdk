@@ -1,6 +1,6 @@
 import { APIError } from '@utils/errors';
 
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   error: jest.fn(),
 }));
 

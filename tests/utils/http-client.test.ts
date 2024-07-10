@@ -4,7 +4,7 @@ import { Config } from '@config/index';
 import { HttpClient } from '@utils/index';
 
 jest.mock('@config/index');
-jest.mock('@utils/logger', () => ({
+jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),
@@ -22,7 +22,7 @@ describe('HttpClient', () => {
     (Config as jest.Mock<Config>).mockImplementation(() => config);
     config.get = jest.fn().mockReturnValue('http://mocked_base_url');
 
-    httpClient = new HttpClient('mocked_jwt_token');
+    httpClient = new HttpClient('http://mocked_base_url');
   });
 
   afterEach(() => {
@@ -114,11 +114,10 @@ describe('HttpClient', () => {
 
     mockAxios.onGet('http://mocked_base_url/test-get').reply(200, mockResponse);
 
+    httpClient.authorize('123');
     const response = await httpClient.get(url);
 
-    expect(response.config.headers.Authorization).toBe(
-      'Bearer mocked_jwt_token',
-    );
+    expect(response.config.headers.Authorization).toBe('Bearer 123');
   });
 
   it('should include an idempotency key in the headers', async () => {

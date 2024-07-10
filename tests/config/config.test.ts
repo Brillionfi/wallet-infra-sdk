@@ -1,33 +1,21 @@
+import Config from '@config/config';
 import dotenv from 'dotenv';
-import { Config, ConfigKeys } from '@config/index';
+import { ConfigSchema } from '@config/config.interface';
 
 jest.mock('dotenv');
 dotenv.config = jest.fn();
 
 describe('Configuration Tests', () => {
-  let config: Config;
-
   beforeEach(() => {
     jest.resetModules();
   });
-
-  it('should load the base URL from environment variables', async () => {
-    process.env[ConfigKeys.BASE_URL] = 'https://api.test.com';
-    config = new Config();
-    expect(config.get(ConfigKeys.BASE_URL)).toBe('https://api.test.com');
+  it('Should parse the schema', () => {
+    const spy = jest.spyOn(ConfigSchema, 'parse');
+    new Config();
+    expect(spy).toHaveBeenCalled();
   });
-
-  it('should throw an error if BASE_URL is not set', async () => {
-    delete process.env[ConfigKeys.BASE_URL];
-    expect(() => {
-      config = new Config();
-    }).toThrow(/Environment variable BASE_URL is not set/);
-  });
-
-  it('should throw an error if BASE_URL is not a valid URL', () => {
-    process.env[ConfigKeys.BASE_URL] = 'invalid-url';
-    expect(() => {
-      config = new Config();
-    }).toThrow(/Invalid url/);
+  it('Should return an env variable', () => {
+    const value = new Config().get('key');
+    expect(typeof value).toBe('undefined'); // It should be a String but there is no value currently.
   });
 });

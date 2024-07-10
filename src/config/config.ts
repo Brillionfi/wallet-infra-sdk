@@ -19,19 +19,18 @@ class Config {
   }
 
   private loadConfig(): IConfig {
+    const variablesList = Object.keys(ConfigSchema.shape);
     return ConfigSchema.parse({
-      [ConfigKeys.BASE_URL]: this.getEnvVariable(ConfigKeys.BASE_URL),
-      [ConfigKeys.MAX_RETRIES]: parseInt(
-        this.getEnvVariable(ConfigKeys.MAX_RETRIES),
-      ),
-      [ConfigKeys.RETRY_DELAY]: parseInt(
-        this.getEnvVariable(ConfigKeys.RETRY_DELAY),
-      ),
+      ...variablesList.map((key) => ({
+        [key]: this.getEnvVariable(key as unknown as ConfigKeys),
+      })),
     });
   }
 
-  public get(key: ConfigKeys): string | number | undefined {
-    return this.config[key];
+  // The type of 'key' should be 'ConfigKeys' here, however
+  // it creates a TS issue because we don't have a value there now.
+  public get(key: string): string {
+    return (this.config as never)[key];
   }
 }
 

@@ -1,5 +1,5 @@
 import { HttpClient } from '@utils/http-client';
-import logger from '@utils/logger';
+import logger from 'loglevel';
 import { APIError, handleError } from '@utils/errors';
 import {
   ITransaction,
@@ -13,9 +13,9 @@ export class TransactionApi {
   private resource: string;
   private httpClient: HttpClient;
 
-  constructor() {
+  constructor(httpClient: HttpClient) {
     this.resource = 'transactions';
-    this.httpClient = new HttpClient();
+    this.httpClient = httpClient;
   }
 
   public async createTransaction(
