@@ -21,7 +21,10 @@ const config: Config = {
       statements: 94,
     },
   },
-  coveragePathIgnorePatterns: ['src/utils/stampers/utils.js'],
+  coveragePathIgnorePatterns: [
+    'src/utils/stampers/bundleStamper/utils.js',
+    'src/utils/stampers/bundleStamper/hpke/*',
+  ],
   moduleNameMapper: {
     '^@api/(.*)$': '<rootDir>/src/api/$1',
     '^@config/(.*)$': '<rootDir>/src/config/$1',

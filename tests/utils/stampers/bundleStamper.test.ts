@@ -1,5 +1,5 @@
 import { BundleStamper } from '@utils/stampers';
-import * as util from '@utils/stampers/utils';
+import * as util from '@utils/stampers/bundleStamper/utils';
 
 describe('BundleStamper', () => {
   const bundle =

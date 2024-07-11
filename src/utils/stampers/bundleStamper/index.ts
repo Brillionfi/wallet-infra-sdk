@@ -1,5 +1,5 @@
 import * as TKHQ from './utils';
-import * as hpke from '@hpke/core';
+import * as hpke from './hpke';
 
 // Header name for an API key stamp
 const stampHeaderName = 'X-Stamp';

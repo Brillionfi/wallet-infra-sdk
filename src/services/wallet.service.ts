@@ -192,7 +192,7 @@ export class WalletService {
             userVerification: 'preferred',
           },
           rp: {
-            id: 'Brillion',
+            id: 'localhost',
             name: 'Turnkey Federated Passkey Demo',
           },
           challenge,
