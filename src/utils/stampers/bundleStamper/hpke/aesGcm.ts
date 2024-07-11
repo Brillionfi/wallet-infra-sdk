@@ -1,9 +1,9 @@
-import type { AeadEncryptionContext } from '../interfaces/aeadEncryptionContext';
-import type { AeadInterface } from '../interfaces/aeadInterface';
+import type { AeadEncryptionContext } from './interfaces/aeadEncryptionContext';
+import type { AeadInterface } from './interfaces/aeadInterface';
 
-import { NativeAlgorithm } from '../algorithm';
-import { AeadId } from '../identifiers';
-import { AEAD_USAGES } from '../interfaces/aeadEncryptionContext';
+import { NativeAlgorithm } from './algorithm';
+import { AeadId } from './identifiers';
+import { AEAD_USAGES } from './interfaces/aeadEncryptionContext';
 
 export class AesGcmContext
   extends NativeAlgorithm
@@ -77,29 +77,6 @@ export class AesGcmContext
   }
 }
 
-/**
- * The AES-128-GCM for HPKE AEAD implementing {@link AeadInterface}.
- *
- * When using `@hpke/core`, the instance of this class must be specified
- * to the `aead` parameter of {@link CipherSuiteParams} instead of `AeadId.Aes128Gcm`.
- *
- * @example
- *
- * ```ts
- * import {
- *   Aes128Gcm,
- *   CipherSuite,
- *   DhkemP256HkdfSha256,
- *   HkdfSha256,
- * } from "http://deno.land/x/hpke/core/mod";
- *
- * const suite = new CipherSuite({
- *   kem: new DhkemP256HkdfSha256(),
- *   kdf: new HkdfSha256(),
- *   aead: new Aes128Gcm(),
- * });
- * ```
- */
 export class Aes128Gcm implements AeadInterface {
   /** AeadId.Aes128Gcm (0x0001) */
   public readonly id: AeadId = AeadId.Aes128Gcm;
@@ -115,30 +92,6 @@ export class Aes128Gcm implements AeadInterface {
   }
 }
 
-/**
- * The AES-256-GCM for HPKE AEAD implementing {@link AeadInterface}.
- *
- * When using `@hpke/core`, the instance of this class must be specified
- * to the `aead` parameter of {@link CipherSuiteParams} instead of `AeadId.Aes256Gcm`
- * as follows:
- *
- * @example
- *
- * ```ts
- * import {
- *   Aes256Gcm,
- *   CipherSuite,
- *   DhkemP256HkdfSha256,
- *   HkdfSha256,
- * } from "http://deno.land/x/hpke/core/mod";
- *
- * const suite = new CipherSuite({
- *   kem: new DhkemP256HkdfSha256(),
- *   kdf: new HkdfSha256(),
- *   aead: new Aes256Gcm(),
- * });
- * ```
- */
 export class Aes256Gcm extends Aes128Gcm {
   /** AeadId.Aes256Gcm (0x0002) */
   public readonly id: AeadId = AeadId.Aes256Gcm;

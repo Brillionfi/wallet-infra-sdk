@@ -1,22 +1,3 @@
-declare const Deno: undefined;
-
-/**
- * Checks whether the execution env is Deno or not.
- */
-export const isDeno = () => typeof Deno !== 'undefined';
-
-/**
- * Checks whetehr the type of input is CryptoKeyPair or not.
- */
-export const isCryptoKeyPair = (x: unknown): x is CryptoKeyPair =>
-  typeof x === 'object' &&
-  x !== null &&
-  typeof (x as CryptoKeyPair).privateKey === 'object' &&
-  typeof (x as CryptoKeyPair).publicKey === 'object';
-
-/**
- * Converts integer to octet string. I2OSP implementation.
- */
 export function i2Osp(n: number, w: number): Uint8Array {
   if (w <= 0) {
     throw new Error('i2Osp: too small size');
@@ -32,9 +13,6 @@ export function i2Osp(n: number, w: number): Uint8Array {
   return ret;
 }
 
-/**
- * Concatenates two Uint8Arrays.
- */
 export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
   const ret = new Uint8Array(a.length + b.length);
   ret.set(a, 0);
@@ -42,9 +20,12 @@ export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
   return ret;
 }
 
-/**
- * Decodes Base64Url-encoded data.
- */
+export const isCryptoKeyPair = (x: unknown): x is CryptoKeyPair =>
+  typeof x === 'object' &&
+  x !== null &&
+  typeof (x as CryptoKeyPair).privateKey === 'object' &&
+  typeof (x as CryptoKeyPair).publicKey === 'object';
+
 export function base64UrlToBytes(v: string): Uint8Array {
   const base64 = v.replace(/-/g, '+').replace(/_/g, '/');
   const byteString = atob(base64);

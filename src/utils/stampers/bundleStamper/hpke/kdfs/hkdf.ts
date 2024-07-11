@@ -188,29 +188,3 @@ export class HkdfSha256Native extends HkdfNative {
     length: 256,
   };
 }
-
-export class HkdfSha384Native extends HkdfNative {
-  /** KdfId.HkdfSha384 (0x0002) */
-  public readonly id: KdfId = KdfId.HkdfSha384;
-  /** 48 */
-  public readonly hashSize: number = 48;
-  /** The parameters for Web Cryptography API */
-  protected readonly algHash: HmacKeyGenParams = {
-    name: 'HMAC',
-    hash: 'SHA-384',
-    length: 384,
-  };
-}
-
-export class HkdfSha512Native extends HkdfNative {
-  /** KdfId.HkdfSha512 (0x0003) */
-  public readonly id: KdfId = KdfId.HkdfSha512;
-  /** 64 */
-  public readonly hashSize: number = 64;
-  /** The parameters for Web Cryptography API */
-  protected readonly algHash: HmacKeyGenParams = {
-    name: 'HMAC',
-    hash: 'SHA-512',
-    length: 512,
-  };
-}
