@@ -24,6 +24,7 @@ const config: Config = {
   coveragePathIgnorePatterns: [
     'src/utils/stampers/bundleStamper/utils.js',
     'src/utils/stampers/bundleStamper/hpke/*',
+    'src/utils/stampers/webAuthnStamper/webauthn-json/*',
   ],
   moduleNameMapper: {
     '^@api/(.*)$': '<rootDir>/src/api/$1',

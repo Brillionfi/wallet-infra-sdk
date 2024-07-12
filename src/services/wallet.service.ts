@@ -22,6 +22,7 @@ import { AxiosError, HttpStatusCode } from 'axios';
 import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { getWebAuthnAttestation, TurnkeyClient } from '@turnkey/http';
+import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
 
 export class WalletService {
   private readonly className: string;
@@ -64,7 +65,38 @@ export class WalletService {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
     try {
-      return await this.walletApi.signTransaction(address, data);
+      const response = await this.walletApi.signTransaction(address, data);
+
+      if (response.needsApproval) {
+        const stamper = new WebauthnStamper({
+          rpId: 'localhost', // TODO register brillion domain and use ENV here
+        });
+
+        const client = new TurnkeyClient(
+          {
+            baseUrl: 'https://api.turnkey.com',
+          },
+          stamper,
+        );
+
+        const signResponse = await client.approveActivity({
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: Date.now().toString(),
+          organizationId: response.organizationId,
+          parameters: {
+            fingerprint: response.fingerprint,
+          },
+        });
+
+        return {
+          ...response,
+          signedTransaction:
+            signResponse.activity.result.signTransactionResult
+              ?.signedTransaction,
+        };
+      } else {
+        return response;
+      }
     } catch (error) {
       throw new CustomError('Failed verify data');
     }
@@ -192,7 +224,7 @@ export class WalletService {
             userVerification: 'preferred',
           },
           rp: {
-            id: 'localhost',
+            id: 'localhost', // TODO register brillion domain and use ENV here
             name: 'Turnkey Federated Passkey Demo',
           },
           challenge,

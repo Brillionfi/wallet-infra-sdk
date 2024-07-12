@@ -86,7 +86,11 @@ export const WalletSignTransactionSchema = z.object({
 });
 
 export const WalletSignTransactionResponseSchema = z.object({
-  signedTransaction: z.string(),
+  organizationId: z.string(),
+  needsApproval: z.boolean(),
+  fingerprint: z.string(),
+  activityId: z.string(),
+  signedTransaction: z.string().optional(),
 });
 
 export const WalletTransactionSchema = z.object({
