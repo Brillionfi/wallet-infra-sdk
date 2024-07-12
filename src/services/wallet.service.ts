@@ -199,9 +199,6 @@ export class WalletService {
     }
   }
 
-  /**
-   * organizationId and userId from initRecovery response
-   */
   public async execRecovery(
     organizationId: string,
     userId: string,

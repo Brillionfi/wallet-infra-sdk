@@ -22,7 +22,6 @@ import { BundleStamper } from '@utils/stampers';
 
 jest.mock('@api/wallet.api');
 jest.mock('@utils/http-client');
-jest.mock('@utils/http-client');
 jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
@@ -38,6 +37,17 @@ jest.mock('@turnkey/http', () => {
             status: 'ACTIVITY_STATUS_CONSENSUS_NOT_NEEDED',
             fingerprint: 'fingerprint',
             id: 'activityId',
+          },
+        };
+      };
+      approveActivity = async () => {
+        return {
+          activity: {
+            result: {
+              signTransactionResult: {
+                signedTransaction: '0x1234',
+              },
+            },
           },
         };
       };
@@ -238,14 +248,37 @@ describe('WalletService', () => {
       );
     });
 
-    it('should get wallet nonce', async () => {
-      const response = { signedTransaction: '0x1234' };
+    it('should return signed tx with no quorum required', async () => {
+      const response = {
+        organizationId: '123',
+        needsApproval: false,
+        fingerprint: '123',
+        activityId: '123',
+        signedTransaction: '0x1234',
+      };
       walletApi.signTransaction.mockResolvedValueOnce(response);
 
       const result = await walletService.signTransaction(wallet, data);
 
       expect(walletApi.signTransaction).toHaveBeenCalled();
       expect(result).toEqual(response);
+    });
+
+    it('should return signed tx with quorum required', async () => {
+      const response = {
+        organizationId: '123',
+        needsApproval: true,
+        fingerprint: '123',
+        activityId: '123',
+        signedTransaction: '',
+      };
+
+      walletApi.signTransaction.mockResolvedValueOnce(response);
+
+      const result = await walletService.signTransaction(wallet, data);
+
+      expect(walletApi.signTransaction).toHaveBeenCalled();
+      expect(result).toEqual({ ...response, signedTransaction: '0x1234' });
     });
   });
 

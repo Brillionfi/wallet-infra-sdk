@@ -134,9 +134,14 @@ describe('Wallet', () => {
     });
 
     it('should call post on HttpClient when signTransaction is called', async () => {
-      httpClientMock.post = jest
-        .fn()
-        .mockResolvedValue({ data: { signedTransaction: '0x1234' } });
+      const response = {
+        organizationId: '123',
+        needsApproval: false,
+        fingerprint: '123',
+        activityId: '123',
+        signedTransaction: '0x1234',
+      };
+      httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
 
       const result = await wallet.signTransaction('address', data);
 
@@ -147,7 +152,7 @@ describe('Wallet', () => {
         '/wallets/address/sign',
         data,
       );
-      expect(result).toEqual({ signedTransaction: '0x1234' });
+      expect(result).toEqual(response);
     });
   });
 
