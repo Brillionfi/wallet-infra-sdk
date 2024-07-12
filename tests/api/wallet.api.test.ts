@@ -141,7 +141,9 @@ describe('Wallet', () => {
         activityId: '123',
         signedTransaction: '0x1234',
       };
-      httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
+      httpClientMock.post = jest
+        .fn()
+        .mockResolvedValue({ data: { data: response } });
 
       const result = await wallet.signTransaction('address', data);
 
@@ -152,7 +154,7 @@ describe('Wallet', () => {
         '/wallets/address/sign',
         data,
       );
-      expect(result).toEqual(response);
+      expect(result).toEqual({ data: response });
     });
   });
 

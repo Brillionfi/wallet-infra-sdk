@@ -86,6 +86,16 @@ export const WalletSignTransactionSchema = z.object({
 });
 
 export const WalletSignTransactionResponseSchema = z.object({
+  data: z.object({
+    organizationId: z.string(),
+    needsApproval: z.boolean(),
+    fingerprint: z.string(),
+    activityId: z.string(),
+    signedTransaction: z.string().optional(),
+  }),
+});
+
+export const WalletSignTransactionServiceResponseSchema = z.object({
   organizationId: z.string(),
   needsApproval: z.boolean(),
   fingerprint: z.string(),
@@ -169,6 +179,9 @@ export type IWalletSignTransaction = z.infer<
 >;
 export type IWalletSignTransactionAPI = z.infer<
   typeof WalletSignTransactionResponseSchema
+>;
+export type IWalletSignTransactionService = z.infer<
+  typeof WalletSignTransactionServiceResponseSchema
 >;
 export type IWalletGasConfiguration = z.infer<
   typeof WalletGasConfigurationSchema

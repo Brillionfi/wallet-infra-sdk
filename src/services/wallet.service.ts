@@ -8,12 +8,12 @@ import {
   IWalletResponse,
   WalletKeys,
   IWalletSignTransaction,
-  IWalletSignTransactionAPI,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
   WalletNonceResponseSchema,
   IWalletRecovery,
   IWalletPortfolio,
+  IWalletSignTransactionService,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -61,11 +61,14 @@ export class WalletService {
   public async signTransaction(
     address: Address,
     data: IWalletSignTransaction,
-  ): Promise<IWalletSignTransactionAPI> {
+  ): Promise<IWalletSignTransactionService> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
     try {
-      const response = await this.walletApi.signTransaction(address, data);
+      const { data: response } = await this.walletApi.signTransaction(
+        address,
+        data,
+      );
 
       if (response.needsApproval) {
         const stamper = new WebauthnStamper({

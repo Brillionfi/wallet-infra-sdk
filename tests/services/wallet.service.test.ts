@@ -256,7 +256,7 @@ describe('WalletService', () => {
         activityId: '123',
         signedTransaction: '0x1234',
       };
-      walletApi.signTransaction.mockResolvedValueOnce(response);
+      walletApi.signTransaction.mockResolvedValueOnce({ data: response });
 
       const result = await walletService.signTransaction(wallet, data);
 
@@ -273,7 +273,7 @@ describe('WalletService', () => {
         signedTransaction: '',
       };
 
-      walletApi.signTransaction.mockResolvedValueOnce(response);
+      walletApi.signTransaction.mockResolvedValueOnce({ data: response });
 
       const result = await walletService.signTransaction(wallet, data);
 
