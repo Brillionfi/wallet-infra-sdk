@@ -222,7 +222,7 @@ export class WalletService {
         parameters: {
           userId,
           authenticator: {
-            authenticatorName: 'laptop',
+            authenticatorName: passkeyName,
             challenge: base64UrlEncode(challenge),
             attestation: attestation,
           },
