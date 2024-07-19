@@ -72,7 +72,7 @@ export class WalletService {
 
       if (response.needsApproval) {
         const stamper = new WebauthnStamper({
-          rpId: 'localhost', // TODO register brillion domain and use ENV here
+          rpId: window?.location.host ?? 'localhost',
         });
 
         const client = new TurnkeyClient(
@@ -224,8 +224,8 @@ export class WalletService {
             userVerification: 'preferred',
           },
           rp: {
-            id: 'localhost', // TODO register brillion domain and use ENV here
-            name: 'Turnkey Federated Passkey Demo',
+            id: window?.location.host ?? 'localhost',
+            name: 'Brillion Passkey',
           },
           challenge,
           pubKeyCredParams: [
