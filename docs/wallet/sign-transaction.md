@@ -18,7 +18,9 @@ const data: IWalletSignTransaction = {
   unsignedTransaction: "01234",
 };
 
-const { signedTransaction } = await WalletInfra.Wallet.signTransaction(wallet, data);
+const origin = 'localhost'; // application domain
+
+const { signedTransaction } = await WalletInfra.Wallet.signTransaction(wallet, data, origin);
 ```
 
 Notes:

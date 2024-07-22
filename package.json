@@ -1,6 +1,6 @@
 {
   "name": "@brillionfi/wallet-infra-sdk",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "an sdk for wallet-infra-api",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,6 +29,7 @@
     "generate-changelog": "semantic-release -e ./.releaserc-changelog.js"
   },
   "dependencies": {
+    "@turnkey/http": "^2.10.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.13.0",
     "axios": "^1.7.2",

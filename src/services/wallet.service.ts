@@ -8,25 +8,31 @@ import {
   IWalletResponse,
   WalletKeys,
   IWalletSignTransaction,
-  IWalletSignTransactionAPI,
   IWalletGasConfiguration,
   IWalletGasConfigurationAPI,
   WalletNonceResponseSchema,
   IWalletRecovery,
   IWalletPortfolio,
+  IWalletSignTransactionService,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
 import { AxiosError, HttpStatusCode } from 'axios';
+import { BundleStamper } from '@utils/stampers';
+import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
+import { getWebAuthnAttestation, TurnkeyClient } from '@turnkey/http';
+import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
 
 export class WalletService {
   private readonly className: string;
   private walletApi: WalletApi;
+  private bundleStamper: BundleStamper;
 
   constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
     this.walletApi = new WalletApi(httpClient);
+    this.bundleStamper = new BundleStamper();
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
@@ -55,11 +61,46 @@ export class WalletService {
   public async signTransaction(
     address: Address,
     data: IWalletSignTransaction,
-  ): Promise<IWalletSignTransactionAPI> {
+    fromOrigin: string,
+  ): Promise<IWalletSignTransactionService> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
     try {
-      return await this.walletApi.signTransaction(address, data);
+      const { data: response } = await this.walletApi.signTransaction(
+        address,
+        data,
+      );
+
+      if (response.needsApproval) {
+        const stamper = new WebauthnStamper({
+          rpId: fromOrigin,
+        });
+
+        const client = new TurnkeyClient(
+          {
+            baseUrl: 'https://api.turnkey.com',
+          },
+          stamper,
+        );
+
+        const signResponse = await client.approveActivity({
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: Date.now().toString(),
+          organizationId: response.organizationId,
+          parameters: {
+            fingerprint: response.fingerprint,
+          },
+        });
+
+        return {
+          ...response,
+          signedTransaction:
+            signResponse.activity.result.signTransactionResult
+              ?.signedTransaction,
+        };
+      } else {
+        return response;
+      }
     } catch (error) {
       throw new CustomError('Failed verify data');
     }
@@ -152,62 +193,89 @@ export class WalletService {
     }
   }
 
-  public async recover(privateKey: string): Promise<IWalletRecovery> {
-    logger.info(`${this.className}: Recovering wallet`);
+  public async initRecovery(): Promise<IWalletRecovery> {
+    logger.info(`${this.className}: Wallet recovery initiated`);
     try {
-      return await this.walletApi.recover(privateKey);
+      await this.bundleStamper.init();
+      return await this.walletApi.recover(this.bundleStamper.publicKey());
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  public async generateTargetPublicKey(
-    iframeUrl: string,
-    iframeElementId: string,
-    iframeContainer: HTMLElement,
-  ): Promise<string> {
-    if (typeof window === 'undefined') {
-      throw new Error('Cannot initialize iframe in non-browser environment');
-    }
+  public async execRecovery(
+    organizationId: string,
+    userId: string,
+    passkeyName: string,
+    bundle: string,
+    fromOrigin: string,
+  ): Promise<IWalletRecovery> {
+    logger.info(`${this.className}: Wallet recovery executed`);
+    try {
+      await this.bundleStamper.injectCredentialBundle(bundle);
+      const challenge = generateRandomBuffer();
+      const authenticatorUserId = generateRandomBuffer();
 
-    if (!iframeContainer) {
-      throw new Error('Iframe container cannot be found');
-    }
-
-    if (iframeContainer.querySelector(`#${iframeElementId}`)) {
-      throw new Error(
-        `Iframe element with ID ${iframeElementId} already exists`,
-      );
-    }
-
-    const iframe = window.document.createElement('iframe');
-
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-
-    // Set the iframe ID and source URL
-    iframe.id = iframeElementId;
-    iframe.src = iframeUrl;
-
-    const iframeOrigin = new URL(iframeUrl).origin;
-    iframeContainer.appendChild(iframe);
-
-    return new Promise((resolve, reject) => {
-      window.addEventListener('message', function onMessage(event) {
-        if (event.origin !== iframeOrigin) {
-          return;
-        }
-
-        if (event.data?.type === 'PUBLIC_KEY_READY') {
-          resolve(event.data['value']);
-          window.removeEventListener('message', onMessage);
-        }
-
-        if (event.data?.type === 'ERROR') {
-          reject(event.data['value']);
-          window.removeEventListener('message', onMessage);
-        }
+      // An example of possible options can be found here:
+      // https://www.w3.org/TR/webauthn-2/#sctn-sample-registration
+      const attestation = await getWebAuthnAttestation({
+        publicKey: {
+          authenticatorSelection: {
+            residentKey: 'preferred',
+            requireResidentKey: false,
+            userVerification: 'preferred',
+          },
+          rp: {
+            id: fromOrigin,
+            name: 'Brillion Passkey',
+          },
+          challenge,
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 },
+            { type: 'public-key', alg: -257 },
+          ],
+          user: {
+            id: authenticatorUserId,
+            name: passkeyName,
+            displayName: passkeyName,
+          },
+        },
       });
-    });
+
+      const client = new TurnkeyClient(
+        {
+          baseUrl: 'https://api.turnkey.com',
+        },
+        this.bundleStamper,
+      );
+
+      const response = await client.recoverUser({
+        type: 'ACTIVITY_TYPE_RECOVER_USER',
+        timestampMs: String(Date.now()),
+        organizationId,
+        parameters: {
+          userId,
+          authenticator: {
+            authenticatorName: passkeyName,
+            challenge: base64UrlEncode(challenge),
+            attestation: attestation,
+          },
+        },
+      });
+
+      return {
+        eoa: {
+          organizationId,
+          userId,
+          needsApproval:
+            response.activity.status === 'ACTIVITY_STATUS_CONSENSUS_NEEDED',
+          fingerprint: response.activity.fingerprint,
+          activityId: response.activity.id,
+        },
+      };
+    } catch (error) {
+      throw handleError(error);
+    }
   }
 
   private parseCreateWalletData(data: IWallet): IWalletAPI {

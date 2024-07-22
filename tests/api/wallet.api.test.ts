@@ -134,9 +134,16 @@ describe('Wallet', () => {
     });
 
     it('should call post on HttpClient when signTransaction is called', async () => {
+      const response = {
+        organizationId: '123',
+        needsApproval: false,
+        fingerprint: '123',
+        activityId: '123',
+        signedTransaction: '0x1234',
+      };
       httpClientMock.post = jest
         .fn()
-        .mockResolvedValue({ data: { signedTransaction: '0x1234' } });
+        .mockResolvedValue({ data: { data: response } });
 
       const result = await wallet.signTransaction('address', data);
 
@@ -147,7 +154,7 @@ describe('Wallet', () => {
         '/wallets/address/sign',
         data,
       );
-      expect(result).toEqual({ signedTransaction: '0x1234' });
+      expect(result).toEqual({ data: response });
     });
   });
 
@@ -424,6 +431,9 @@ describe('Wallet', () => {
           eoa: {
             organizationId: '44d9a7f9-f745-4b10-ae66-028bc2fc45c0',
             userId: 'fab988c5-62bf-4ea8-9201-dbf670c42626',
+            needsApproval: false,
+            fingerprint: 'fingerprint',
+            activityId: 'activityId',
           },
         },
       };
