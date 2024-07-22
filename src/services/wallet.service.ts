@@ -61,6 +61,7 @@ export class WalletService {
   public async signTransaction(
     address: Address,
     data: IWalletSignTransaction,
+    fromOrigin: string,
   ): Promise<IWalletSignTransactionService> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
@@ -72,7 +73,7 @@ export class WalletService {
 
       if (response.needsApproval) {
         const stamper = new WebauthnStamper({
-          rpId: window?.location.host ?? 'localhost',
+          rpId: fromOrigin,
         });
 
         const client = new TurnkeyClient(
@@ -207,6 +208,7 @@ export class WalletService {
     userId: string,
     passkeyName: string,
     bundle: string,
+    fromOrigin: string,
   ): Promise<IWalletRecovery> {
     logger.info(`${this.className}: Wallet recovery executed`);
     try {
@@ -224,7 +226,7 @@ export class WalletService {
             userVerification: 'preferred',
           },
           rp: {
-            id: window?.location.host ?? 'localhost',
+            id: fromOrigin,
             name: 'Brillion Passkey',
           },
           challenge,

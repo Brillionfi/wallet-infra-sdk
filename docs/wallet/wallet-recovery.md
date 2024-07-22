@@ -11,5 +11,7 @@ const walletInfra = new WalletInfra(appId, baseUrl);
 const initResponse = await sdk.Wallet.initRecovery();
 
 // if another approval is not required (response.eoa.needsApproval), user should get bundle code via email
-const response = await sdk.Wallet.execRecovery(initResponse.eoa.organizationId, initResponse.eoa.userId, ${newPasskeyName}, ${bundle});
+const origin = 'localhost'; // application domain
+
+const response = await sdk.Wallet.execRecovery(initResponse.eoa.organizationId, initResponse.eoa.userId, ${newPasskeyName}, ${bundle}, origin);
 ```

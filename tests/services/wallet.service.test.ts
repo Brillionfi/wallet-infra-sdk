@@ -243,9 +243,9 @@ describe('WalletService', () => {
 
     it('should catch if wrong response from api', async () => {
       walletApi.signTransaction.mockRejectedValue('Failed verify data');
-      await expect(walletService.signTransaction(wallet, data)).rejects.toThrow(
-        'Failed verify data',
-      );
+      await expect(
+        walletService.signTransaction(wallet, data, 'localhost'),
+      ).rejects.toThrow('Failed verify data');
     });
 
     it('should return signed tx with no quorum required', async () => {
@@ -258,7 +258,11 @@ describe('WalletService', () => {
       };
       walletApi.signTransaction.mockResolvedValueOnce({ data: response });
 
-      const result = await walletService.signTransaction(wallet, data);
+      const result = await walletService.signTransaction(
+        wallet,
+        data,
+        'localhost',
+      );
 
       expect(walletApi.signTransaction).toHaveBeenCalled();
       expect(result).toEqual(response);
@@ -275,7 +279,11 @@ describe('WalletService', () => {
 
       walletApi.signTransaction.mockResolvedValueOnce({ data: response });
 
-      const result = await walletService.signTransaction(wallet, data);
+      const result = await walletService.signTransaction(
+        wallet,
+        data,
+        'localhost',
+      );
 
       expect(walletApi.signTransaction).toHaveBeenCalled();
       expect(result).toEqual({ ...response, signedTransaction: '0x1234' });
@@ -500,6 +508,7 @@ describe('WalletService', () => {
           userId,
           'passkeyName',
           'bundle',
+          'localhost',
         ),
       ).rejects.toThrow(Error);
 
@@ -531,6 +540,7 @@ describe('WalletService', () => {
         userId,
         'passkeyName',
         'bundle',
+        'localhost',
       );
 
       expect(result).toEqual(recoveryData);
