@@ -28,5 +28,5 @@ After successful authentication, the user will be redirected to your specified `
 Use the received JWT to authenticate the user with the Wallet Infra SDK:
 
 ```js
-await walletInfra.authenticateUser(receivedJWT);
+walletInfra.authenticateUser(receivedJWT);
 ```

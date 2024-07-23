@@ -58,7 +58,7 @@ const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
 // Redirect user to authUrl for identity verification
 
 // In your redirect endpoint, authenticate the user with the received JWT
-await walletInfra.authenticateUser(receivedJWT);
+walletInfra.authenticateUser(receivedJWT);
 ```
 
 ### 4. Create a wallet
@@ -66,12 +66,12 @@ await walletInfra.authenticateUser(receivedJWT);
 After authentication, create a new wallet for the user:
 
 ```ts
+import { IWallet } from "@brillionfi/wallet-infra-sdk";
 import {
-  IWallet,
   WalletTypes,
   WalletFormats,
   PasskeyAuthenticationSchema
-} from "@brillionfi/wallet-infra-sdk/models";
+} from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 
 const newWallet: IWallet = {
   walletType: WalletTypes.EOA,

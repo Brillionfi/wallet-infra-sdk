@@ -3,12 +3,12 @@
 This guide provides instructions for creating a new wallet using the Wallet Infra SDK.
 
 ```ts
+import { IWallet } from "@brillionfi/wallet-infra-sdk";
 import {
-  IWallet,
   WalletTypes,
   WalletFormats,
   PasskeyAuthenticationSchema
-} from "@brillionfi/wallet-infra-sdk/models";
+} from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 
 const newWallet: IWallet = {
   walletType: WalletTypes.EOA,

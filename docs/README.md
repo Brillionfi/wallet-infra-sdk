@@ -27,6 +27,8 @@ const baseUrl = "your-base-url";
 const walletInfra = new WalletInfra(appId, baseUrl);
 ```
 
+> Make sure to replace `"your-app-id"` with the actual API key you obtained from the Brillion Dashboard.
+
 ## 🧩 Core Modules
 
 The Wallet Infra SDK is organized into several modules, each handling specific functionalities:
@@ -63,6 +65,8 @@ The **Token** module provides functionality for retrieving information about tok
 ### 📜 Transaction
 
 The **Transaction** module handles the management of wallet transactions, retrieving transaction details, and estimating gas costs:
+
+- [Transaction Interface](transaction/transaction-interface.md)
 
 ## 👣 Next Steps
 

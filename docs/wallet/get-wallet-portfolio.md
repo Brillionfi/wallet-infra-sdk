@@ -3,14 +3,16 @@
 This guide provides instructions for retrieving the portfolio of a wallet on a specified chain using the Wallet Infra SDK.
 
 ```ts
-import { ChainId } from "@brillionfi/wallet-infra-sdk";
-import { IWalletPortfolio } from "@brillionfi/wallet-infra-sdk/models";
+import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
+import { IWalletPortfolio } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
+import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
 
-const walletAddress = "your-wallet-address";
-const walletsPortfolio: IWalletPortfolio = await walletInfra.Wallet.getPortfolio(walletAddress, ChainId.ETHEREUM);
+const walletAddress: Address = "your-wallet-address";
+const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
+const walletsPortfolio: IWalletPortfolio = await walletInfra.Wallet.getPortfolio(walletAddress, chainId);
 ```
 
-## IWalletPortfolio interface
+## IWalletPortfolio properties
 
 The `IWalletPortfolio` interface represents the structure of the wallet portfolio data. Here's a breakdown of its properties:
 
@@ -21,18 +23,18 @@ The `IWalletPortfolio` interface represents the structure of the wallet portfoli
 
 ### `chainId`
 
-- **Type**: `ChainID` (enum)
+- **Type**: `SUPPORTED_CHAINS` (enum)
 - **Description**: The ID of the blockchain network.
 - **Possible Values**:
-  - `ChainID.ETHEREUM`
-  - `ChainID.POLYGON`
-  - `ChainID.SOLANA`
-  - `ChainID.COSMOS`
-  - `ChainID.TRON`
+  - `SUPPORTED_CHAINS.ETHEREUM`
+  - `SUPPORTED_CHAINS.POLYGON`
+  - `SUPPORTED_CHAINS.SOLANA`
+  - `SUPPORTED_CHAINS.COSMOS`
+  - `SUPPORTED_CHAINS.TRON`
 
 ### `portfolio`
 
-- **Type**: `array`
+- **Type**: `array[object]`
 - **Description**: The wallet portfolio details.
 - **Data**:
   - `tokenId`:
