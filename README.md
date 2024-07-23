@@ -1,26 +1,120 @@
 # Wallet Infra SDK
 
-## Overview
+The Wallet Infra SDK provides tools and services for managing wallets, transactions, and assets within the Brillion ecosystem.
 
-The Wallet Infra SDK provides tools and services for managing wallets, transactions and assets within the Wallet Infra API ecosystem.
+## 💡 Features
 
-## Table of Contents
+- 👛 **Wallet Management**: Create, recover, and manage wallets
+- 💸 **Transaction Handling**: Create, sign, and cancel transactions
+- 🔐 **Authentication**: Support for multiple authentication providers
+- 🪙 **Token Management**: Retrieve and manage tokens across different chains
+- ⛓️ **Multi-Chain Support**: Compatible with various blockchain networks
+- ⛽ **Gas Fee Estimation**: Calculate and manage transaction gas fees
+- 📊 **Portfolio Tracking**: Monitor wallet portfolios across chains
+- 📜 **Transaction History**: Retrieve and analyze transaction history
 
-- [Getting Started](docs/getting-started.md)
-- [Modules](docs/)
-  - Wallet Module
-    - [Wallet model](docs/wallet/wallet-model.md)
-    - [Wallet creation](docs/wallet/create-wallet.md)
-    - [Get Wallets](docs/wallet/get-wallets.md)
-    - [Get Wallet Nonce](docs/wallet/get-wallet-nonce.md)
-    - [Sign transaction](docs/wallet/sign-transaction.md)
-    - [Get Wallet Gas Configuration](docs/wallet/gas-configuration/get-wallet-gas-configuration.md)
-    - [Set Wallet Gas Configuration](docs/wallet/gas-configuration/set-wallet-gas-configuration.md)
-    - [Get transaction history](docs/get-transaction-history.md)
-  - Transaction Module
-    - [Create Unsigned Transaction](docs/transaction/create-unsigned-transaction.md)
-    - [Create Signed Transaction](docs/transaction/create-signed-transaction.md)
-    - [Get a Transaction](docs/transaction/get-transaction.md)
-    - [Cancel a Transaction](docs/transaction/cancel-transaction.md)
-- [Contributing](docs/contributing.md)
-- [License](docs/license.md)
+## 🚀 Installation
+
+Install the Wallet Infra SDK into your project with a single command:
+
+```shell
+npm install @brillionfi/wallet-infra-sdk
+```
+
+## ⚡ Quick Start Guide
+
+Get started with Wallet Infra SDK in a few steps:
+
+### 1. Obtain your API key
+
+Visit the Brillion Dashboard to set up your organization and create your first application. This process will give you a unique API key (`appId`).
+
+### 2. Initialize the SDK
+
+First, create a new instance of the Wallet Infra SDK:
+
+```js
+import { WalletInfra } from "@brillionfi/wallet-infra-sdk";
+
+// Initialize the SDK
+const appId = "your-app-id";
+const baseUrl = "your-base-url";
+const walletInfra = new WalletInfra(appId, baseUrl);
+```
+
+### 3. Authenticate a user
+
+Create or authenticate a user using your preferred provider:
+
+```js
+import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
+
+// Generate authentication URL
+const redirectUrl = "your-redirect-url";
+const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
+
+// Redirect user to authUrl for identity verification
+
+// In your redirect endpoint, authenticate the user with the received JWT
+await walletInfra.authenticateUser(receivedJWT);
+```
+
+### 4. Create a wallet
+
+After authentication, create a new wallet for the user:
+
+```js
+import {
+  WalletTypes,
+  WalletFormats,
+  PasskeyAuthenticationSchema
+} from "@models/wallet.models";
+
+const newWallet = await walletInfra.Wallet.createWallet({
+  walletType: WalletTypes.EOA,
+  walletName: "MyFirstWallet",
+  walletFormat: WalletFormats.ETHEREUM,
+  authenticationType: PasskeyAuthenticationSchema,
+});
+
+console.log("New wallet created:", newWallet);
+```
+
+## 📚 Documentation
+
+Check out the [docs directory](docs/) for detailed information and examples on using the Wallet Infra SDK.
+
+## 🌐 Demo
+
+Check out our [Simple Wallet Demo](https://github.com/Brillionfi/simple-wallet-demo) to see the Wallet Infra SDK in action. This demo showcases how to manage your organization and applications and demonstrates how to access your application as a wallet user.
+
+## 🤝 Contributing
+
+We value community contributions and are eager to support your involvement. Here's how you can make a difference:
+
+- 🚀 Use Wallet Infra SDK in your projects and share your experiences.
+- 🐞 Found a bug? [Open an issue](https://github.com/Brillionfi/wallet-infra-sdk/issues). Better yet, submit a [pull request](https://github.com/Brillionfi/wallet-infra-sdk/pulls) with a fix!
+- 💡 Have ideas for new features? We'd love to hear them.
+- 📚 Help improve our [documentation](docs/) for a smoother developer experience.
+
+### Committing
+
+We use [Commitizen](https://github.com/commitizen/cz-cli) to handle versioning and ensure consistent and meaningful commit messages. Here's how to use it:
+
+```shell
+npx cz
+```
+
+Or, after installing Commitizen globally:
+
+```shell
+git cz
+```
+
+## 💬 Support
+
+If you encounter any issues or have questions, please [open an issue](https://github.com/Brillionfi/wallet-infra-sdk/issues) on our GitHub repository or contact the Brillion support team.
+
+## 📄 License
+
+The Wallet Infra SDK is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
