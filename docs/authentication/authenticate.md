@@ -1,25 +1,32 @@
-### Authenticate a user
+# Authenticate User
 
-The authentication pattern looks like this:
+The authentication process follows these main steps:
 
-1. First generate a login url depending on the method(s) you wish to offer
-1. Once logged in, get the returned jwt on your endpoint to sign the user in.
+1. Generate a login URL for the chosen authentication method
+2. Redirect the user to the authentication provider
+3. Receive and process the JWT token upon successful authentication
 
-```ts
-import { WalletInfra } from './wallet-infra';
+## 1. Generate authentication URL
 
-const app_id = 'f9e7f099-bd95-433b-9365-de8b73e72824';
+Generate a login URL based on the authentication method you want to offer. The SDK supports various providers through the `AuthProvider` enum:
 
-const walletInfra = new WalletInfra(app_id, baseUrl);
+```js
+import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
+
+const redirectUrl = "your-redirect-url";
 const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
-// The user can be redirected to `authUrl` and verify his identity.
 ```
 
-Now in your redirect endpoint, you parse the answer to read the jwt and pass it to a WalletInfra instance:
+## 2. Redirect user to authentication provider
 
-```ts
-import { WalletInfra } from './wallet-infra';
+In your frontend application, redirect the user to the generated `authUrl`.
 
-const walletInfra = new WalletInfra(app_id, baseUrl);
-await walletInfra.authenticateUser(jwt);
+## 3. Authenticate user with JWT
+
+After successful authentication, the user will be redirected to your specified `redirectUrl`. The authentication provider will include a JWT token in the URL parameters.
+
+Use the received JWT to authenticate the user with the Wallet Infra SDK:
+
+```js
+await walletInfra.authenticateUser(receivedJWT);
 ```

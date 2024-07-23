@@ -42,7 +42,9 @@ const baseUrl = "your-base-url";
 const walletInfra = new WalletInfra(appId, baseUrl);
 ```
 
-### 3. Authenticate a user
+> Make sure to replace `"your-app-id"` with the actual API key you obtained from the Brillion Dashboard.
+
+### 3. Authenticate user
 
 Create or authenticate a user using your preferred provider:
 
@@ -113,7 +115,7 @@ git cz
 
 ## 💬 Support
 
-If you encounter any issues or have questions, please [open an issue](https://github.com/Brillionfi/wallet-infra-sdk/issues) on our GitHub repository or contact the Brillion support team.
+If you encounter any issues or have questions, please [open an issue](https://github.com/Brillionfi/wallet-infra-sdk/issues) or contact the Brillion support team.
 
 ## 📄 License
 
