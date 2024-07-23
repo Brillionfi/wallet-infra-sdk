@@ -194,7 +194,7 @@ export const WalletNotificationsSchema = z.array(
       }),
     ),
     intent: z.object({}).passthrough(),
-    result: z.object({}).passthrough().optional(),
+    result: z.object({}).passthrough().nullable(),
     notificationLevel: z.string(),
     notificationStatus: z.string(),
   }),
