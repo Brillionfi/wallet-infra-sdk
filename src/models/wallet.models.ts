@@ -171,6 +171,34 @@ export const WalletPortfolioSchema = z.object({
   ),
 });
 
+export const WalletNotificationsSchema = z.array(
+  z.object({
+    id: z.string(),
+    fingerprint: z.string(),
+    organizationId: z.string(),
+    type: z.string(),
+    status: z.string(),
+    eoa: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    canApprove: z.boolean(),
+    canReject: z.boolean(),
+    votes: z.array(
+      z.object({
+        selection: z.string(),
+        userId: z.string(),
+        user: z.object({
+          userName: z.string().optional(),
+          userEmail: z.string().optional(),
+        }),
+      }),
+    ),
+    intent: z.object({}).passthrough(),
+    notificationLevel: z.string(),
+    notificationStatus: z.string(),
+  }),
+);
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
@@ -194,3 +222,4 @@ export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
 export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
 export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;
+export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;

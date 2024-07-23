@@ -14,6 +14,7 @@ import {
   IWalletRecovery,
   IWalletPortfolio,
   IWalletSignTransactionService,
+  IWalletNotifications,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -23,6 +24,10 @@ import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { getWebAuthnAttestation, TurnkeyClient } from '@turnkey/http';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
+import {
+  TApproveActivityResponse,
+  TRejectActivityResponse,
+} from '@turnkey/http/dist/__generated__/services/coordinator/public/v1/public_api.fetcher';
 
 export class WalletService {
   private readonly className: string;
@@ -72,25 +77,12 @@ export class WalletService {
       );
 
       if (response.needsApproval) {
-        const stamper = new WebauthnStamper({
-          rpId: fromOrigin,
-        });
-
-        const client = new TurnkeyClient(
-          {
-            baseUrl: 'https://api.turnkey.com',
-          },
-          stamper,
+        const signResponse = await this.approveOrRejectActivity(
+          true,
+          response.fingerprint,
+          response.organizationId,
+          fromOrigin,
         );
-
-        const signResponse = await client.approveActivity({
-          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: Date.now().toString(),
-          organizationId: response.organizationId,
-          parameters: {
-            fingerprint: response.fingerprint,
-          },
-        });
 
         return {
           ...response,
@@ -273,6 +265,59 @@ export class WalletService {
           activityId: response.activity.id,
         },
       };
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveOrRejectActivity(
+    decision: boolean,
+    organizationId: string,
+    fingerprint: string,
+    fromOrigin: string,
+  ): Promise<TApproveActivityResponse | TRejectActivityResponse> {
+    try {
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+      });
+
+      const client = new TurnkeyClient(
+        {
+          baseUrl: 'https://api.turnkey.com',
+        },
+        stamper,
+      );
+
+      if (decision) {
+        return await client.approveActivity({
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: Date.now().toString(),
+          organizationId,
+          parameters: {
+            fingerprint,
+          },
+        });
+      } else {
+        return await client.rejectActivity({
+          type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
+          timestampMs: Date.now().toString(),
+          organizationId,
+          parameters: {
+            fingerprint,
+          },
+        });
+      }
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
+  public async getNotifications(
+    address: string,
+  ): Promise<IWalletNotifications> {
+    logger.info(`${this.className}: Getting Wallet notifications`);
+    try {
+      return await this.walletApi.getNotifications(address);
     } catch (error) {
       throw handleError(error);
     }

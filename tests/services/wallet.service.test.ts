@@ -10,6 +10,7 @@ import {
   WalletSchemaAPI,
   IWalletNonceAPI,
   IWalletRecovery,
+  IWalletNotifications,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
@@ -574,6 +575,29 @@ describe('WalletService', () => {
         APIError,
       );
       expect(walletApi.getPortfolio).toHaveBeenCalled();
+    });
+  });
+
+  describe('getNotifications', () => {
+    it('should get notifications', async () => {
+      const exampleNotifications: IWalletNotifications = [];
+
+      walletApi.getNotifications.mockResolvedValueOnce(exampleNotifications);
+
+      const result = await walletService.getNotifications(wallet);
+
+      expect(walletApi.getNotifications).toHaveBeenCalled();
+      expect(result).toEqual(exampleNotifications);
+    });
+
+    it('should throw an error when walletApi.getNotifications fails', async () => {
+      walletApi.getNotifications.mockRejectedValueOnce(
+        new APIError('BadRequest', 400),
+      );
+      await expect(walletService.getNotifications(wallet)).rejects.toThrow(
+        APIError,
+      );
+      expect(walletApi.getNotifications).toHaveBeenCalled();
     });
   });
 });
