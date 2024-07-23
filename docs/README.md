@@ -1,4 +1,4 @@
-# Wallet Infra SDK Documentation
+# 📚 Wallet Infra SDK Documentation
 
 Welcome to the documentation for Wallet Infra SDK! This guide will help you navigate our powerful toolkit for managing wallets, transactions, and assets within the Brillion ecosystem.
 
@@ -18,7 +18,7 @@ Visit the Brillion Dashboard to set up your organization and create your first a
 
 To start using the SDK, you need to initialize it with your API key:
 
-```js
+```ts
 import { WalletInfra } from "@brillionfi/wallet-infra-sdk";
 
 // Initialize the SDK
@@ -42,9 +42,23 @@ The **Authentication** module handles user creation and authentication:
 
 The **Wallet** module provides functionality for creating and managing wallets:
 
+- [Wallet Interface](wallet/wallet-interface.md)
+- [Create Wallet](wallet/create-wallet.md)
+- [Get Wallets](wallet/get-wallets.md)
+- [Recover Wallet](wallet/recover-wallet.md)
+- [Get Wallet Portfolio](wallet/get-wallet-portfolio.md)
+- [Get Transaction History](wallet/get-transaction-history.md)
+- [Get Wallet Nonce](wallet/get-wallet-nonce.md)
+- [Wallet Gas Configuration](wallet/gas-configuration.md)
+- [Get Gas Fees](wallet/get-gas-fees.md)
+- [Sign Transaction](wallet/sign-transaction.md)
+
 ### 🪙 Token
 
 The **Token** module provides functionality for retrieving information about tokens on a network:
+
+- [Token Interface](token/token-interface.md)
+- [Get Tokens](token/get-tokens.md)
 
 ### 📜 Transaction
 

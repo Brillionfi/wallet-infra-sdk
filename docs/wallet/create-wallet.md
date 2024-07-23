@@ -1,28 +1,23 @@
-### Create wallet
+# Create Wallet
 
-This section guides you through the process of creating a new wallet using the WalletInfra.
+This guide provides instructions for creating a new wallet using the Wallet Infra SDK.
 
 ```ts
-import { 
-  IWallet, 
-  PasskeyAuthenticationSchema, 
-  WalletTypes, 
-  WalletFormats 
-} from '@models/wallet.models';
+import {
+  IWallet,
+  WalletTypes,
+  WalletFormats,
+  PasskeyAuthenticationSchema
+} from "@brillionfi/wallet-infra-sdk/models";
 
-const myWallet: IWallet = {
+const newWallet: IWallet = {
   walletType: WalletTypes.EOA,
-  walletName: 'testWallet',
+  walletName: "MyFirstWallet",
   walletFormat: WalletFormats.ETHEREUM,
   authenticationType: PasskeyAuthenticationSchema,
 };
 
-await WalletInfra.Wallet.createWallet(myWallet);
+await walletInfra.Wallet.createWallet(newWallet);
 ```
 
-Notes:
-
-- `walletType`: The type of wallet, use it from `WalletTypes` model. For example, `WalletTypes.EOA` which stands for Externally Owned Account.
-- `walletName`: A user-friendly name for the wallet.
-- `walletFormat`: The wallet format for certain blockchains types which the wallet is created, use it from `WalletFormats` model. Like `WalletFormats.ETHEREUM`.
-- `authenticationType`: The schema used for authentication. This must conform to the PasskeyAuthenticationSchema.
+Please refer to the [Wallet Interface](wallet-interface.md) guide for detailed information about the wallet properties.

@@ -1,4 +1,4 @@
-# Wallet Infra SDK
+# 🛠️ Wallet Infra SDK
 
 The Wallet Infra SDK provides tools and services for managing wallets, transactions, and assets within the Brillion ecosystem.
 
@@ -21,7 +21,7 @@ Install the Wallet Infra SDK into your project with a single command:
 npm install @brillionfi/wallet-infra-sdk
 ```
 
-## ⚡ Quick Start Guide
+## ⚡ Quick Start
 
 Get started with Wallet Infra SDK in a few steps:
 
@@ -33,7 +33,7 @@ Visit the Brillion Dashboard to set up your organization and create your first a
 
 First, create a new instance of the Wallet Infra SDK:
 
-```js
+```ts
 import { WalletInfra } from "@brillionfi/wallet-infra-sdk";
 
 // Initialize the SDK
@@ -48,7 +48,7 @@ const walletInfra = new WalletInfra(appId, baseUrl);
 
 Create or authenticate a user using your preferred provider:
 
-```js
+```ts
 import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
 
 // Generate authentication URL
@@ -65,21 +65,22 @@ await walletInfra.authenticateUser(receivedJWT);
 
 After authentication, create a new wallet for the user:
 
-```js
+```ts
 import {
+  IWallet,
   WalletTypes,
   WalletFormats,
   PasskeyAuthenticationSchema
-} from "@models/wallet.models";
+} from "@brillionfi/wallet-infra-sdk/models";
 
-const newWallet = await walletInfra.Wallet.createWallet({
+const newWallet: IWallet = {
   walletType: WalletTypes.EOA,
   walletName: "MyFirstWallet",
   walletFormat: WalletFormats.ETHEREUM,
   authenticationType: PasskeyAuthenticationSchema,
-});
+};
 
-console.log("New wallet created:", newWallet);
+await walletInfra.Wallet.createWallet(newWallet);
 ```
 
 ## 📚 Documentation
