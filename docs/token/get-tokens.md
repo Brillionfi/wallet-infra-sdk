@@ -1,13 +1,16 @@
-### Get all Tokens per Chain
+### Get Tokens
 
-This section guides you through the process of retrieving all tokens per chainID using the WalletInfra.
+This guide provides instructions for retrieving all the tokens supported on a specified network using the Wallet Infra SDK.
+
+To retrieve the supported tokens, use the `getTokens()` method:
 
 ```ts
-import { WalletInfra } from './wallet-infra';
-
-const walletInfra = new WalletInfra(appId, baseUrl);
+import { ChainId } from "@brillionfi/wallet-infra-sdk";
+import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
+import { IToken } from "@brillionfi/wallet-infra-sdk/dist/models/token.model";
 
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
-
-const tokens: ITokens[] = await walletInfra.Token.getTokens(chainId);
+const tokens: IToken[] = await walletInfra.Token.getTokens(chainId);
 ```
+
+Please refer to the [Token Interface](token-interface.md) guide for detailed information about the token properties.

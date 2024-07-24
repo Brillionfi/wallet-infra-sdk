@@ -6,8 +6,8 @@ To retrieve the portfolio information of a wallet, use the `getPortfolio()` meth
 
 ```ts
 import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
-import { IWalletPortfolio } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
+import { IWalletPortfolio } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 
 const walletAddress: Address = "your-wallet-address";
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
@@ -41,16 +41,16 @@ The `IWalletPortfolio` interface represents the structure of the wallet portfoli
 - **Data**:
   - `tokenId`:
     - **Type**: `string`
-    - **Description**: Token ID.
+    - **Description**: The unique identifier of the token.
   - `balance`:
     - **Type**: `string`
-    - **Description**: Token balance.
-  - `decimals`:
+    - **Description**: The balance of the token.
+  - `decimals` (optional):
     - **Type**: `number`
-    - **Description**: Token decimals.
-  - `address`:
+    - **Description**: The number of decimals the token uses. This is optional.
+  - `address` (optional):
     - **Type**: `string`
-    - **Description**: Token address.
-  - `tokenPriceUsd`:
+    - **Description**: The address of the token contract. This is optional.
+  - `tokenPriceUsd` (optional):
     - **Type**: `string`
-    - **Description**: Token balance in USD.
+    - **Description**: The balance of the token in USD.
