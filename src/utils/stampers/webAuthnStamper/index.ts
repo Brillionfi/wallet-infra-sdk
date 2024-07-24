@@ -21,9 +21,6 @@ export type TWebauthnStamperConfig = {
 const defaultTimeout = 5 * 60 * 1000; // five minutes
 const defaultUserVerification = 'preferred';
 
-/**
- * Stamper to use with `@turnkey/http`'s `TurnkeyClient`
- */
 export class WebauthnStamper {
   rpId: string;
   timeout: number;

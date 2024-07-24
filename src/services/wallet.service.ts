@@ -21,8 +21,9 @@ import logger from 'loglevel';
 import { AxiosError, HttpStatusCode } from 'axios';
 import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
-import { getWebAuthnAttestation, TurnkeyClient } from '@turnkey/http';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
+import { ApproveActivityInTurnkey, RecoverUserInTurnkey } from '@utils/turnkey';
+import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 
 export class WalletService {
   private readonly className: string;
@@ -76,21 +77,11 @@ export class WalletService {
           rpId: fromOrigin,
         });
 
-        const client = new TurnkeyClient(
-          {
-            baseUrl: 'https://api.turnkey.com',
-          },
+        const signResponse = await ApproveActivityInTurnkey(
+          response.organizationId,
+          response.fingerprint,
           stamper,
         );
-
-        const signResponse = await client.approveActivity({
-          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: Date.now().toString(),
-          organizationId: response.organizationId,
-          parameters: {
-            fingerprint: response.fingerprint,
-          },
-        });
 
         return {
           ...response,
@@ -216,9 +207,7 @@ export class WalletService {
       const challenge = generateRandomBuffer();
       const authenticatorUserId = generateRandomBuffer();
 
-      // An example of possible options can be found here:
-      // https://www.w3.org/TR/webauthn-2/#sctn-sample-registration
-      const attestation = await getWebAuthnAttestation({
+      const attestation = await webAuthCreation({
         publicKey: {
           authenticatorSelection: {
             residentKey: 'preferred',
@@ -229,39 +218,29 @@ export class WalletService {
             id: fromOrigin,
             name: 'Brillion Passkey',
           },
-          challenge,
+          challenge: base64UrlEncode(challenge),
           pubKeyCredParams: [
             { type: 'public-key', alg: -7 },
             { type: 'public-key', alg: -257 },
           ],
           user: {
-            id: authenticatorUserId,
+            id: base64UrlEncode(authenticatorUserId),
             name: passkeyName,
             displayName: passkeyName,
           },
         },
       });
 
-      const client = new TurnkeyClient(
+      const response = await RecoverUserInTurnkey(
+        organizationId,
+        userId,
         {
-          baseUrl: 'https://api.turnkey.com',
+          authenticatorName: passkeyName,
+          challenge: base64UrlEncode(challenge),
+          attestation: attestation,
         },
         this.bundleStamper,
       );
-
-      const response = await client.recoverUser({
-        type: 'ACTIVITY_TYPE_RECOVER_USER',
-        timestampMs: String(Date.now()),
-        organizationId,
-        parameters: {
-          userId,
-          authenticator: {
-            authenticatorName: passkeyName,
-            challenge: base64UrlEncode(challenge),
-            attestation: attestation,
-          },
-        },
-      });
 
       return {
         eoa: {

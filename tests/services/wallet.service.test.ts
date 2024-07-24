@@ -27,33 +27,33 @@ jest.mock('loglevel', () => ({
   debug: jest.fn(),
   error: jest.fn(),
 }));
-jest.mock('@turnkey/http', () => {
-  return {
-    getWebAuthnAttestation: jest.fn(),
-    TurnkeyClient: class Test {
-      recoverUser = async () => {
-        return {
-          activity: {
-            status: 'ACTIVITY_STATUS_CONSENSUS_NOT_NEEDED',
-            fingerprint: 'fingerprint',
-            id: 'activityId',
-          },
-        };
-      };
-      approveActivity = async () => {
-        return {
-          activity: {
-            result: {
-              signTransactionResult: {
-                signedTransaction: '0x1234',
-              },
-            },
-          },
-        };
-      };
-    },
-  };
-});
+// jest.mock('@turnkey/http', () => {
+//   return {
+//     getWebAuthnAttestation: jest.fn(),
+//     TurnkeyClient: class Test {
+//       recoverUser = async () => {
+//         return {
+//           activity: {
+//             status: 'ACTIVITY_STATUS_CONSENSUS_NOT_NEEDED',
+//             fingerprint: 'fingerprint',
+//             id: 'activityId',
+//           },
+//         };
+//       };
+//       approveActivity = async () => {
+//         return {
+//           activity: {
+//             result: {
+//               signTransactionResult: {
+//                 signedTransaction: '0x1234',
+//               },
+//             },
+//           },
+//         };
+//       };
+//     },
+//   };
+// });
 
 describe('WalletService', () => {
   let walletApi: jest.Mocked<WalletApi>;

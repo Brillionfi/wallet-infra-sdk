@@ -9,9 +9,6 @@ type TStamp = {
   stampHeaderValue: string;
 };
 
-/**
- * Stamper to use with `@turnkey/http`'s `TurnkeyClient`
- */
 export class BundleStamper {
   stamperPublicKey: CryptoKey | null;
   stamperPrivateKey: CryptoKey | null;
