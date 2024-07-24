@@ -2,6 +2,8 @@
 
 This guide provides instructions for retrieving the portfolio of a wallet on a specified chain using the Wallet Infra SDK.
 
+To retrieve the portfolio information of a wallet, use the `getPortfolio()` method:
+
 ```ts
 import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
 import { IWalletPortfolio } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";

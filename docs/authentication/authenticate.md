@@ -1,6 +1,6 @@
 # Authenticate User
 
-The authentication process follows these main steps:
+The authentication process follows these steps:
 
 1. Generate a login URL for the chosen authentication method
 2. Redirect the user to the authentication provider

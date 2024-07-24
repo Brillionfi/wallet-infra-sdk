@@ -47,11 +47,11 @@ The **Wallet** module provides functionality for creating and managing wallets:
 - [Wallet Interface](wallet/wallet-interface.md)
 - [Create Wallet](wallet/create-wallet.md)
 - [Get Wallets](wallet/get-wallets.md)
-- [Recover Wallet](wallet/recover-wallet.md)
+- [Wallet Recovery](wallet/wallet-recovery.md)
 - [Get Wallet Portfolio](wallet/get-wallet-portfolio.md)
 - [Get Transaction History](wallet/get-transaction-history.md)
 - [Get Wallet Nonce](wallet/get-wallet-nonce.md)
-- [Wallet Gas Configuration](wallet/gas-configuration.md)
+- [Gas Configuration](wallet/gas-configuration.md)
 - [Get Gas Fees](wallet/get-gas-fees.md)
 - [Sign Transaction](wallet/sign-transaction.md)
 

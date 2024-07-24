@@ -1,17 +1,52 @@
-### Wallet Recovery
+# Wallet Recovery
 
-This section provides instructions on how to recover eoa wallets in WalletInfra sdk.
+This guide outlines the process for recovering a wallet using the Wallet Infra SDK. The recovery process consists of two main steps: `initiation` and `execution`.
+
+## 1. Initiate wallet recovery
+
+To begin the wallet recovery process, use the `initRecovery()` method:
 
 ```ts
-import { WalletInfra } from 'wallet-infra';
+import { IWalletRecovery } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 
-const appId = 'f9e7f099-bd95-433b-9365-de8b73e72824';
-const walletInfra = new WalletInfra(appId, baseUrl);
-
-const initResponse = await sdk.Wallet.initRecovery();
-
-// if another approval is not required (response.eoa.needsApproval), user should get bundle code via email
-const origin = 'localhost'; // application domain
-
-const response = await sdk.Wallet.execRecovery(initResponse.eoa.organizationId, initResponse.eoa.userId, ${newPasskeyName}, ${bundle}, origin);
+const initResponse: IWalletRecovery = await walletInfra.Wallet.initRecovery();
 ```
+
+## 2. Execute wallet recovery
+
+After initiation, execute the recovery process using the `execRecovery()` method:
+
+```ts
+import { IWalletRecovery } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
+
+const origin = "localhost"; // Replace with your application's domain
+const execResponse: IWalletRecovery = await walletInfra.Wallet.execRecovery(
+  initResponse.eoa.organizationId,
+  initResponse.eoa.userId,
+  newPasskeyName,
+  bundle,
+  origin
+);
+```
+
+> If `initResponse.eoa.needsApproval` is false, the user should receive a `bundle` code via email. This code is required for the `execRecovery()` method.
+
+## IWalletRecovery properties
+
+The `IWalletRecovery` interface represents the structure of the recovery details. Here's a breakdown of its properties:
+
+### `eoa`
+
+- **Type**: `object`
+- **Description**: The recovery details for an `EOA` wallet.
+- **Data**:
+  - `organizationId`:
+    - **Type**: `string`
+  - `userId`:
+    - **Type**: `string`
+  - `needsApproval`:
+    - **Type**: `boolean`
+  - `fingerprint`:
+    - **Type**: `string`
+  - `activityId`:
+    - **Type**: `string`
