@@ -14,4 +14,5 @@ const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
 const transactionHistory: ITransaction[] = await walletInfra.Wallet.getTransactionHistory(walletAddress, chainId);
 ```
 
-Please refer to the [Transaction Interface](../transaction/transaction-interface.md) guide for detailed information about the transaction properties.
+> [!NOTE]
+> Please refer to the [Transaction Interface](../transaction/transaction-interface.md) guide for detailed information about the transaction properties.

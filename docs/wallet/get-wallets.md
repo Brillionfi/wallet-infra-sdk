@@ -10,4 +10,5 @@ import { IWallet } from "@brillionfi/wallet-infra-sdk";
 const wallets: IWallet[] = await walletInfra.Wallet.getWallets();
 ```
 
-Please refer to the [Wallet Interface](wallet-interface.md) guide for detailed information about the wallet properties.
+> [!NOTE]
+> Please refer to the [Wallet Interface](wallet-interface.md) guide for detailed information about the wallet properties.

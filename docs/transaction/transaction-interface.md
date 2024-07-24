@@ -1,88 +1,105 @@
-### ITransaction Model
+# ITransaction Interface
 
-The ITransaction model represents a transaction and includes various properties that define its characteristics. This document provides an in-depth explanation of the ITransaction model.
+The `ITransaction` interface represents the structure of a transaction. Here's a breakdown of its properties:
 
-1.  `transactionType`
+## Properties
 
-    - Type: TransactionTypeKeys enum ['signed', 'unsigned']
-    - Description: The type of the transaction that is required to publish
+### `transactionType` (optional)
 
-2.  `transactionId`
+- **Type**: `TransactionTypeKeys` (enum)
+- **Description**: The type of the transaction that is required to publish. This is optional.
+- **Possible Values**:
+  - `TransactionTypeKeys.SIGNED`
+  - `TransactionTypeKeys.UNSIGNED`
 
-    - Type: string
-    - Description: The unique identifier of the transaction.
+### `transactionId`
 
-3.  `transactionHash`
+- **Type**: `string`
+- **Description**: The unique identifier of the transaction.
 
-    - Type: string
-    - Description: The hash of the transaction. This is optional.
+### `transactionHash` (optional)
 
-4.  `signedTx`
+- **Type**: `string`
+- **Description**: The hash of the transaction. This is optional.
 
-        - Type: string
-        - Description: The signed transaction data. This is optional.
+### `signedTx` (optional)
 
-5.  `from`
+- **Type**: `string`
+- **Description**: The signed transaction data. This is optional.
 
-        - Type: string
-        - Description: The sender address of the transaction.
+### `from`
 
-6.  `to`
+- **Type**: `string`
+- **Description**: The sender address of the transaction.
 
-        - Type: string
-        - Description: The receiver address of the transaction.
+### `to`
 
-7.  `value`
+- **Type**: `string`
+- **Description**: The receiver address of the transaction.
 
-    - Type: number
-    - Description: The value of the transaction.
+### `value`
 
-8.  `gasLimit`
+- **Type**: `number`
+- **Description**: The value of the transaction.
 
-    - Type: number
-    - Description: The gas limit for the transaction.
+### `gasLimit`
 
-9.  `maxFeePerGas`
+- **Type**: `number`
+- **Description**: The gas limit for the transaction.
 
-    - Type: number
-    - Description: The maximum fee per gas unit for the transaction.
+### `maxFeePerGas`
 
-10. `maxPriorityFeePerGas`
+- **Type**: `number`
+- **Description**: The maximum fee per gas unit for the transaction.
 
-    - Type: number
-    - Description: The maximum priority fee per gas unit for the transaction.
+### `maxPriorityFeePerGas`
 
-11. `nonce`
+- **Type**: `number`
+- **Description**: The maximum priority fee per gas unit for the transaction.
 
-    - Type: number
-    - Description: The nonce for the transaction.
+### `nonce`
 
-12. `data`
+- **Type**: `number`
+- **Description**: The nonce for the transaction.
 
-    - Type: string
-    - Description: The data payload of the transaction.
+### `data`
 
-13. `chainId`
+- **Type**: `string`
+- **Description**: The data payload of the transaction.
 
-    - Type: ChainIdSchema
-    - Description: The chain ID on which the transaction is executed.
+### `chainId`
 
-14. `status`
+- **Type**: `SUPPORTED_CHAINS` (enum)
+- **Description**: The chain ID on which the transaction is executed.
+- **Possible Values**:
+  - `SUPPORTED_CHAINS.ETHEREUM`
+  - `SUPPORTED_CHAINS.POLYGON`
+  - `SUPPORTED_CHAINS.SOLANA`
+  - `SUPPORTED_CHAINS.COSMOS`
+  - `SUPPORTED_CHAINS.TRON`
 
-    - Type: TransactionStatusKeys enum [`queued`,`pending`, `success`, `failed`, `canceled` ]
-    - Description: The status of publishing a transaction
+### `status`
 
-15. `createdAt`
+- **Type**: `TransactionStatusKeys` (enum)
+- **Description**: The status of publishing a transaction
+- **Possible Values**:
+  - `TransactionStatusKeys.QUEUED`
+  - `TransactionStatusKeys.PENDING`
+  - `TransactionStatusKeys.SUCCESS`
+  - `TransactionStatusKeys.FAILED`
+  - `TransactionStatusKeys.CANCELED`
 
-    - Type: string
-    - Description: The timestamp when the transaction was created.
+### `createdAt`
 
-16. `updatedAt`
+- **Type**: `string`
+- **Description**: The timestamp when the transaction was created.
 
-    - Type: string
-    - Description: The timestamp when the transaction was last updated.
+### `updatedAt`
 
-17. `updatedBy`
+- **Type**: `string`
+- **Description**: The timestamp when the transaction was last updated.
 
-    - Type: string
-    - Description: The identifier of the entity that last updated the transaction.
+### `updatedBy`
+
+- **Type**: `string`
+- **Description**: The identifier of the entity that last updated the transaction.

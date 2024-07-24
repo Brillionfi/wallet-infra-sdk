@@ -30,39 +30,39 @@ The `IWalletGasEstimation` interface represents the structure of a transaction g
 ### `gasLimit`
 
 - **Type**: `string`
-- **Description**: Gas limit.
+- **Description**: The gas limit for the transaction.
 
 ### `gasFee`
 
 - **Type**: `string`
-- **Description**: Gas fee.
+- **Description**: The gas fee for the transaction.
 
 ### `maxGasFee`
 
 - **Type**: `string`
-- **Description**: Max gas fee.
+- **Description**: The maximum gas fee for the transaction.
 
 ### `gasPrice`
 
 - **Type**: `string`
-- **Description**: Gas price.
+- **Description**: The gas price for the transaction.
 
 ### `maxFeePerGas`
 
 - **Type**: `string`
-- **Description**: Max fee per gas.
+- **Description**: The maximum fee per gas unit for the transaction.
 
 ### `maxPriorityFeePerGas`
 
 - **Type**: `string`
-- **Description**: Max priority fee per gas.
+- **Description**: The maximum priority fee per gas unit for the transaction.
 
 ### `totalCostString`
 
 - **Type**: `string`
-- **Description**: Total cost.
+- **Description**: The total gas cost for the transaction.
 
 ### `totalMaxCostString`
 
 - **Type**: `string`
-- **Description**: Total max cost.
+- **Description**: The total maximum gas cost for the transaction.

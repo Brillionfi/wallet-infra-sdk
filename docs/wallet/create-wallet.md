@@ -22,4 +22,5 @@ const newWallet: IWallet = {
 await walletInfra.Wallet.createWallet(newWallet);
 ```
 
-Please refer to the [Wallet Interface](wallet-interface.md) guide for detailed information about the wallet properties.
+> [!NOTE]
+> Please refer to the [Wallet Interface](wallet-interface.md) guide for detailed information about the wallet properties.

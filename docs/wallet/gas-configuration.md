@@ -46,14 +46,14 @@ The `IWalletGasConfiguration` interface represents the structure of a wallet gas
 ### `gasLimit`
 
 - **Type**: `string`
-- **Description**: Gas limit.
+- **Description**: The gas limit for the wallet.
 
 ### `maxFeePerGas`
 
 - **Type**: `string`
-- **Description**: Max fee per gas.
+- **Description**: The maximum fee per gas unit for the wallet.
 
 ### `maxPriorityFeePerGas`
 
 - **Type**: `string`
-- **Description**: Max priority fee per gas.
+- **Description**: The maximum priority fee per gas unit for the wallet.

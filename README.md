@@ -42,6 +42,7 @@ const baseUrl = "your-base-url";
 const walletInfra = new WalletInfra(appId, baseUrl);
 ```
 
+> [!NOTE]
 > Make sure to replace `"your-app-id"` with the actual API key you obtained from the Brillion Dashboard.
 
 ### 3. Authenticate user

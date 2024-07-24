@@ -13,4 +13,5 @@ const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
 const tokens: IToken[] = await walletInfra.Token.getTokens(chainId);
 ```
 
-Please refer to the [Token Interface](token-interface.md) guide for detailed information about the token properties.
+> [!NOTE]
+> Please refer to the [Token Interface](token-interface.md) guide for detailed information about the token properties.

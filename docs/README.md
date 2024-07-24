@@ -27,6 +27,7 @@ const baseUrl = "your-base-url";
 const walletInfra = new WalletInfra(appId, baseUrl);
 ```
 
+> [!NOTE]
 > Make sure to replace `"your-app-id"` with the actual API key you obtained from the Brillion Dashboard.
 
 ## 🧩 Core Modules
@@ -67,6 +68,10 @@ The **Token** module provides functionality for retrieving information about tok
 The **Transaction** module handles the management of wallet transactions, retrieving transaction details, and estimating gas costs:
 
 - [Transaction Interface](transaction/transaction-interface.md)
+- [Create Signed Transaction](transaction/create-transaction.md#create-signed-transaction)
+- [Create Unsigned Transaction](transaction/create-transaction.md#create-unsigned-transaction)
+- [Get Transaction](transaction/get-transaction.md)
+- [Cancel Transaction](transaction/cancel-transaction.md)
 
 ## 👣 Next Steps
 

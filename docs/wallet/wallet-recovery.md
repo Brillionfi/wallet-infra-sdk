@@ -29,6 +29,7 @@ const execResponse: IWalletRecovery = await walletInfra.Wallet.execRecovery(
 );
 ```
 
+> [!NOTE]
 > If `initResponse.eoa.needsApproval` is false, the user should receive a `bundle` code via email. This code is required for the `execRecovery()` method.
 
 ## IWalletRecovery properties

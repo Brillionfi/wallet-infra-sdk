@@ -1,18 +1,13 @@
 ### Cancel a Transaction
 
-This section guides you through the process of canceling an existing transaction using the WalletInfra.
+This guide provides instructions for canceling an unpublished transaction using the Wallet Infra SDK.
 
-Only an unpublished transaction can be canceled. Once your transaction has been published with a `pending` status, it can not be canceled
+To cancel an unpublished transaction, use the `cancelTransaction()` method:
 
 ```ts
-import {
-  ITransactionCancel,
-  TransactionTypeKeys,
-} from '@models/transaction.models';
-import { WalletInfra } from './wallet-infra';
-
-const walletInfra = new WalletInfra(appId, baseUrl);
-const transactionId: string = '46debf23-5e81-4d38-8100-c4f683c634d1';
-
+const transactionId = "your-transaction-id";
 await walletInfra.Transaction.cancelTransaction(transactionId);
 ```
+
+> [!NOTE]
+> Only unpublished transactions can be canceled. Once a transaction has been published and has a `pending` status, it cannot be canceled.
