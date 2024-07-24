@@ -312,12 +312,10 @@ export class WalletService {
     }
   }
 
-  public async getNotifications(
-    address: string,
-  ): Promise<IWalletNotifications> {
+  public async getNotifications(): Promise<IWalletNotifications> {
     logger.info(`${this.className}: Getting Wallet notifications`);
     try {
-      return await this.walletApi.getNotifications(address);
+      return await this.walletApi.getNotifications();
     } catch (error) {
       throw handleError(error);
     }

@@ -227,11 +227,11 @@ export class WalletApi {
     }
   }
 
-  public async getNotifications(address: Address) {
+  public async getNotifications() {
     logger.debug(`${this.className}: Get Wallet Notifications`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
-        `/wallets/notifications/${address}`,
+        `/wallets/notifications`,
       );
 
       return WalletNotificationsSchema.parse(response.data.messages);

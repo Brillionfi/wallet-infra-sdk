@@ -584,7 +584,7 @@ describe('WalletService', () => {
 
       walletApi.getNotifications.mockResolvedValueOnce(exampleNotifications);
 
-      const result = await walletService.getNotifications(wallet);
+      const result = await walletService.getNotifications();
 
       expect(walletApi.getNotifications).toHaveBeenCalled();
       expect(result).toEqual(exampleNotifications);
@@ -594,9 +594,7 @@ describe('WalletService', () => {
       walletApi.getNotifications.mockRejectedValueOnce(
         new APIError('BadRequest', 400),
       );
-      await expect(walletService.getNotifications(wallet)).rejects.toThrow(
-        APIError,
-      );
+      await expect(walletService.getNotifications()).rejects.toThrow(APIError);
       expect(walletApi.getNotifications).toHaveBeenCalled();
     });
   });

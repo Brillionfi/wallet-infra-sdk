@@ -178,7 +178,6 @@ export const WalletNotificationsSchema = z.array(
     organizationId: z.string(),
     type: z.string(),
     status: z.string(),
-    eoa: z.string(),
     createdAt: z.string(),
     updatedAt: z.string(),
     canApprove: z.boolean(),

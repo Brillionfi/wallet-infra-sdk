@@ -493,7 +493,7 @@ describe('Wallet', () => {
     it('should throw error if getNotifications fails', async () => {
       httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
 
-      await expect(wallet.getNotifications(address)).rejects.toThrow('error');
+      await expect(wallet.getNotifications()).rejects.toThrow('error');
     });
 
     it('should call get on HttpClient when getNotifications is called', async () => {
@@ -503,14 +503,12 @@ describe('Wallet', () => {
         .fn()
         .mockResolvedValue({ data: { messages: response } });
 
-      const result = await wallet.getNotifications(address);
+      const result = await wallet.getNotifications();
 
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Get Wallet Notifications',
       );
-      expect(httpClientMock.get).toHaveBeenCalledWith(
-        `/wallets/notifications/${address}`,
-      );
+      expect(httpClientMock.get).toHaveBeenCalledWith(`/wallets/notifications`);
       expect(result).toEqual(response);
     });
   });

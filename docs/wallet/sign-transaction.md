@@ -1,30 +1,27 @@
-### Sign Transaction
+# Sign Transaction
 
-This section guides you through the process of Signing a transaction.
+This guide provides instructions for signing a transaction for a wallet using the Wallet Infra SDK.
+
+To sign a transaction, use the `signTransaction()` method:
 
 ```ts
-import { 
-  IWalletSignTransaction, 
-  WalletTypes, 
-  WalletFormats 
-} from '@models/wallet.models';
-import { Address } from '@models/common.models';
+import { Address } from "@brillionfi/wallet-infra-sdk";
+import {
+  WalletTypes,
+  WalletFormats,
+  IWalletSignTransaction
+} from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 
-const wallet: Address = "0x123";
-
+const walletAddress: Address = "your-wallet-address";
 const data: IWalletSignTransaction = {
   walletType: WalletTypes.EOA,
   walletFormat: WalletFormats.ETHEREUM,
-  unsignedTransaction: "01234",
+  unsignedTransaction: "your-unsigned-transaction", // unsigned transaction (without "0x" prefix)
 };
-
-const origin = 'localhost'; // application domain
-
-const { signedTransaction } = await WalletInfra.Wallet.signTransaction(wallet, data, origin);
+const origin = "localhost"; // Replace with your application's domain
+const { signedTransaction }: string = await walletInfra.Wallet.signTransaction(
+  walletAddress,
+  data,
+  origin
+);
 ```
-
-Notes:
-
-- `walletType`: The type of wallet, use it from `WalletTypes` model. For example, `WalletTypes.EOA` which stands for Externally Owned Account.
-- `walletFormat`: The wallet format for certain blockchains types which the wallet is created, use it from `WalletFormats` model. Like `WalletFormats.ETHEREUM`.
-- `unsignedTransaction`: A non 0x String representing an unsigned transaction.
