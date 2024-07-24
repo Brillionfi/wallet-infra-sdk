@@ -1,4 +1,4 @@
-### Get Tokens
+# Get Tokens
 
 This guide provides instructions for retrieving all the tokens supported on a specified network using the Wallet Infra SDK.
 

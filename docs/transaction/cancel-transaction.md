@@ -1,4 +1,4 @@
-### Cancel a Transaction
+# Cancel Transaction
 
 This guide provides instructions for canceling an unpublished transaction using the Wallet Infra SDK.
 
