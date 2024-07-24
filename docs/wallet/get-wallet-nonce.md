@@ -1,15 +1,14 @@
-### Get wallets
+# Get Wallet Nonce
+
+This guide provides instructions for retrieving the nonce of a wallet on a specified chain using the Wallet Infra SDK.
+
+To retrieve the nonce for a wallet, use the `getNonce()` method:
 
 ```ts
-import { Address, ChainId, SUPPORTED_CHAINS } from '@models/common.models';
+import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
+import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
 
-const wallet: Address = '0x123';
+const walletAddress: Address = "your-wallet-address";
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
-
-const nonce: number = await SDK.wallet.getNonce(wallet, chainId);
+const nonce: number = walletInfra.Wallet.getNonce(walletAddress, chainId);
 ```
-
-Notes:
-
-- `wallet`: The wallet address.
-- `chainId`: The chain id number, use it from `SUPPORTED_CHAINS` model. Like `SUPPORTED_CHAINS.ETHEREUM`.

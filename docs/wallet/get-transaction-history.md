@@ -1,16 +1,18 @@
-### Get wallet transaction history
+# Get Transaction History
+
+This guide provides instructions for retrieving the transactions of a wallet on a specified chain using the Wallet Infra SDK.
+
+To retrieve the transaction history for a wallet, use the `getTransactionHistory()` method:
 
 ```ts
-import { IWalletTransaction } from '@models/wallet.models';
-import { Address, ChainId, SUPPORTED_CHAINS } from '@models/common.models';
+import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
+import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
+import { ITransaction } from "@brillionfi/wallet-infra-sdk/dist/models/transaction.models";
 
-const wallet: Address = "0x123";
+const walletAddress: Address = "your-wallet-address";
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
-
-const history: IWalletTransaction[] = await WalletInfra.Wallet.getTransactionHistory(wallet, chainId);
+const transactionHistory: ITransaction[] = await walletInfra.Wallet.getTransactionHistory(walletAddress, chainId);
 ```
 
-Notes:
-
-- `IWalletTransaction`: This interface defines the structure of the transaction.
-- `SDK.Wallet.getTransactionHistory`: This method retrieves all transactions associated with the current user/session. It returns a promise that resolves to an array of wallet transaction objects.
+> [!NOTE]
+> Please refer to the [Transaction Interface](../transaction/transaction-interface.md) guide for detailed information about the transaction properties.
