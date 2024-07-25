@@ -5,7 +5,7 @@ import { TurnkeyApiTypes } from '@turnkey/http';
 export async function ApproveActivityInTurnkey(
   organizationId: string,
   fingerprint: string,
-  stamper: WebauthnStamper | BundleStamper,
+  stamper: WebauthnStamper,
 ): Promise<TurnkeyApiTypes['v1ActivityResponse']> {
   const requestBody = {
     type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
@@ -25,7 +25,7 @@ export async function ApproveActivityInTurnkey(
 export async function RejectActivityInTurnkey(
   organizationId: string,
   fingerprint: string,
-  stamper: WebauthnStamper | BundleStamper,
+  stamper: WebauthnStamper,
 ): Promise<TurnkeyApiTypes['v1ActivityResponse']> {
   const requestBody = {
     type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
@@ -46,7 +46,7 @@ export async function RecoverUserInTurnkey(
   organizationId: string,
   userId: string,
   authenticator: object,
-  stamper: WebauthnStamper | BundleStamper,
+  stamper: BundleStamper,
 ): Promise<TurnkeyApiTypes['v1ActivityResponse']> {
   const requestBody = {
     type: 'ACTIVITY_TYPE_RECOVER_USER',

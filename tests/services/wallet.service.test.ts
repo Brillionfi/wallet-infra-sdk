@@ -18,46 +18,24 @@ import { AxiosError, AxiosResponse, HttpStatusCode } from 'axios';
 import { HttpClient } from '@utils/http-client';
 import { v4 as uuidv4 } from 'uuid';
 import logger from 'loglevel';
-import { BundleStamper } from '@utils/stampers';
+import { BundleStamper, WebauthnStamper } from '@utils/stampers';
+import * as BundleUtils from '@utils/stampers/webAuthnStamper/webauthn-json/api';
+import axios from 'axios';
+import { PublicKeyCredentialWithAttestationJSON } from '@utils/stampers/webAuthnStamper/webauthn-json';
 
 jest.mock('@api/wallet.api');
+jest.mock('axios');
 jest.mock('@utils/http-client');
 jest.mock('loglevel', () => ({
   info: jest.fn(),
   debug: jest.fn(),
   error: jest.fn(),
 }));
-// jest.mock('@turnkey/http', () => {
-//   return {
-//     getWebAuthnAttestation: jest.fn(),
-//     TurnkeyClient: class Test {
-//       recoverUser = async () => {
-//         return {
-//           activity: {
-//             status: 'ACTIVITY_STATUS_CONSENSUS_NOT_NEEDED',
-//             fingerprint: 'fingerprint',
-//             id: 'activityId',
-//           },
-//         };
-//       };
-//       approveActivity = async () => {
-//         return {
-//           activity: {
-//             result: {
-//               signTransactionResult: {
-//                 signedTransaction: '0x1234',
-//               },
-//             },
-//           },
-//         };
-//       };
-//     },
-//   };
-// });
 
 describe('WalletService', () => {
   let walletApi: jest.Mocked<WalletApi>;
   let walletService: WalletService;
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
 
   const wallet = '0xe6d0c561728eFeA5EEFbCdF0A5d0C945e3697bEA';
   const chainId = SUPPORTED_CHAINS.ETHEREUM;
@@ -278,6 +256,19 @@ describe('WalletService', () => {
       };
 
       walletApi.signTransaction.mockResolvedValueOnce({ data: response });
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          activity: {
+            result: {
+              signTransactionResult: { signedTransaction: '0x1234' },
+            },
+          },
+        },
+      });
 
       const result = await walletService.signTransaction(
         wallet,
@@ -353,23 +344,17 @@ describe('WalletService', () => {
     it('should create wallet gas config if does not exist', async () => {
       const response = { status: 'success' };
 
-      walletApi.getGasConfig.mockImplementation(() => {
-        const error = new AxiosError(
-          'NOT FOUND',
-          undefined,
-          undefined,
-          undefined,
-          {
-            status: HttpStatusCode.NotFound,
-          } as AxiosResponse,
-        );
-        return Promise.reject(error);
-      });
+      const error = new AxiosError();
+      error.message = 'NOT FOUND';
+      error.response = {
+        status: HttpStatusCode.NotFound,
+      } as AxiosResponse;
+
+      walletApi.getGasConfig.mockRejectedValue(error);
 
       walletApi.createGasConfig.mockResolvedValue(response);
 
       const result = await walletService.setGasConfig(wallet, chainId, gasData);
-
       expect(result).toEqual(response);
       expect(walletApi.createGasConfig).toHaveBeenCalledWith(
         wallet,
@@ -534,6 +519,22 @@ describe('WalletService', () => {
           activityId: 'activityId',
         },
       };
+      jest
+        .spyOn(BundleUtils, 'create')
+        .mockResolvedValue({} as PublicKeyCredentialWithAttestationJSON);
+      jest.spyOn(BundleStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          activity: {
+            fingerprint: recoveryData.eoa.fingerprint,
+            id: 'activityId',
+            status: 'status',
+          },
+        },
+      });
 
       const result = await walletService.execRecovery(
         organizationId,
