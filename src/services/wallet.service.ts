@@ -207,7 +207,7 @@ export class WalletService {
       const challenge = generateRandomBuffer();
       const authenticatorUserId = generateRandomBuffer();
 
-      const attestation = await webAuthCreation({
+      const assertion = await webAuthCreation({
         publicKey: {
           authenticatorSelection: {
             residentKey: 'preferred',
@@ -230,6 +230,15 @@ export class WalletService {
           },
         },
       });
+
+      const attestation = {
+        credentialId: assertion.id,
+        clientDataJson: assertion.response.clientDataJSON,
+        attestationObject: assertion.response.attestationObject,
+        transports: assertion.response.transports.map(
+          (arg) => 'AUTHENTICATOR_TRANSPORT_' + arg.toUpperCase(),
+        ),
+      };
 
       const response = await RecoverUserInTurnkey(
         organizationId,

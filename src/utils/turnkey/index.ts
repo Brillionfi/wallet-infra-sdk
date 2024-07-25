@@ -16,7 +16,7 @@ export async function ApproveActivityInTurnkey(
     },
   };
   return sendTurnkeyRequest<TurnkeyApiTypes['v1ActivityResponse']>(
-    'public/v1/submit/approve_activity',
+    '/public/v1/submit/approve_activity',
     requestBody,
     stamper,
   );

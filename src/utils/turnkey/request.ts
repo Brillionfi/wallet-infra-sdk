@@ -8,7 +8,7 @@ export async function sendTurnkeyRequest<T>(
   data: unknown,
   stamper: WebauthnStamper | BundleStamper,
 ): Promise<T> {
-  const baseUrl = 'https://api.turnkey.com/';
+  const baseUrl = 'https://api.turnkey.com';
   const { stampHeaderValue: jsonStamp } = await stamper.stamp(
     JSON.stringify(data),
   );
