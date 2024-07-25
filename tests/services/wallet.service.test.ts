@@ -519,9 +519,14 @@ describe('WalletService', () => {
           activityId: 'activityId',
         },
       };
-      jest
-        .spyOn(BundleUtils, 'create')
-        .mockResolvedValue({} as PublicKeyCredentialWithAttestationJSON);
+      jest.spyOn(BundleUtils, 'create').mockResolvedValue({
+        id: 'id',
+        response: {
+          clientDataJSON: '',
+          attestationObject: '',
+          transports: ['hybrid'],
+        },
+      } as PublicKeyCredentialWithAttestationJSON);
       jest.spyOn(BundleStamper.prototype, 'stamp').mockResolvedValue({
         stampHeaderName: 'name',
         stampHeaderValue: 'value',

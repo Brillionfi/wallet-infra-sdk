@@ -9,13 +9,13 @@ export async function sendTurnkeyRequest<T>(
   stamper: WebauthnStamper | BundleStamper,
 ): Promise<T> {
   const baseUrl = 'https://api.turnkey.com';
-  const { stampHeaderValue: jsonStamp } = await stamper.stamp(
+  const { stampHeaderName, stampHeaderValue } = await stamper.stamp(
     JSON.stringify(data),
   );
   try {
     const response = await axios.post(baseUrl + url, data, {
       headers: {
-        'X-Stamp': jsonStamp,
+        [stampHeaderName]: stampHeaderValue,
         'Content-Type': 'application/json',
       },
     });
