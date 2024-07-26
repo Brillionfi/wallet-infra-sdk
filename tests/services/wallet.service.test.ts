@@ -11,6 +11,7 @@ import {
   IWalletNonceAPI,
   IWalletRecovery,
   IWalletNotifications,
+  TurnkeyWalletActivitySchema,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
@@ -270,6 +271,14 @@ describe('WalletService', () => {
     });
 
     it('should return signed tx with quorum required', async () => {
+      TurnkeyWalletActivitySchema.parse = jest.fn().mockResolvedValue({
+        result: {
+          signTransactionResult: {
+            signedTransaction: '0x1234',
+          },
+        },
+      });
+
       const response = {
         organizationId: '123',
         needsApproval: true,

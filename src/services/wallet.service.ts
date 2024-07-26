@@ -15,6 +15,8 @@ import {
   IWalletPortfolio,
   IWalletSignTransactionService,
   IWalletNotifications,
+  ITurnkeyWalletActivity,
+  TurnkeyWalletActivitySchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -24,10 +26,6 @@ import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { getWebAuthnAttestation, TurnkeyClient } from '@turnkey/http';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
-import {
-  TApproveActivityResponse,
-  TRejectActivityResponse,
-} from '@turnkey/http/dist/__generated__/services/coordinator/public/v1/public_api.fetcher';
 
 export class WalletService {
   private readonly className: string;
@@ -78,17 +76,16 @@ export class WalletService {
 
       if (response.needsApproval) {
         const signResponse = await this.approveOrRejectActivity(
-          true,
           response.fingerprint,
           response.organizationId,
+          true,
           fromOrigin,
         );
 
         return {
           ...response,
           signedTransaction:
-            signResponse.activity.result.signTransactionResult
-              ?.signedTransaction,
+            signResponse.result?.signTransactionResult?.signedTransaction,
         };
       } else {
         return response;
@@ -271,11 +268,11 @@ export class WalletService {
   }
 
   public async approveOrRejectActivity(
-    decision: boolean,
     organizationId: string,
     fingerprint: string,
+    decision: boolean,
     fromOrigin: string,
-  ): Promise<TApproveActivityResponse | TRejectActivityResponse> {
+  ): Promise<ITurnkeyWalletActivity> {
     try {
       const stamper = new WebauthnStamper({
         rpId: fromOrigin,
@@ -289,7 +286,7 @@ export class WalletService {
       );
 
       if (decision) {
-        return await client.approveActivity({
+        const { activity } = await client.approveActivity({
           type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
           timestampMs: Date.now().toString(),
           organizationId,
@@ -297,8 +294,9 @@ export class WalletService {
             fingerprint,
           },
         });
+        return TurnkeyWalletActivitySchema.parse(activity);
       } else {
-        return await client.rejectActivity({
+        const { activity } = await client.rejectActivity({
           type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
           timestampMs: Date.now().toString(),
           organizationId,
@@ -306,6 +304,7 @@ export class WalletService {
             fingerprint,
           },
         });
+        return TurnkeyWalletActivitySchema.parse(activity);
       }
     } catch (error) {
       throw new CustomError('Failed to make a decision');
