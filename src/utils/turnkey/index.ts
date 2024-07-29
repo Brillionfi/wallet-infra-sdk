@@ -1,12 +1,12 @@
 import { BundleStamper, WebauthnStamper } from '@utils/stampers';
 import { sendTurnkeyRequest } from './request';
-import { TurnkeyApiTypes } from '@turnkey/http';
+import { ITurnkeyWalletActivity } from '@models/wallet.models';
 
 export async function ApproveActivityInTurnkey(
   organizationId: string,
   fingerprint: string,
   stamper: WebauthnStamper,
-): Promise<TurnkeyApiTypes['v1ActivityResponse']> {
+): Promise<ITurnkeyWalletActivity> {
   const requestBody = {
     type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
     timestampMs: String(Date.now()),
@@ -15,7 +15,7 @@ export async function ApproveActivityInTurnkey(
       fingerprint,
     },
   };
-  return sendTurnkeyRequest<TurnkeyApiTypes['v1ActivityResponse']>(
+  return sendTurnkeyRequest<ITurnkeyWalletActivity>(
     '/public/v1/submit/approve_activity',
     requestBody,
     stamper,
@@ -26,7 +26,7 @@ export async function RejectActivityInTurnkey(
   organizationId: string,
   fingerprint: string,
   stamper: WebauthnStamper,
-): Promise<TurnkeyApiTypes['v1ActivityResponse']> {
+): Promise<ITurnkeyWalletActivity> {
   const requestBody = {
     type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
     timestampMs: String(Date.now()),
@@ -35,7 +35,7 @@ export async function RejectActivityInTurnkey(
       fingerprint,
     },
   };
-  return sendTurnkeyRequest<TurnkeyApiTypes['v1ActivityResponse']>(
+  return sendTurnkeyRequest<ITurnkeyWalletActivity>(
     '/public/v1/submit/reject_activity',
     requestBody,
     stamper,
@@ -47,7 +47,7 @@ export async function RecoverUserInTurnkey(
   userId: string,
   authenticator: object,
   stamper: BundleStamper,
-): Promise<TurnkeyApiTypes['v1ActivityResponse']> {
+): Promise<ITurnkeyWalletActivity> {
   const requestBody = {
     type: 'ACTIVITY_TYPE_RECOVER_USER',
     timestampMs: String(Date.now()),
@@ -57,7 +57,7 @@ export async function RecoverUserInTurnkey(
       authenticator,
     },
   };
-  return sendTurnkeyRequest<TurnkeyApiTypes['v1ActivityResponse']>(
+  return sendTurnkeyRequest<ITurnkeyWalletActivity>(
     '/public/v1/submit/recover_user',
     requestBody,
     stamper,

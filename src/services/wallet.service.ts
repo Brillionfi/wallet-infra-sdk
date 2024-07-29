@@ -14,6 +14,9 @@ import {
   IWalletRecovery,
   IWalletPortfolio,
   IWalletSignTransactionService,
+  IWalletNotifications,
+  ITurnkeyWalletActivity,
+  TurnkeyWalletActivitySchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -22,7 +25,11 @@ import { AxiosError, HttpStatusCode } from 'axios';
 import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
-import { ApproveActivityInTurnkey, RecoverUserInTurnkey } from '@utils/turnkey';
+import {
+  ApproveActivityInTurnkey,
+  RecoverUserInTurnkey,
+  RejectActivityInTurnkey,
+} from '@utils/turnkey';
 import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 
 export class WalletService {
@@ -77,7 +84,7 @@ export class WalletService {
           rpId: fromOrigin,
         });
 
-        const signResponse = await ApproveActivityInTurnkey(
+        const activity = await ApproveActivityInTurnkey(
           response.organizationId,
           response.fingerprint,
           stamper,
@@ -86,8 +93,7 @@ export class WalletService {
         return {
           ...response,
           signedTransaction:
-            signResponse.activity.result.signTransactionResult
-              ?.signedTransaction,
+            activity.result?.signTransactionResult?.signedTransaction,
         };
       } else {
         return response;
@@ -240,7 +246,7 @@ export class WalletService {
         ),
       };
 
-      const response = await RecoverUserInTurnkey(
+      const activity = await RecoverUserInTurnkey(
         organizationId,
         userId,
         {
@@ -255,12 +261,51 @@ export class WalletService {
         eoa: {
           organizationId,
           userId,
-          needsApproval:
-            response.activity.status === 'ACTIVITY_STATUS_CONSENSUS_NEEDED',
-          fingerprint: response.activity.fingerprint,
-          activityId: response.activity.id,
+          needsApproval: activity.status === 'ACTIVITY_STATUS_CONSENSUS_NEEDED',
+          fingerprint: activity.fingerprint,
+          activityId: activity.id,
         },
       };
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveOrRejectActivity(
+    organizationId: string,
+    fingerprint: string,
+    decision: boolean,
+    fromOrigin: string,
+  ): Promise<ITurnkeyWalletActivity> {
+    try {
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+      });
+
+      if (decision) {
+        const activity = await ApproveActivityInTurnkey(
+          organizationId,
+          fingerprint,
+          stamper,
+        );
+        return TurnkeyWalletActivitySchema.parse(activity);
+      } else {
+        const activity = await RejectActivityInTurnkey(
+          organizationId,
+          fingerprint,
+          stamper,
+        );
+        return TurnkeyWalletActivitySchema.parse(activity);
+      }
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
+  public async getNotifications(): Promise<IWalletNotifications> {
+    logger.info(`${this.className}: Getting Wallet notifications`);
+    try {
+      return await this.walletApi.getNotifications();
     } catch (error) {
       throw handleError(error);
     }

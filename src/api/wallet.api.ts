@@ -23,6 +23,7 @@ import {
   WalletRecoverySchema,
   IWalletRecovery,
   WalletPortfolioSchema,
+  WalletNotificationsSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -221,6 +222,19 @@ export class WalletApi {
 
       const portfolio = WalletPortfolioSchema.parse(response.data.data);
       return portfolio;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getNotifications() {
+    logger.debug(`${this.className}: Get Wallet Notifications`);
+    try {
+      const response: AxiosResponse = await this.httpClient.get(
+        `/wallets/notifications`,
+      );
+
+      return WalletNotificationsSchema.parse(response.data.messages);
     } catch (error) {
       throw handleError(error);
     }
