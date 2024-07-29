@@ -171,6 +171,77 @@ export const WalletPortfolioSchema = z.object({
   ),
 });
 
+export const WalletNotificationsSchema = z.array(
+  z.object({
+    id: z.string(),
+    fingerprint: z.string(),
+    organizationId: z.string(),
+    type: z.string(),
+    status: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    canApprove: z.boolean(),
+    canReject: z.boolean(),
+    votes: z.array(
+      z.object({
+        selection: z.string(),
+        userId: z.string(),
+        user: z.object({
+          userName: z.string().optional(),
+          userEmail: z.string().optional(),
+        }),
+      }),
+    ),
+    intent: z.object({}).passthrough(),
+    result: z.object({}).passthrough().optional(),
+    notificationLevel: z.string(),
+    notificationStatus: z.string(),
+  }),
+);
+
+export const TurnkeyWalletActivitySchema = z.object({
+  id: z.string(),
+  fingerprint: z.string(),
+  organizationId: z.string(),
+  type: z.string(),
+  status: z.string(),
+  createdAt: z
+    .object({
+      seconds: z.string(),
+    })
+    .transform((arg) => arg.seconds + '000'),
+  updatedAt: z
+    .object({
+      seconds: z.string(),
+    })
+    .transform((arg) => arg.seconds + '000'),
+  canApprove: z.boolean(),
+  canReject: z.boolean(),
+  votes: z
+    .array(
+      z.object({
+        selection: z.string(),
+        userId: z.string(),
+        user: z.object({
+          userName: z.string().optional(),
+          userEmail: z.string().optional(),
+        }),
+      }),
+    )
+    .optional(),
+  intent: z.object({}).passthrough(),
+  result: z
+    .object({
+      signTransactionResult: z
+        .object({
+          signedTransaction: z.string().optional(),
+        })
+        .optional(),
+    })
+    .passthrough()
+    .optional(),
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
@@ -194,3 +265,7 @@ export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
 export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
 export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;
+export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;
+export type ITurnkeyWalletActivity = z.infer<
+  typeof TurnkeyWalletActivitySchema
+>;

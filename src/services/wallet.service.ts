@@ -14,6 +14,9 @@ import {
   IWalletRecovery,
   IWalletPortfolio,
   IWalletSignTransactionService,
+  IWalletNotifications,
+  ITurnkeyWalletActivity,
+  TurnkeyWalletActivitySchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -72,31 +75,17 @@ export class WalletService {
       );
 
       if (response.needsApproval) {
-        const stamper = new WebauthnStamper({
-          rpId: fromOrigin,
-        });
-
-        const client = new TurnkeyClient(
-          {
-            baseUrl: 'https://api.turnkey.com',
-          },
-          stamper,
+        const signResponse = await this.approveOrRejectActivity(
+          response.fingerprint,
+          response.organizationId,
+          true,
+          fromOrigin,
         );
-
-        const signResponse = await client.approveActivity({
-          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: Date.now().toString(),
-          organizationId: response.organizationId,
-          parameters: {
-            fingerprint: response.fingerprint,
-          },
-        });
 
         return {
           ...response,
           signedTransaction:
-            signResponse.activity.result.signTransactionResult
-              ?.signedTransaction,
+            signResponse.result?.signTransactionResult?.signedTransaction,
         };
       } else {
         return response;
@@ -273,6 +262,59 @@ export class WalletService {
           activityId: response.activity.id,
         },
       };
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveOrRejectActivity(
+    organizationId: string,
+    fingerprint: string,
+    decision: boolean,
+    fromOrigin: string,
+  ): Promise<ITurnkeyWalletActivity> {
+    try {
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+      });
+
+      const client = new TurnkeyClient(
+        {
+          baseUrl: 'https://api.turnkey.com',
+        },
+        stamper,
+      );
+
+      if (decision) {
+        const { activity } = await client.approveActivity({
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: Date.now().toString(),
+          organizationId,
+          parameters: {
+            fingerprint,
+          },
+        });
+        return TurnkeyWalletActivitySchema.parse(activity);
+      } else {
+        const { activity } = await client.rejectActivity({
+          type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
+          timestampMs: Date.now().toString(),
+          organizationId,
+          parameters: {
+            fingerprint,
+          },
+        });
+        return TurnkeyWalletActivitySchema.parse(activity);
+      }
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
+  public async getNotifications(): Promise<IWalletNotifications> {
+    logger.info(`${this.className}: Getting Wallet notifications`);
+    try {
+      return await this.walletApi.getNotifications();
     } catch (error) {
       throw handleError(error);
     }

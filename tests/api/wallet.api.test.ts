@@ -1,7 +1,12 @@
 import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
-import { IWalletAPI, WalletFormats, WalletTypes } from '@models/wallet.models';
+import {
+  IWalletAPI,
+  IWalletNotifications,
+  WalletFormats,
+  WalletTypes,
+} from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -480,6 +485,30 @@ describe('Wallet', () => {
       expect(httpClientMock.get).toHaveBeenCalledWith(
         `/wallets/portfolio/${address}/${chainId}`,
       );
+      expect(result).toEqual(response);
+    });
+  });
+
+  describe('getNotifications', () => {
+    it('should throw error if getNotifications fails', async () => {
+      httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(wallet.getNotifications()).rejects.toThrow('error');
+    });
+
+    it('should call get on HttpClient when getNotifications is called', async () => {
+      const response: IWalletNotifications = [];
+
+      httpClientMock.get = jest
+        .fn()
+        .mockResolvedValue({ data: { messages: response } });
+
+      const result = await wallet.getNotifications();
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Get Wallet Notifications',
+      );
+      expect(httpClientMock.get).toHaveBeenCalledWith(`/wallets/notifications`);
       expect(result).toEqual(response);
     });
   });

@@ -10,6 +10,8 @@ import {
   WalletSchemaAPI,
   IWalletNonceAPI,
   IWalletRecovery,
+  IWalletNotifications,
+  TurnkeyWalletActivitySchema,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
@@ -269,6 +271,14 @@ describe('WalletService', () => {
     });
 
     it('should return signed tx with quorum required', async () => {
+      TurnkeyWalletActivitySchema.parse = jest.fn().mockResolvedValue({
+        result: {
+          signTransactionResult: {
+            signedTransaction: '0x1234',
+          },
+        },
+      });
+
       const response = {
         organizationId: '123',
         needsApproval: true,
@@ -574,6 +584,27 @@ describe('WalletService', () => {
         APIError,
       );
       expect(walletApi.getPortfolio).toHaveBeenCalled();
+    });
+  });
+
+  describe('getNotifications', () => {
+    it('should get notifications', async () => {
+      const exampleNotifications: IWalletNotifications = [];
+
+      walletApi.getNotifications.mockResolvedValueOnce(exampleNotifications);
+
+      const result = await walletService.getNotifications();
+
+      expect(walletApi.getNotifications).toHaveBeenCalled();
+      expect(result).toEqual(exampleNotifications);
+    });
+
+    it('should throw an error when walletApi.getNotifications fails', async () => {
+      walletApi.getNotifications.mockRejectedValueOnce(
+        new APIError('BadRequest', 400),
+      );
+      await expect(walletService.getNotifications()).rejects.toThrow(APIError);
+      expect(walletApi.getNotifications).toHaveBeenCalled();
     });
   });
 });
