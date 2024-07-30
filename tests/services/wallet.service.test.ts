@@ -12,6 +12,7 @@ import {
   IWalletRecovery,
   IWalletNotifications,
   TurnkeyWalletActivitySchema,
+  ITurnkeyWalletActivity,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
@@ -24,6 +25,7 @@ import { BundleStamper, WebauthnStamper } from '@utils/stampers';
 import * as BundleUtils from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 import axios from 'axios';
 import { PublicKeyCredentialWithAttestationJSON } from '@utils/stampers/webAuthnStamper/webauthn-json';
+import * as TurnkeyActivity from '@utils/turnkey';
 
 jest.mock('@api/wallet.api');
 jest.mock('axios');
@@ -541,15 +543,20 @@ describe('WalletService', () => {
         stampHeaderName: 'name',
         stampHeaderValue: 'value',
       });
+      const activity = {
+        fingerprint: recoveryData.eoa.fingerprint,
+        id: 'activityId',
+        status: 'status',
+      };
       mockedAxios.post.mockResolvedValue({
         data: {
-          activity: {
-            fingerprint: recoveryData.eoa.fingerprint,
-            id: 'activityId',
-            status: 'status',
-          },
+          activity,
         },
       });
+
+      jest
+        .spyOn(TurnkeyWalletActivitySchema, 'parse')
+        .mockImplementation(() => activity as ITurnkeyWalletActivity);
 
       const result = await walletService.execRecovery(
         organizationId,
@@ -611,6 +618,59 @@ describe('WalletService', () => {
       );
       await expect(walletService.getNotifications()).rejects.toThrow(APIError);
       expect(walletApi.getNotifications).toHaveBeenCalled();
+    });
+  });
+
+  describe('approveOrRejectActivity', () => {
+    const organizationId = 'id';
+    const fingerprint = 'fingerprint';
+    const activity = {
+      fingerprint: 'fingerprint',
+      id: 'activityId',
+      status: 'status',
+    };
+
+    it('should throw an error when any action fails', async () => {
+      jest
+        .spyOn(TurnkeyActivity, 'ApproveActivityInTurnkey')
+        .mockRejectedValue(new Error('approve error'));
+      await expect(
+        walletService.approveOrRejectActivity(
+          organizationId,
+          fingerprint,
+          true,
+          'localhost',
+        ),
+      ).rejects.toThrow('Failed to make a decision');
+    });
+
+    it('should approve', async () => {
+      jest
+        .spyOn(TurnkeyActivity, 'ApproveActivityInTurnkey')
+        .mockResolvedValue(activity as ITurnkeyWalletActivity);
+      const result = await walletService.approveOrRejectActivity(
+        organizationId,
+        fingerprint,
+        true,
+        'localhost',
+      );
+
+      expect(result).toEqual(activity);
+    });
+
+    it('should reject', async () => {
+      jest
+        .spyOn(TurnkeyActivity, 'RejectActivityInTurnkey')
+        .mockResolvedValue(activity as ITurnkeyWalletActivity);
+
+      const result = await walletService.approveOrRejectActivity(
+        organizationId,
+        fingerprint,
+        false,
+        'localhost',
+      );
+
+      expect(result).toEqual(result);
     });
   });
 });
