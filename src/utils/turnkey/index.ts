@@ -1,6 +1,10 @@
 import { BundleStamper, WebauthnStamper } from '@utils/stampers';
 import { sendTurnkeyRequest } from './request';
-import { ITurnkeyWalletActivity } from '@models/wallet.models';
+import {
+  ITurnkeyWalletActivity,
+  ITurnkeyWalletActivityResponse,
+  TurnkeyWalletActivitySchema,
+} from '@models/wallet.models';
 
 export async function ApproveActivityInTurnkey(
   organizationId: string,
@@ -15,11 +19,12 @@ export async function ApproveActivityInTurnkey(
       fingerprint,
     },
   };
-  return sendTurnkeyRequest<ITurnkeyWalletActivity>(
+  const { activity } = await sendTurnkeyRequest<ITurnkeyWalletActivityResponse>(
     '/public/v1/submit/approve_activity',
     requestBody,
     stamper,
   );
+  return TurnkeyWalletActivitySchema.parse(activity);
 }
 
 export async function RejectActivityInTurnkey(
@@ -35,11 +40,12 @@ export async function RejectActivityInTurnkey(
       fingerprint,
     },
   };
-  return sendTurnkeyRequest<ITurnkeyWalletActivity>(
+  const { activity } = await sendTurnkeyRequest<ITurnkeyWalletActivityResponse>(
     '/public/v1/submit/reject_activity',
     requestBody,
     stamper,
   );
+  return TurnkeyWalletActivitySchema.parse(activity);
 }
 
 export async function RecoverUserInTurnkey(
@@ -57,9 +63,10 @@ export async function RecoverUserInTurnkey(
       authenticator,
     },
   };
-  return sendTurnkeyRequest<ITurnkeyWalletActivity>(
+  const { activity } = await sendTurnkeyRequest<ITurnkeyWalletActivityResponse>(
     '/public/v1/submit/recover_user',
     requestBody,
     stamper,
   );
+  return TurnkeyWalletActivitySchema.parse(activity);
 }

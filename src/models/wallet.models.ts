@@ -242,6 +242,10 @@ export const TurnkeyWalletActivitySchema = z.object({
     .optional(),
 });
 
+export const TurnkeyWalletActivityResponseSchema = z.object({
+  activity: TurnkeyWalletActivitySchema,
+});
+
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
@@ -266,6 +270,9 @@ export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
 export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;
 export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;
+export type ITurnkeyWalletActivityResponse = z.infer<
+  typeof TurnkeyWalletActivityResponseSchema
+>;
 export type ITurnkeyWalletActivity = z.infer<
   typeof TurnkeyWalletActivitySchema
 >;

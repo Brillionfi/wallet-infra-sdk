@@ -16,7 +16,6 @@ import {
   IWalletSignTransactionService,
   IWalletNotifications,
   ITurnkeyWalletActivity,
-  TurnkeyWalletActivitySchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -283,19 +282,17 @@ export class WalletService {
       });
 
       if (decision) {
-        const activity = await ApproveActivityInTurnkey(
+        return await ApproveActivityInTurnkey(
           organizationId,
           fingerprint,
           stamper,
         );
-        return TurnkeyWalletActivitySchema.parse(activity);
       } else {
-        const activity = await RejectActivityInTurnkey(
+        return await RejectActivityInTurnkey(
           organizationId,
           fingerprint,
           stamper,
         );
-        return TurnkeyWalletActivitySchema.parse(activity);
       }
     } catch (error) {
       throw new CustomError('Failed to make a decision');
