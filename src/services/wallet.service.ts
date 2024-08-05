@@ -346,7 +346,6 @@ export class WalletService {
         [WalletKeys.ADDRESS]: walletData.walletAddress,
         [WalletKeys.FORMAT]: walletData.walletFormat,
         [WalletKeys.NAME]: walletData.walletName,
-        [WalletKeys.AUTHENTICATION]: walletData.authentication,
       };
     } catch (error) {
       throw new CustomError('Failed to create wallet response');

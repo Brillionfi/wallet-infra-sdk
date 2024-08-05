@@ -93,6 +93,10 @@ describe('WalletService', () => {
     attestation,
   };
 
+  const apiKey = {
+    publicKey: 'fakePublicKey',
+  };
+
   beforeEach(() => {
     walletApi = new WalletApi(new HttpClient('')) as jest.Mocked<WalletApi>;
 
@@ -106,7 +110,47 @@ describe('WalletService', () => {
   });
 
   describe('createWallet', () => {
-    it('should create a new wallet', async () => {
+    it('should create a new wallet with APIKey authentication', async () => {
+      const example: IWallet = {
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.AUTHENTICATION]: apiKey,
+      };
+
+      const data = {
+        walletType: {
+          [WalletTypes.EOA.toLowerCase()]: {
+            walletName: 'name',
+            walletFormat: WalletFormats.ETHEREUM,
+            [WalletKeys.AUTHENTICATION]: apiKey,
+          },
+        },
+      } as IWalletAPI;
+
+      const response = {
+        eoa: {
+          walletAddress: 'walletAddress',
+          walletFormat: WalletFormats.ETHEREUM,
+          walletType: WalletTypes.EOA,
+          walletName: 'name',
+        },
+      };
+
+      walletApi.createWallet = jest.fn().mockResolvedValue(response);
+
+      const result = await walletService.createWallet(example);
+
+      expect(walletApi.createWallet).toHaveBeenCalledWith(data);
+      expect(result).toEqual({
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.ADDRESS]: 'walletAddress',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.NAME]: 'name',
+      });
+    });
+
+    it('should create a new wallet with passkey authentication', async () => {
       const example: IWallet = {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
@@ -130,7 +174,6 @@ describe('WalletService', () => {
           walletFormat: WalletFormats.ETHEREUM,
           walletType: WalletTypes.EOA,
           walletName: 'name',
-          authentication: authentication,
         },
       };
 
@@ -144,7 +187,6 @@ describe('WalletService', () => {
         [WalletKeys.ADDRESS]: 'walletAddress',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.NAME]: 'name',
-        [WalletKeys.AUTHENTICATION]: authentication,
       });
     });
 
