@@ -15,6 +15,12 @@ export enum TransactionStatusKeys {
   CANCELED = 'canceled',
 }
 
+export enum TransactionSignStatus {
+  PENDING = 'pending',
+  SIGNED = 'signed',
+  REJECTED = 'rejected',
+}
+
 export enum TransactionKeys {
   TRANSACTION_TYPE = 'transactionType',
   TRANSACTION_ID = 'transactionId',
@@ -37,6 +43,9 @@ export enum TransactionKeys {
   UPDATED_BY = 'updatedBy',
   AUTHENTICATED_BY = 'authenticatedBy',
   AUTHENTICATED_METHOD = 'authenticationMethod',
+  SIGNED_STATUS = 'signedStatus',
+  FINGERPRINT = 'fingerprint',
+  ORGANIZATION_ID = 'organizationId',
 }
 
 export const TransactionTypeSchema = z.union([
@@ -71,6 +80,9 @@ export const TransactionSchema = z.object({
   [TransactionKeys.STATUS]: TransactionStatusSchema.optional(),
   [TransactionKeys.AUTHENTICATED_BY]: z.string().optional(),
   [TransactionKeys.AUTHENTICATED_METHOD]: z.string().optional(),
+  [TransactionKeys.SIGNED_STATUS]: z.string(),
+  [TransactionKeys.FINGERPRINT]: z.string(),
+  [TransactionKeys.ORGANIZATION_ID]: z.string(),
 });
 
 export const TransactionSignedSchema = z.object({
@@ -86,6 +98,12 @@ export const TransactionUnsignedSchema = z.object({
   [TransactionKeys.DATA]: z.string(),
   [TransactionKeys.CHAIN_ID]: z.string(),
 });
+
+export const TransactionSignStatusSchema = z.enum([
+  TransactionSignStatus.PENDING,
+  TransactionSignStatus.SIGNED,
+  TransactionSignStatus.REJECTED,
+]);
 
 export const SignTransactionSchema = z.object({
   id: z.string(),
