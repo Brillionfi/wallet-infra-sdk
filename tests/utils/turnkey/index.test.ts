@@ -1,7 +1,4 @@
-import {
-  ITurnkeyWalletActivity,
-  TurnkeyWalletActivitySchema,
-} from '@models/wallet.models';
+import { IWalletActivity, WalletActivitySchema } from '@models/wallet.models';
 import { WebauthnStamper } from '@utils/stampers';
 import { RejectActivityInTurnkey } from '@utils/turnkey';
 import * as TurnkeyRequestUtils from '@utils/turnkey/request';
@@ -38,8 +35,8 @@ describe('Turnkey utils', () => {
         status: 'status',
       };
       jest
-        .spyOn(TurnkeyWalletActivitySchema, 'parse')
-        .mockImplementation(() => activity as ITurnkeyWalletActivity);
+        .spyOn(WalletActivitySchema, 'parse')
+        .mockImplementation(() => activity as IWalletActivity);
 
       const response = await RejectActivityInTurnkey(
         organizationId,

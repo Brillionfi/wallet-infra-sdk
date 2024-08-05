@@ -15,7 +15,7 @@ import {
   IWalletPortfolio,
   IWalletSignTransactionService,
   IWalletNotifications,
-  ITurnkeyWalletActivity,
+  IWalletActivity,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -24,11 +24,6 @@ import { AxiosError, HttpStatusCode } from 'axios';
 import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
-import {
-  ApproveActivityInTurnkey,
-  RecoverUserInTurnkey,
-  RejectActivityInTurnkey,
-} from '@utils/turnkey';
 import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 
 export class WalletService {
@@ -83,11 +78,23 @@ export class WalletService {
           rpId: fromOrigin,
         });
 
-        const activity = await ApproveActivityInTurnkey(
-          response.organizationId,
-          response.fingerprint,
-          stamper,
-        );
+        const requestBody = {
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: String(Date.now()),
+          organizationId: response.organizationId,
+          parameters: {
+            fingerprint: response.fingerprint,
+          },
+        };
+
+        const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+        const activity = await this.walletApi.approveOrRejectActivity({
+          organizationId: response.organizationId,
+          fingerprint: response.fingerprint,
+          approved: true,
+          stamped,
+        });
 
         return {
           ...response,
@@ -205,7 +212,7 @@ export class WalletService {
     passkeyName: string,
     bundle: string,
     fromOrigin: string,
-  ): Promise<IWalletRecovery> {
+  ): Promise<IWalletActivity> {
     logger.info(`${this.className}: Wallet recovery executed`);
     try {
       await this.bundleStamper.injectCredentialBundle(bundle);
@@ -245,26 +252,32 @@ export class WalletService {
         ),
       };
 
-      const activity = await RecoverUserInTurnkey(
-        organizationId,
-        userId,
-        {
-          authenticatorName: passkeyName,
-          challenge: base64UrlEncode(challenge),
-          attestation: attestation,
-        },
-        this.bundleStamper,
-      );
+      const authenticator = {
+        authenticatorName: passkeyName,
+        challenge: base64UrlEncode(challenge),
+        attestation: attestation,
+      };
 
-      return {
-        eoa: {
-          organizationId,
+      const requestBody = {
+        type: 'ACTIVITY_TYPE_RECOVER_USER',
+        timestampMs: String(Date.now()),
+        organizationId,
+        parameters: {
           userId,
-          needsApproval: activity.status === 'ACTIVITY_STATUS_CONSENSUS_NEEDED',
-          fingerprint: activity.fingerprint,
-          activityId: activity.id,
+          authenticator,
         },
       };
+
+      const stamped = await this.bundleStamper.stamp(
+        JSON.stringify(requestBody),
+      );
+
+      return await this.walletApi.execRecover({
+        organizationId,
+        userId,
+        authenticator,
+        stamped,
+      });
     } catch (error) {
       throw handleError(error);
     }
@@ -273,26 +286,51 @@ export class WalletService {
   public async approveOrRejectActivity(
     organizationId: string,
     fingerprint: string,
-    decision: boolean,
+    approved: boolean,
     fromOrigin: string,
-  ): Promise<ITurnkeyWalletActivity> {
+  ): Promise<IWalletActivity> {
     try {
       const stamper = new WebauthnStamper({
         rpId: fromOrigin,
       });
 
-      if (decision) {
-        return await ApproveActivityInTurnkey(
+      if (approved) {
+        const requestBody = {
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: String(Date.now()),
+          organizationId,
+          parameters: {
+            fingerprint,
+          },
+        };
+
+        const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+        return await this.walletApi.approveOrRejectActivity({
           organizationId,
           fingerprint,
-          stamper,
-        );
+          approved,
+          stamped,
+        });
       } else {
-        return await RejectActivityInTurnkey(
+        const requestBody = {
+          type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
+          timestampMs: String(Date.now()),
+          organizationId,
+          parameters: {
+            fingerprint,
+          },
+        };
+        const stamped = await this.bundleStamper.stamp(
+          JSON.stringify(requestBody),
+        );
+
+        return await this.walletApi.approveOrRejectActivity({
           organizationId,
           fingerprint,
-          stamper,
-        );
+          approved,
+          stamped,
+        });
       }
     } catch (error) {
       throw new CustomError('Failed to make a decision');

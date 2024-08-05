@@ -199,7 +199,7 @@ export const WalletNotificationsSchema = z.array(
   }),
 );
 
-export const TurnkeyWalletActivitySchema = z.object({
+export const WalletActivitySchema = z.object({
   id: z.string(),
   fingerprint: z.string(),
   organizationId: z.string(),
@@ -242,9 +242,34 @@ export const TurnkeyWalletActivitySchema = z.object({
     .optional(),
 });
 
-export const TurnkeyWalletActivityResponseSchema = z.object({
-  activity: TurnkeyWalletActivitySchema,
+export const WalletActivityResponseSchema = z.object({
+  activity: WalletActivitySchema,
 });
+
+export const stampedActivitySchema = z.object({
+  stampHeaderName: z.string(),
+  stampHeaderValue: z.string(),
+});
+
+export const ExecRecoverySchema = z.object({
+  organizationId: z.string(),
+  userId: z.string(),
+  authenticator: z
+    .object({ authenticatorName: z.string() })
+    .merge(PasskeyAuthenticationSchema),
+  stamped: stampedActivitySchema,
+});
+export type TExecRecoveryRequest = z.infer<typeof ExecRecoverySchema>;
+
+export const ApproveRejectActivitySchema = z.object({
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  approved: z.boolean(),
+  stamped: stampedActivitySchema,
+});
+export type TApproveRejectActivityRequest = z.infer<
+  typeof ApproveRejectActivitySchema
+>;
 
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
@@ -270,9 +295,8 @@ export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
 export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;
 export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;
-export type ITurnkeyWalletActivityResponse = z.infer<
-  typeof TurnkeyWalletActivityResponseSchema
+export type IWalletActivityResponse = z.infer<
+  typeof WalletActivityResponseSchema
 >;
-export type ITurnkeyWalletActivity = z.infer<
-  typeof TurnkeyWalletActivitySchema
->;
+export type IWalletActivity = z.infer<typeof WalletActivitySchema>;
+export type TStampedActivitySchema = z.infer<typeof stampedActivitySchema>;

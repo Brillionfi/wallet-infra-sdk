@@ -11,8 +11,8 @@ import {
   IWalletNonceAPI,
   IWalletRecovery,
   IWalletNotifications,
-  TurnkeyWalletActivitySchema,
-  ITurnkeyWalletActivity,
+  WalletActivitySchema,
+  IWalletActivity,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
@@ -251,7 +251,7 @@ describe('WalletService', () => {
     });
 
     it('should return signed tx with quorum required', async () => {
-      TurnkeyWalletActivitySchema.parse = jest.fn().mockResolvedValue({
+      WalletActivitySchema.parse = jest.fn().mockResolvedValue({
         result: {
           signTransactionResult: {
             signedTransaction: '0x1234',
@@ -555,8 +555,8 @@ describe('WalletService', () => {
       });
 
       jest
-        .spyOn(TurnkeyWalletActivitySchema, 'parse')
-        .mockImplementation(() => activity as ITurnkeyWalletActivity);
+        .spyOn(WalletActivitySchema, 'parse')
+        .mockImplementation(() => activity as IWalletActivity);
 
       const result = await walletService.execRecovery(
         organizationId,
@@ -647,7 +647,7 @@ describe('WalletService', () => {
     it('should approve', async () => {
       jest
         .spyOn(TurnkeyActivity, 'ApproveActivityInTurnkey')
-        .mockResolvedValue(activity as ITurnkeyWalletActivity);
+        .mockResolvedValue(activity as IWalletActivity);
       const result = await walletService.approveOrRejectActivity(
         organizationId,
         fingerprint,
@@ -661,7 +661,7 @@ describe('WalletService', () => {
     it('should reject', async () => {
       jest
         .spyOn(TurnkeyActivity, 'RejectActivityInTurnkey')
-        .mockResolvedValue(activity as ITurnkeyWalletActivity);
+        .mockResolvedValue(activity as IWalletActivity);
 
       const result = await walletService.approveOrRejectActivity(
         organizationId,
