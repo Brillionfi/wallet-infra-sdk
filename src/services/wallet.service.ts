@@ -77,10 +77,10 @@ export class WalletService {
         const stamper = new WebauthnStamper({
           rpId: fromOrigin,
         });
-
+        const timestamp = Date.now().toString();
         const requestBody = {
           type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: String(Date.now()),
+          timestampMs: timestamp,
           organizationId: response.organizationId,
           parameters: {
             fingerprint: response.fingerprint,
@@ -90,6 +90,7 @@ export class WalletService {
         const stamped = await stamper.stamp(JSON.stringify(requestBody));
 
         const activity = await this.walletApi.approveOrRejectActivity({
+          timestamp,
           organizationId: response.organizationId,
           fingerprint: response.fingerprint,
           approved: true,
@@ -258,9 +259,11 @@ export class WalletService {
         attestation: attestation,
       };
 
+      const timestamp = Date.now().toString();
+
       const requestBody = {
         type: 'ACTIVITY_TYPE_RECOVER_USER',
-        timestampMs: String(Date.now()),
+        timestampMs: timestamp,
         organizationId,
         parameters: {
           userId,
@@ -273,6 +276,7 @@ export class WalletService {
       );
 
       return await this.walletApi.execRecover({
+        timestamp,
         organizationId,
         userId,
         authenticator,
@@ -295,9 +299,10 @@ export class WalletService {
       });
 
       if (approved) {
+        const timestamp = Date.now().toString();
         const requestBody = {
           type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: String(Date.now()),
+          timestampMs: timestamp,
           organizationId,
           parameters: {
             fingerprint,
@@ -307,25 +312,26 @@ export class WalletService {
         const stamped = await stamper.stamp(JSON.stringify(requestBody));
 
         return await this.walletApi.approveOrRejectActivity({
+          timestamp,
           organizationId,
           fingerprint,
           approved,
           stamped,
         });
       } else {
+        const timestamp = Date.now().toString();
         const requestBody = {
           type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
-          timestampMs: String(Date.now()),
+          timestampMs: timestamp,
           organizationId,
           parameters: {
             fingerprint,
           },
         };
-        const stamped = await this.bundleStamper.stamp(
-          JSON.stringify(requestBody),
-        );
+        const stamped = await stamper.stamp(JSON.stringify(requestBody));
 
         return await this.walletApi.approveOrRejectActivity({
+          timestamp,
           organizationId,
           fingerprint,
           approved,

@@ -270,7 +270,7 @@ export class WalletApi {
     logger.debug(`${this.className}: Approve Or Reject Activity`);
     try {
       const response: AxiosResponse = await this.httpClient.post(
-        `wallets/activity/${body.fingerprint}`,
+        `/wallets/activity/${body.fingerprint}`,
         body,
       );
 

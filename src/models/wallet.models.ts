@@ -252,6 +252,7 @@ export const stampedActivitySchema = z.object({
 });
 
 export const ExecRecoverySchema = z.object({
+  timestamp: z.string(),
   organizationId: z.string(),
   userId: z.string(),
   authenticator: z
@@ -262,6 +263,7 @@ export const ExecRecoverySchema = z.object({
 export type TExecRecoveryRequest = z.infer<typeof ExecRecoverySchema>;
 
 export const ApproveRejectActivitySchema = z.object({
+  timestamp: z.string(),
   organizationId: z.string(),
   fingerprint: z.string(),
   approved: z.boolean(),
