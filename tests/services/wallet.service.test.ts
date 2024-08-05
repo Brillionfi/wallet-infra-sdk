@@ -88,9 +88,13 @@ describe('WalletService', () => {
     ],
   };
 
-  const authenticationType = {
+  const authentication = {
     challenge,
     attestation,
+  };
+
+  const apiKey = {
+    publicKey: 'fakePublicKey',
   };
 
   beforeEach(() => {
@@ -106,12 +110,12 @@ describe('WalletService', () => {
   });
 
   describe('createWallet', () => {
-    it('should create a new wallet', async () => {
+    it('should create a new wallet with APIKey authentication', async () => {
       const example: IWallet = {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: apiKey,
       };
 
       const data = {
@@ -119,7 +123,7 @@ describe('WalletService', () => {
           [WalletTypes.EOA.toLowerCase()]: {
             walletName: 'name',
             walletFormat: WalletFormats.ETHEREUM,
-            [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+            [WalletKeys.AUTHENTICATION]: apiKey,
           },
         },
       } as IWalletAPI;
@@ -130,7 +134,6 @@ describe('WalletService', () => {
           walletFormat: WalletFormats.ETHEREUM,
           walletType: WalletTypes.EOA,
           walletName: 'name',
-          authenticationType: authenticationType,
         },
       };
 
@@ -144,7 +147,46 @@ describe('WalletService', () => {
         [WalletKeys.ADDRESS]: 'walletAddress',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.NAME]: 'name',
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+      });
+    });
+
+    it('should create a new wallet with passkey authentication', async () => {
+      const example: IWallet = {
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.NAME]: 'name',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.AUTHENTICATION]: authentication,
+      };
+
+      const data = {
+        walletType: {
+          [WalletTypes.EOA.toLowerCase()]: {
+            walletName: 'name',
+            walletFormat: WalletFormats.ETHEREUM,
+            [WalletKeys.AUTHENTICATION]: authentication,
+          },
+        },
+      } as IWalletAPI;
+
+      const response = {
+        eoa: {
+          walletAddress: 'walletAddress',
+          walletFormat: WalletFormats.ETHEREUM,
+          walletType: WalletTypes.EOA,
+          walletName: 'name',
+        },
+      };
+
+      walletApi.createWallet = jest.fn().mockResolvedValue(response);
+
+      const result = await walletService.createWallet(example);
+
+      expect(walletApi.createWallet).toHaveBeenCalledWith(data);
+      expect(result).toEqual({
+        [WalletKeys.TYPE]: WalletTypes.EOA,
+        [WalletKeys.ADDRESS]: 'walletAddress',
+        [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
+        [WalletKeys.NAME]: 'name',
       });
     });
 
@@ -153,7 +195,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       jest.spyOn(WalletSchemaAPI, 'parse').mockImplementation(() => {
@@ -170,7 +212,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const error = new Error('Failed to create wallet');
@@ -185,7 +227,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const invalidResponse = {} as IWalletResponse;
