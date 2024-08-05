@@ -1,8 +1,4 @@
-import {
-  Address,
-  ChainId,
-  TApproveAndRejectSignTxRequest,
-} from '@models/common.models';
+import { Address, ChainId } from '@models/common.models';
 import { ITransaction, TransactionSchema } from '@models/transaction.models';
 import type {
   IWallet,
@@ -18,6 +14,7 @@ import type {
   IWalletNotifications,
   IWalletPortfolio,
   IExecRecovery,
+  TApproveAndRejectSignTxRequest,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
