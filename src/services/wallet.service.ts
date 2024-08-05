@@ -13,9 +13,9 @@ import {
   WalletNonceResponseSchema,
   IWalletRecovery,
   IWalletPortfolio,
-  IWalletSignTransactionService,
   IWalletNotifications,
-  IWalletActivity,
+  IExecRecovery,
+  IWalletSignTransactionResponse,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -64,14 +64,11 @@ export class WalletService {
     address: Address,
     data: IWalletSignTransaction,
     fromOrigin: string,
-  ): Promise<IWalletSignTransactionService> {
+  ): Promise<IWalletSignTransactionResponse> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
     try {
-      const { data: response } = await this.walletApi.signTransaction(
-        address,
-        data,
-      );
+      const response = await this.walletApi.signTransaction(address, data);
 
       if (response.needsApproval) {
         const stamper = new WebauthnStamper({
@@ -89,19 +86,13 @@ export class WalletService {
 
         const stamped = await stamper.stamp(JSON.stringify(requestBody));
 
-        const activity = await this.walletApi.approveOrRejectActivity({
+        return await this.walletApi.approveSignTransaction({
+          address,
           timestamp,
           organizationId: response.organizationId,
           fingerprint: response.fingerprint,
-          approved: true,
           stamped,
         });
-
-        return {
-          ...response,
-          signedTransaction:
-            activity.result?.signTransactionResult?.signedTransaction,
-        };
       } else {
         return response;
       }
@@ -213,7 +204,7 @@ export class WalletService {
     passkeyName: string,
     bundle: string,
     fromOrigin: string,
-  ): Promise<IWalletActivity> {
+  ): Promise<IExecRecovery> {
     logger.info(`${this.className}: Wallet recovery executed`);
     try {
       await this.bundleStamper.injectCredentialBundle(bundle);
@@ -287,57 +278,70 @@ export class WalletService {
     }
   }
 
-  public async approveOrRejectActivity(
+  public async approveTransaction(
+    address: string,
     organizationId: string,
     fingerprint: string,
-    approved: boolean,
     fromOrigin: string,
-  ): Promise<IWalletActivity> {
+  ): Promise<IWalletSignTransactionResponse> {
     try {
       const stamper = new WebauthnStamper({
         rpId: fromOrigin,
       });
 
-      if (approved) {
-        const timestamp = Date.now().toString();
-        const requestBody = {
-          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: timestamp,
-          organizationId,
-          parameters: {
-            fingerprint,
-          },
-        };
-
-        const stamped = await stamper.stamp(JSON.stringify(requestBody));
-
-        return await this.walletApi.approveOrRejectActivity({
-          timestamp,
-          organizationId,
+      const timestamp = Date.now().toString();
+      const requestBody = {
+        type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
           fingerprint,
-          approved,
-          stamped,
-        });
-      } else {
-        const timestamp = Date.now().toString();
-        const requestBody = {
-          type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
-          timestampMs: timestamp,
-          organizationId,
-          parameters: {
-            fingerprint,
-          },
-        };
-        const stamped = await stamper.stamp(JSON.stringify(requestBody));
+        },
+      };
 
-        return await this.walletApi.approveOrRejectActivity({
-          timestamp,
-          organizationId,
+      const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+      return await this.walletApi.approveSignTransaction({
+        address,
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
+  public async rejectTransaction(
+    address: string,
+    organizationId: string,
+    fingerprint: string,
+    fromOrigin: string,
+  ): Promise<IWalletSignTransactionResponse> {
+    try {
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+      });
+
+      const timestamp = Date.now().toString();
+      const requestBody = {
+        type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
           fingerprint,
-          approved,
-          stamped,
-        });
-      }
+        },
+      };
+      const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+      return await this.walletApi.rejectSignTransaction({
+        address,
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
     } catch (error) {
       throw new CustomError('Failed to make a decision');
     }
