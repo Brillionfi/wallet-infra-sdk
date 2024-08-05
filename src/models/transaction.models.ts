@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ChainIdSchema } from './common.models';
+import { stampedActivitySchema } from './wallet.models';
 
 export enum TransactionTypeKeys {
   SIGNED = 'signed',
@@ -86,6 +87,22 @@ export const TransactionUnsignedSchema = z.object({
   [TransactionKeys.CHAIN_ID]: z.string(),
 });
 
+export const SignTransactionSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  timestamp: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export const SignTransactionResponseSchema = z.object({
+  status: z.string(),
+  signedTransaction: z.string().optional(),
+});
+
 export type ITransaction = z.infer<typeof TransactionSchema>;
 export type ITransactionSigned = z.infer<typeof TransactionSignedSchema>;
 export type ITransactionUnsigned = z.infer<typeof TransactionUnsignedSchema>;
+export type ISignTransactionSchema = z.infer<typeof SignTransactionSchema>;
+export type ISignTransactionResponse = z.infer<
+  typeof SignTransactionResponseSchema
+>;
