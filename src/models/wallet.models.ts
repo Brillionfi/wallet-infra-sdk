@@ -13,7 +13,7 @@ export enum WalletKeys {
   NAME = 'name',
   FORMAT = 'format',
   OWNER = 'owner',
-  AUTHENTICATION_TYPE = 'authenticationType',
+  AUTHENTICATION = 'authentication',
 }
 
 export enum WalletTypes {
@@ -54,7 +54,7 @@ export const WalletSchema = z.object({
   [WalletKeys.NAME]: z.string(),
   [WalletKeys.FORMAT]: WalletFormatsSchema,
   [WalletKeys.OWNER]: z.string().optional(),
-  [WalletKeys.AUTHENTICATION_TYPE]: PasskeyAuthenticationSchema.optional(),
+  [WalletKeys.AUTHENTICATION]: PasskeyAuthenticationSchema.optional(),
 });
 
 export const WalletSchemaAPI = z.object({
@@ -63,7 +63,7 @@ export const WalletSchemaAPI = z.object({
       .object({
         walletName: z.string(),
         walletFormat: WalletFormatsSchema,
-        authenticationType: PasskeyAuthenticationSchema,
+        authentication: PasskeyAuthenticationSchema,
       })
       .optional(),
   }),
@@ -75,7 +75,7 @@ export const WalletResponseSchema = z.record(
     walletFormat: WalletFormatsSchema,
     walletType: WalletTypesSchema,
     walletName: z.string(),
-    authenticationType: PasskeyAuthenticationSchema.optional(),
+    authentication: PasskeyAuthenticationSchema.optional(),
   }),
 );
 

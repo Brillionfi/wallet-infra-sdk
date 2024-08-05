@@ -88,7 +88,7 @@ describe('WalletService', () => {
     ],
   };
 
-  const authenticationType = {
+  const authentication = {
     challenge,
     attestation,
   };
@@ -111,7 +111,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const data = {
@@ -119,7 +119,7 @@ describe('WalletService', () => {
           [WalletTypes.EOA.toLowerCase()]: {
             walletName: 'name',
             walletFormat: WalletFormats.ETHEREUM,
-            [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+            [WalletKeys.AUTHENTICATION]: authentication,
           },
         },
       } as IWalletAPI;
@@ -130,7 +130,7 @@ describe('WalletService', () => {
           walletFormat: WalletFormats.ETHEREUM,
           walletType: WalletTypes.EOA,
           walletName: 'name',
-          authenticationType: authenticationType,
+          authentication: authentication,
         },
       };
 
@@ -144,7 +144,7 @@ describe('WalletService', () => {
         [WalletKeys.ADDRESS]: 'walletAddress',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.NAME]: 'name',
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       });
     });
 
@@ -153,7 +153,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       jest.spyOn(WalletSchemaAPI, 'parse').mockImplementation(() => {
@@ -170,7 +170,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const error = new Error('Failed to create wallet');
@@ -185,7 +185,7 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION_TYPE]: authenticationType,
+        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const invalidResponse = {} as IWalletResponse;
