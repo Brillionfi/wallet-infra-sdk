@@ -47,7 +47,6 @@ const handleAxiosError = (error: AxiosError): void => {
       ) {
         logger.error(`Internal Error (${statusCode}):`, errorMessage);
         logger.error('Retrying ...');
-        // TODO: implement retry mechanism
       } else {
         logger.error(`Unexpected API Error (${statusCode}):`, errorMessage);
       }

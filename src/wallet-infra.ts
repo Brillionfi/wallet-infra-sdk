@@ -1,5 +1,6 @@
 import { WalletService } from '@services/wallet.service';
 import { TransactionService } from '@services/transaction.service';
+import { KycService } from '@services/kyc.service';
 import { HttpClient } from './utils';
 import { Config } from './config';
 import { AuthProvider, AuthProviderSchema } from '@models/auth.models';
@@ -9,6 +10,7 @@ export class WalletInfra {
   public Transaction: TransactionService;
   public Wallet: WalletService;
   public Token: TokenService;
+  public Kyc: KycService;
   private appId: string;
   private httpClient: HttpClient;
   private config: Config;
@@ -23,6 +25,7 @@ export class WalletInfra {
     this.Transaction = new TransactionService(this.httpClient);
     this.Token = new TokenService(this.httpClient);
     this.Wallet = new WalletService(this.httpClient);
+    this.Kyc = new KycService(this.httpClient);
   }
 
   public generateAuthUrl(redirectUrl: string, provider: AuthProvider): string {

@@ -2,6 +2,7 @@ export { WalletInfra } from './wallet-infra';
 export { TokenService } from './services/token.service';
 export { TransactionService } from './services/transaction.service';
 export { WalletService } from './services/wallet.service';
+export { KycService } from './services/kyc.service';
 export { AuthProvider } from './models/auth.models';
 export {
   ITransactionSigned,
