@@ -16,7 +16,7 @@ const newWallet: IWallet = {
   walletType: WalletTypes.EOA,
   walletName: "MyFirstWallet",
   walletFormat: WalletFormats.ETHEREUM,
-  authenticationType: PasskeyAuthenticationSchema,
+  authentication: PasskeyAuthenticationSchema,
 };
 
 await walletInfra.Wallet.createWallet(newWallet);

@@ -36,7 +36,7 @@ The `IWallet` interface represents the structure of a wallet. Here's a breakdown
 - **Type**: `string`
 - **Description**: The owner of the wallet.
 
-### `authenticationType`
+### `authentication`
 
 - **Type**: `PasskeyAuthenticationSchema`
 - **Description**: The schema defining the authentication type for the wallet.

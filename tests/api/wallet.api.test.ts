@@ -45,7 +45,7 @@ describe('Wallet', () => {
     ],
   };
 
-  const authenticationType = {
+  const authentication = {
     challenge,
     attestation,
   };
@@ -72,7 +72,7 @@ describe('Wallet', () => {
           [WalletTypes.EOA]: {
             walletName,
             walletFormat: WalletFormats.ETHEREUM,
-            authenticationType,
+            authentication,
           },
         },
       } as IWalletAPI;

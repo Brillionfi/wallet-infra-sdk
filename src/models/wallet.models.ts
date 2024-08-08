@@ -13,7 +13,7 @@ export enum WalletKeys {
   NAME = 'name',
   FORMAT = 'format',
   OWNER = 'owner',
-  AUTHENTICATION_TYPE = 'authenticationType',
+  AUTHENTICATION = 'authentication',
 }
 
 export enum WalletTypes {
@@ -48,13 +48,20 @@ export const PasskeyAuthenticationSchema = z.object({
   }),
 });
 
+export const ApiKeyAuthenticationSchema = z.object({
+  publicKey: z.string(),
+});
+
 export const WalletSchema = z.object({
   [WalletKeys.ADDRESS]: z.string().optional(),
   [WalletKeys.TYPE]: WalletTypesSchema,
   [WalletKeys.NAME]: z.string(),
   [WalletKeys.FORMAT]: WalletFormatsSchema,
   [WalletKeys.OWNER]: z.string().optional(),
-  [WalletKeys.AUTHENTICATION_TYPE]: PasskeyAuthenticationSchema.optional(),
+  [WalletKeys.AUTHENTICATION]: z.union([
+    PasskeyAuthenticationSchema.optional(),
+    ApiKeyAuthenticationSchema.optional(),
+  ]),
 });
 
 export const WalletSchemaAPI = z.object({
@@ -63,7 +70,10 @@ export const WalletSchemaAPI = z.object({
       .object({
         walletName: z.string(),
         walletFormat: WalletFormatsSchema,
-        authenticationType: PasskeyAuthenticationSchema,
+        authentication: z.union([
+          PasskeyAuthenticationSchema,
+          ApiKeyAuthenticationSchema,
+        ]),
       })
       .optional(),
   }),
@@ -75,7 +85,6 @@ export const WalletResponseSchema = z.record(
     walletFormat: WalletFormatsSchema,
     walletType: WalletTypesSchema,
     walletName: z.string(),
-    authenticationType: PasskeyAuthenticationSchema.optional(),
   }),
 );
 

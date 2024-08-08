@@ -363,7 +363,7 @@ export class WalletService {
           [data[WalletKeys.TYPE].toLocaleLowerCase()]: {
             walletName: data[WalletKeys.NAME],
             walletFormat: data[WalletKeys.FORMAT],
-            authenticationType: data[WalletKeys.AUTHENTICATION_TYPE],
+            authentication: data[WalletKeys.AUTHENTICATION],
           },
         },
       });
@@ -382,7 +382,6 @@ export class WalletService {
         [WalletKeys.ADDRESS]: walletData.walletAddress,
         [WalletKeys.FORMAT]: walletData.walletFormat,
         [WalletKeys.NAME]: walletData.walletName,
-        [WalletKeys.AUTHENTICATION_TYPE]: walletData.authenticationType,
       };
     } catch (error) {
       throw new CustomError('Failed to create wallet response');
