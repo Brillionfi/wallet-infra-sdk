@@ -265,7 +265,7 @@ export class WalletApi {
   public async approveSignTransaction(
     body: TApproveAndRejectSignTxRequest,
   ): Promise<IWalletSignTransactionResponse> {
-    logger.debug(`${this.className}: Approve Or Reject Activity`);
+    logger.debug(`${this.className}: Approving transaction`);
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/wallets/${body.address}/sign/${body.fingerprint}/approve`,
@@ -281,7 +281,7 @@ export class WalletApi {
   public async rejectSignTransaction(
     body: TApproveAndRejectSignTxRequest,
   ): Promise<IWalletSignTransactionResponse> {
-    logger.debug(`${this.className}: Approve Or Reject Activity`);
+    logger.debug(`${this.className}: Rejecting transaction`);
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/wallets/${body.address}/sign/${body.fingerprint}/reject`,

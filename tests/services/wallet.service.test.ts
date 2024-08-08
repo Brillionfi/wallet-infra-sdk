@@ -11,8 +11,7 @@ import {
   IWalletNonceAPI,
   IWalletRecovery,
   IWalletNotifications,
-  WalletActivitySchema,
-  IWalletActivity,
+  WalletSignTransactionResponseSchema,
 } from '@models/wallet.models';
 import { SUPPORTED_CHAINS } from '@models/common.models';
 import { APIError, CustomError } from '@utils/errors';
@@ -25,7 +24,6 @@ import { BundleStamper, WebauthnStamper } from '@utils/stampers';
 import * as BundleUtils from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 import axios from 'axios';
 import { PublicKeyCredentialWithAttestationJSON } from '@utils/stampers/webAuthnStamper/webauthn-json';
-import * as TurnkeyActivity from '@utils/turnkey';
 
 jest.mock('@api/wallet.api');
 jest.mock('axios');
@@ -237,8 +235,9 @@ describe('WalletService', () => {
         fingerprint: '123',
         activityId: '123',
         signedTransaction: '0x1234',
+        status: 'status',
       };
-      walletApi.signTransaction.mockResolvedValueOnce({ data: response });
+      walletApi.signTransaction.mockResolvedValueOnce(response);
 
       const result = await walletService.signTransaction(
         wallet,
@@ -251,7 +250,7 @@ describe('WalletService', () => {
     });
 
     it('should return signed tx with quorum required', async () => {
-      WalletActivitySchema.parse = jest.fn().mockResolvedValue({
+      WalletSignTransactionResponseSchema.parse = jest.fn().mockResolvedValue({
         result: {
           signTransactionResult: {
             signedTransaction: '0x1234',
@@ -265,21 +264,19 @@ describe('WalletService', () => {
         fingerprint: '123',
         activityId: '123',
         signedTransaction: '',
+        status: 'status',
       };
 
-      walletApi.signTransaction.mockResolvedValueOnce({ data: response });
+      walletApi.signTransaction.mockResolvedValueOnce(response);
+
       jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
         stampHeaderName: 'name',
         stampHeaderValue: 'value',
       });
-      mockedAxios.post.mockResolvedValue({
-        data: {
-          activity: {
-            result: {
-              signTransactionResult: { signedTransaction: '0x1234' },
-            },
-          },
-        },
+
+      walletApi.approveSignTransaction.mockResolvedValueOnce({
+        ...response,
+        signedTransaction: '0x1234',
       });
 
       const result = await walletService.signTransaction(
@@ -320,8 +317,16 @@ describe('WalletService', () => {
           createdAt: '123456',
           updatedAt: '123456',
           updatedBy: '123456',
+          organizationId: 'organizationId',
+          fingerprint: 'fingerprint',
         },
       ];
+
+      mockedAxios.get.mockResolvedValue({
+        data: {
+          example,
+        },
+      });
 
       walletApi.getTransactionHistory.mockResolvedValueOnce(example);
 
@@ -522,15 +527,6 @@ describe('WalletService', () => {
       const organizationId = '44d9a7f9-f745-4b10-ae66-028bc2fc45c0';
       const userId = 'fab988c5-62bf-4ea8-9201-dbf670c42626';
 
-      const recoveryData: IWalletRecovery = {
-        eoa: {
-          organizationId,
-          userId,
-          needsApproval: false,
-          fingerprint: 'fingerprint',
-          activityId: 'activityId',
-        },
-      };
       jest.spyOn(BundleUtils, 'create').mockResolvedValue({
         id: 'id',
         response: {
@@ -543,20 +539,12 @@ describe('WalletService', () => {
         stampHeaderName: 'name',
         stampHeaderValue: 'value',
       });
-      const activity = {
-        fingerprint: recoveryData.eoa.fingerprint,
-        id: 'activityId',
-        status: 'status',
-      };
-      mockedAxios.post.mockResolvedValue({
-        data: {
-          activity,
-        },
-      });
 
-      jest
-        .spyOn(WalletActivitySchema, 'parse')
-        .mockImplementation(() => activity as IWalletActivity);
+      const mockResponse = {
+        status: 'recovered',
+      };
+
+      walletApi.execRecover.mockResolvedValue(mockResponse);
 
       const result = await walletService.execRecovery(
         organizationId,
@@ -566,7 +554,7 @@ describe('WalletService', () => {
         'localhost',
       );
 
-      expect(result).toEqual(recoveryData);
+      expect(result).toEqual(mockResponse);
       expect(logger.info).toHaveBeenCalledWith(
         'WalletService: Wallet recovery executed',
       );
@@ -621,56 +609,77 @@ describe('WalletService', () => {
     });
   });
 
-  describe('approveOrRejectActivity', () => {
+  describe('Approve Or Reject Sign Tx', () => {
     const organizationId = 'id';
     const fingerprint = 'fingerprint';
-    const activity = {
-      fingerprint: 'fingerprint',
-      id: 'activityId',
+    const response = {
+      organizationId,
+      needsApproval: true,
+      fingerprint,
+      activityId: '123',
+      signedTransaction: '',
       status: 'status',
     };
 
     it('should throw an error when any action fails', async () => {
-      jest
-        .spyOn(TurnkeyActivity, 'ApproveActivityInTurnkey')
-        .mockRejectedValue(new Error('approve error'));
       await expect(
-        walletService.approveOrRejectActivity(
+        walletService.approveTransaction(
+          'address',
           organizationId,
           fingerprint,
-          true,
+          'localhost',
+        ),
+      ).rejects.toThrow('Failed to make a decision');
+    });
+
+    it('should throw an error when any action fails', async () => {
+      await expect(
+        walletService.rejectTransaction(
+          'address',
+          organizationId,
+          fingerprint,
           'localhost',
         ),
       ).rejects.toThrow('Failed to make a decision');
     });
 
     it('should approve', async () => {
-      jest
-        .spyOn(TurnkeyActivity, 'ApproveActivityInTurnkey')
-        .mockResolvedValue(activity as IWalletActivity);
-      const result = await walletService.approveOrRejectActivity(
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+
+      walletApi.approveSignTransaction.mockResolvedValueOnce({
+        ...response,
+        signedTransaction: '0x1234',
+      });
+
+      const result = await walletService.approveTransaction(
+        'address',
         organizationId,
         fingerprint,
-        true,
         'localhost',
       );
 
-      expect(result).toEqual(activity);
+      expect(result).toEqual({ ...response, signedTransaction: '0x1234' });
     });
 
     it('should reject', async () => {
-      jest
-        .spyOn(TurnkeyActivity, 'RejectActivityInTurnkey')
-        .mockResolvedValue(activity as IWalletActivity);
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
 
-      const result = await walletService.approveOrRejectActivity(
+      walletApi.rejectSignTransaction.mockResolvedValueOnce(response);
+
+      const result = await walletService.rejectTransaction(
+        'address',
         organizationId,
         fingerprint,
-        false,
         'localhost',
       );
 
-      expect(result).toEqual(result);
+      expect(result).toEqual(response);
     });
   });
 });

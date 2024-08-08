@@ -2,6 +2,7 @@ import { WalletApi } from '@api/wallet.api';
 import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
 import {
+  IExecRecoveryRequest,
   IWalletAPI,
   IWalletNotifications,
   WalletFormats,
@@ -145,13 +146,13 @@ describe('Wallet', () => {
         fingerprint: '123',
         activityId: '123',
         signedTransaction: '0x1234',
+        status: 'status',
       };
       httpClientMock.post = jest
         .fn()
         .mockResolvedValue({ data: { data: response } });
 
       const result = await wallet.signTransaction('address', data);
-
       expect(logger.debug).toHaveBeenCalledWith(
         'WalletApi: Signing transaction',
       );
@@ -159,7 +160,7 @@ describe('Wallet', () => {
         '/wallets/address/sign',
         data,
       );
-      expect(result).toEqual({ data: response });
+      expect(result).toEqual(response);
     });
   });
 
@@ -340,6 +341,8 @@ describe('Wallet', () => {
           maxPriorityFeePerGas: 1,
           nonce: 1,
           data: '0x',
+          fingerprint: 'fingerprint',
+          organizationId: 'organizationId',
         },
       ];
 
@@ -457,6 +460,56 @@ describe('Wallet', () => {
     });
   });
 
+  describe('execRecovery', () => {
+    const request = {
+      organizationId: '',
+      userId: '',
+      timestamp: '',
+      authenticator: {
+        authenticatorName: '',
+        challenge: '',
+        attestation: {
+          credentialId: '',
+          clientDataJson: '',
+          attestationObject: '',
+          transports: [''],
+        },
+      },
+      stamped: {
+        stampHeaderName: '',
+        stampHeaderValue: '',
+      },
+    };
+    it('should throw error if recovery fails', async () => {
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(
+        wallet.execRecover({} as IExecRecoveryRequest),
+      ).rejects.toThrow('error');
+    });
+
+    it('should call post on HttpClient when execRecovery is called', async () => {
+      const response = {
+        data: {
+          status: 'recovered',
+        },
+      };
+
+      httpClientMock.post = jest.fn().mockResolvedValue(response);
+
+      const result = await wallet.execRecover(request);
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Wallet Recovery Execute',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/wallets/recovery/execute`,
+        request,
+      );
+      expect(result).toEqual(response.data);
+    });
+  });
+
   describe('getPortfolio', () => {
     it('should throw error if getPortfolio fails', async () => {
       httpClientMock.get = jest.fn().mockRejectedValue(new Error('error'));
@@ -509,6 +562,90 @@ describe('Wallet', () => {
         'WalletApi: Get Wallet Notifications',
       );
       expect(httpClientMock.get).toHaveBeenCalledWith(`/wallets/notifications`);
+      expect(result).toEqual(response);
+    });
+  });
+
+  describe('approveSignTransaction', () => {
+    const data = {
+      timestamp: 'timestamp',
+      organizationId: 'organizationId',
+      stamped: {
+        stampHeaderName: 'stampHeaderName',
+        stampHeaderValue: 'stampHeaderValue',
+      },
+      address: 'address',
+      fingerprint: 'fingerprint',
+    };
+
+    it('should throw error if approveSignTransaction fails', async () => {
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(wallet.approveSignTransaction(data)).rejects.toThrow(
+        'error',
+      );
+    });
+
+    it('should call post on HttpClient when approveSignTransaction is called', async () => {
+      const response = {
+        organizationId: '123',
+        needsApproval: false,
+        fingerprint: '123',
+        activityId: '123',
+        signedTransaction: '0x1234',
+        status: 'status',
+      };
+      httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
+
+      const result = await wallet.approveSignTransaction(data);
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Approving transaction',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/wallets/${data.address}/sign/${data.fingerprint}/approve`,
+        data,
+      );
+      expect(result).toEqual(response);
+    });
+  });
+
+  describe('rejectSignTransaction', () => {
+    const data = {
+      timestamp: 'timestamp',
+      organizationId: 'organizationId',
+      stamped: {
+        stampHeaderName: 'stampHeaderName',
+        stampHeaderValue: 'stampHeaderValue',
+      },
+      address: 'address',
+      fingerprint: 'fingerprint',
+    };
+
+    it('should throw error if rejectSignTransaction fails', async () => {
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(wallet.rejectSignTransaction(data)).rejects.toThrow('error');
+    });
+
+    it('should call post on HttpClient when rejectSignTransaction is called', async () => {
+      const response = {
+        organizationId: '123',
+        needsApproval: false,
+        fingerprint: '123',
+        activityId: '123',
+        signedTransaction: '0x1234',
+        status: 'status',
+      };
+      httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
+
+      const result = await wallet.rejectSignTransaction(data);
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Rejecting transaction',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/wallets/${data.address}/sign/${data.fingerprint}/reject`,
+        data,
+      );
       expect(result).toEqual(response);
     });
   });
