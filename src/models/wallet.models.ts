@@ -94,23 +94,19 @@ export const WalletSignTransactionSchema = z.object({
   unsignedTransaction: non0xString,
 });
 
-export const WalletSignTransactionResponseSchema = z.object({
-  data: z.object({
-    organizationId: z.string(),
-    needsApproval: z.boolean(),
-    fingerprint: z.string(),
-    activityId: z.string(),
-    signedTransaction: z.string().optional(),
-  }),
-});
-
-export const WalletSignTransactionServiceResponseSchema = z.object({
+export const ActivityResponseSchema = z.object({
+  status: z.string(),
   organizationId: z.string(),
   needsApproval: z.boolean(),
   fingerprint: z.string(),
   activityId: z.string(),
-  signedTransaction: z.string().optional(),
 });
+
+export const WalletSignTransactionResponseSchema = ActivityResponseSchema.merge(
+  z.object({
+    signedTransaction: z.string().optional(),
+  }),
+);
 
 export const WalletTransactionSchema = z.object({
   transactionId: z.string(),
@@ -208,60 +204,44 @@ export const WalletNotificationsSchema = z.array(
   }),
 );
 
-export const TurnkeyWalletActivitySchema = z.object({
-  id: z.string(),
-  fingerprint: z.string(),
-  organizationId: z.string(),
-  type: z.string(),
-  status: z.string(),
-  createdAt: z
-    .object({
-      seconds: z.string(),
-    })
-    .transform((arg) => arg.seconds + '000'),
-  updatedAt: z
-    .object({
-      seconds: z.string(),
-    })
-    .transform((arg) => arg.seconds + '000'),
-  canApprove: z.boolean(),
-  canReject: z.boolean(),
-  votes: z
-    .array(
-      z.object({
-        selection: z.string(),
-        userId: z.string(),
-        user: z.object({
-          userName: z.string().optional(),
-          userEmail: z.string().optional(),
-        }),
-      }),
-    )
-    .optional(),
-  intent: z.object({}).passthrough(),
-  result: z
-    .object({
-      signTransactionResult: z
-        .object({
-          signedTransaction: z.string().optional(),
-        })
-        .optional(),
-    })
-    .passthrough()
-    .optional(),
+export const stampedActivitySchema = z.object({
+  stampHeaderName: z.string(),
+  stampHeaderValue: z.string(),
 });
 
+export const ExecRecoverySchema = z.object({
+  timestamp: z.string(),
+  organizationId: z.string(),
+  userId: z.string(),
+  authenticator: z
+    .object({ authenticatorName: z.string() })
+    .merge(PasskeyAuthenticationSchema),
+  stamped: stampedActivitySchema,
+});
+
+export const ExecRecoveryResponseSchema = z.object({
+  status: z.string(),
+});
+
+export const ApproveAndRejectSignTxSchema = z.object({
+  address: EthereumAddressSchema,
+  timestamp: z.string(),
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export type TApproveAndRejectSignTxRequest = z.infer<
+  typeof ApproveAndRejectSignTxSchema
+>;
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
 export type IWalletSignTransaction = z.infer<
   typeof WalletSignTransactionSchema
 >;
-export type IWalletSignTransactionAPI = z.infer<
+export type IWalletSignTransactionResponse = z.infer<
   typeof WalletSignTransactionResponseSchema
->;
-export type IWalletSignTransactionService = z.infer<
-  typeof WalletSignTransactionServiceResponseSchema
 >;
 export type IWalletGasConfiguration = z.infer<
   typeof WalletGasConfigurationSchema
@@ -275,6 +255,6 @@ export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
 export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;
 export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;
-export type ITurnkeyWalletActivity = z.infer<
-  typeof TurnkeyWalletActivitySchema
->;
+export type TStampedActivitySchema = z.infer<typeof stampedActivitySchema>;
+export type IExecRecoveryRequest = z.infer<typeof ExecRecoverySchema>;
+export type IExecRecovery = z.infer<typeof ExecRecoveryResponseSchema>;

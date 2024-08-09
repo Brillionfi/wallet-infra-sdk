@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ChainIdSchema } from './common.models';
+import { stampedActivitySchema } from './wallet.models';
 
 export enum TransactionTypeKeys {
   SIGNED = 'signed',
@@ -12,6 +13,8 @@ export enum TransactionStatusKeys {
   SUCCESS = 'success',
   FAILED = 'failed',
   CANCELED = 'canceled',
+  REJECTED = 'rejected',
+  APPROVED = 'approved',
 }
 
 export enum TransactionKeys {
@@ -36,6 +39,8 @@ export enum TransactionKeys {
   UPDATED_BY = 'updatedBy',
   AUTHENTICATED_BY = 'authenticatedBy',
   AUTHENTICATED_METHOD = 'authenticationMethod',
+  FINGERPRINT = 'fingerprint',
+  ORGANIZATION_ID = 'organizationId',
 }
 
 export const TransactionTypeSchema = z.union([
@@ -49,6 +54,8 @@ export const TransactionStatusSchema = z.enum([
   TransactionStatusKeys.SUCCESS,
   TransactionStatusKeys.FAILED,
   TransactionStatusKeys.CANCELED,
+  TransactionStatusKeys.REJECTED,
+  TransactionStatusKeys.APPROVED,
 ]);
 
 export const TransactionSchema = z.object({
@@ -70,6 +77,8 @@ export const TransactionSchema = z.object({
   [TransactionKeys.STATUS]: TransactionStatusSchema.optional(),
   [TransactionKeys.AUTHENTICATED_BY]: z.string().optional(),
   [TransactionKeys.AUTHENTICATED_METHOD]: z.string().optional(),
+  [TransactionKeys.FINGERPRINT]: z.string(),
+  [TransactionKeys.ORGANIZATION_ID]: z.string(),
 });
 
 export const TransactionSignedSchema = z.object({
@@ -86,6 +95,22 @@ export const TransactionUnsignedSchema = z.object({
   [TransactionKeys.CHAIN_ID]: z.string(),
 });
 
+export const SignTransactionSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  timestamp: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export const SignTransactionResponseSchema = z.object({
+  status: z.string(),
+  signedTransaction: z.string().optional(),
+});
+
 export type ITransaction = z.infer<typeof TransactionSchema>;
 export type ITransactionSigned = z.infer<typeof TransactionSignedSchema>;
 export type ITransactionUnsigned = z.infer<typeof TransactionUnsignedSchema>;
+export type ISignTransactionSchema = z.infer<typeof SignTransactionSchema>;
+export type ISignTransactionResponse = z.infer<
+  typeof SignTransactionResponseSchema
+>;

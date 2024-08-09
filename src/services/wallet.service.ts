@@ -13,10 +13,9 @@ import {
   WalletNonceResponseSchema,
   IWalletRecovery,
   IWalletPortfolio,
-  IWalletSignTransactionService,
   IWalletNotifications,
-  ITurnkeyWalletActivity,
-  TurnkeyWalletActivitySchema,
+  IExecRecovery,
+  IWalletSignTransactionResponse,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -24,8 +23,8 @@ import logger from 'loglevel';
 import { AxiosError, HttpStatusCode } from 'axios';
 import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
-import { getWebAuthnAttestation, TurnkeyClient } from '@turnkey/http';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
+import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 
 export class WalletService {
   private readonly className: string;
@@ -65,28 +64,35 @@ export class WalletService {
     address: Address,
     data: IWalletSignTransaction,
     fromOrigin: string,
-  ): Promise<IWalletSignTransactionService> {
+  ): Promise<IWalletSignTransactionResponse> {
     logger.info(`${this.className}: Setting Wallet gas configuration`);
 
     try {
-      const { data: response } = await this.walletApi.signTransaction(
-        address,
-        data,
-      );
+      const response = await this.walletApi.signTransaction(address, data);
 
       if (response.needsApproval) {
-        const signResponse = await this.approveOrRejectActivity(
-          response.fingerprint,
-          response.organizationId,
-          true,
-          fromOrigin,
-        );
-
-        return {
-          ...response,
-          signedTransaction:
-            signResponse.result?.signTransactionResult?.signedTransaction,
+        const stamper = new WebauthnStamper({
+          rpId: fromOrigin,
+        });
+        const timestamp = Date.now().toString();
+        const requestBody = {
+          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+          timestampMs: timestamp,
+          organizationId: response.organizationId,
+          parameters: {
+            fingerprint: response.fingerprint,
+          },
         };
+
+        const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+        return await this.walletApi.approveSignTransaction({
+          address,
+          timestamp,
+          organizationId: response.organizationId,
+          fingerprint: response.fingerprint,
+          stamped,
+        });
       } else {
         return response;
       }
@@ -198,16 +204,14 @@ export class WalletService {
     passkeyName: string,
     bundle: string,
     fromOrigin: string,
-  ): Promise<IWalletRecovery> {
+  ): Promise<IExecRecovery> {
     logger.info(`${this.className}: Wallet recovery executed`);
     try {
       await this.bundleStamper.injectCredentialBundle(bundle);
       const challenge = generateRandomBuffer();
       const authenticatorUserId = generateRandomBuffer();
 
-      // An example of possible options can be found here:
-      // https://www.w3.org/TR/webauthn-2/#sctn-sample-registration
-      const attestation = await getWebAuthnAttestation({
+      const assertion = await webAuthCreation({
         publicKey: {
           authenticatorSelection: {
             residentKey: 'preferred',
@@ -218,94 +222,126 @@ export class WalletService {
             id: fromOrigin,
             name: 'Brillion Passkey',
           },
-          challenge,
+          challenge: base64UrlEncode(challenge),
           pubKeyCredParams: [
             { type: 'public-key', alg: -7 },
             { type: 'public-key', alg: -257 },
           ],
           user: {
-            id: authenticatorUserId,
+            id: base64UrlEncode(authenticatorUserId),
             name: passkeyName,
             displayName: passkeyName,
           },
         },
       });
 
-      const client = new TurnkeyClient(
-        {
-          baseUrl: 'https://api.turnkey.com',
-        },
-        this.bundleStamper,
-      );
+      const attestation = {
+        credentialId: assertion.id,
+        clientDataJson: assertion.response.clientDataJSON,
+        attestationObject: assertion.response.attestationObject,
+        transports: assertion.response.transports.map(
+          (arg) => 'AUTHENTICATOR_TRANSPORT_' + arg.toUpperCase(),
+        ),
+      };
 
-      const response = await client.recoverUser({
+      const authenticator = {
+        authenticatorName: passkeyName,
+        challenge: base64UrlEncode(challenge),
+        attestation: attestation,
+      };
+
+      const timestamp = Date.now().toString();
+
+      const requestBody = {
         type: 'ACTIVITY_TYPE_RECOVER_USER',
-        timestampMs: String(Date.now()),
+        timestampMs: timestamp,
         organizationId,
         parameters: {
           userId,
-          authenticator: {
-            authenticatorName: passkeyName,
-            challenge: base64UrlEncode(challenge),
-            attestation: attestation,
-          },
-        },
-      });
-
-      return {
-        eoa: {
-          organizationId,
-          userId,
-          needsApproval:
-            response.activity.status === 'ACTIVITY_STATUS_CONSENSUS_NEEDED',
-          fingerprint: response.activity.fingerprint,
-          activityId: response.activity.id,
+          authenticator,
         },
       };
+
+      const stamped = await this.bundleStamper.stamp(
+        JSON.stringify(requestBody),
+      );
+
+      return await this.walletApi.execRecover({
+        timestamp,
+        organizationId,
+        userId,
+        authenticator,
+        stamped,
+      });
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  public async approveOrRejectActivity(
+  public async approveTransaction(
+    address: string,
     organizationId: string,
     fingerprint: string,
-    decision: boolean,
     fromOrigin: string,
-  ): Promise<ITurnkeyWalletActivity> {
+  ): Promise<IWalletSignTransactionResponse> {
     try {
       const stamper = new WebauthnStamper({
         rpId: fromOrigin,
       });
 
-      const client = new TurnkeyClient(
-        {
-          baseUrl: 'https://api.turnkey.com',
+      const timestamp = Date.now().toString();
+      const requestBody = {
+        type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
+          fingerprint,
         },
-        stamper,
-      );
+      };
 
-      if (decision) {
-        const { activity } = await client.approveActivity({
-          type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-          timestampMs: Date.now().toString(),
-          organizationId,
-          parameters: {
-            fingerprint,
-          },
-        });
-        return TurnkeyWalletActivitySchema.parse(activity);
-      } else {
-        const { activity } = await client.rejectActivity({
-          type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
-          timestampMs: Date.now().toString(),
-          organizationId,
-          parameters: {
-            fingerprint,
-          },
-        });
-        return TurnkeyWalletActivitySchema.parse(activity);
-      }
+      const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+      return await this.walletApi.approveSignTransaction({
+        address,
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
+  public async rejectTransaction(
+    address: string,
+    organizationId: string,
+    fingerprint: string,
+    fromOrigin: string,
+  ): Promise<IWalletSignTransactionResponse> {
+    try {
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+      });
+
+      const timestamp = Date.now().toString();
+      const requestBody = {
+        type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
+          fingerprint,
+        },
+      };
+      const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+      return await this.walletApi.rejectSignTransaction({
+        address,
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
     } catch (error) {
       throw new CustomError('Failed to make a decision');
     }

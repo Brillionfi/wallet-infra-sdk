@@ -7,6 +7,7 @@ import {
   TransactionTypeKeys,
 } from '@models/transaction.models';
 import { HttpClient } from '@utils/http-client';
+import { WebauthnStamper } from '@utils/stampers';
 
 jest.mock('@api/transaction.api');
 jest.mock('@utils/http-client');
@@ -57,6 +58,8 @@ describe('TransactionService', () => {
         data: '0x',
         chainId: SUPPORTED_CHAINS.ETHEREUM,
         status: TransactionStatusKeys.PENDING,
+        organizationId: 'organizationId',
+        fingerprint: 'fingerprint',
       };
 
       transactionApi.createTransaction = jest
@@ -95,6 +98,8 @@ describe('TransactionService', () => {
         data: '0x',
         chainId: SUPPORTED_CHAINS.ETHEREUM,
         status: TransactionStatusKeys.PENDING,
+        organizationId: 'organizationId',
+        fingerprint: 'fingerprint',
       };
 
       transactionApi.createTransaction = jest
@@ -139,6 +144,8 @@ describe('TransactionService', () => {
         data: '0x',
         chainId: SUPPORTED_CHAINS.ETHEREUM,
         status: TransactionStatusKeys.PENDING,
+        organizationId: 'organizationId',
+        fingerprint: 'fingerprint',
       };
 
       transactionApi.getTransactionById.mockResolvedValue(transaction);
@@ -187,6 +194,122 @@ describe('TransactionService', () => {
       await expect(
         transactionService.cancelTransaction(transactionId),
       ).rejects.toThrow(error);
+    });
+  });
+
+  describe('approveSignTransaction', () => {
+    const id = 'id';
+    const organizationId = 'organizationId';
+    const fingerprint = 'fingerprint';
+    const fromOrigin = 'fromOrigin';
+
+    it('should handle errors thrown by the API', async () => {
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+
+      const error = new Error('API Error');
+
+      transactionApi.approveSignTransaction.mockRejectedValue(error);
+
+      await expect(
+        transactionService.approveSignTransaction(
+          id,
+          organizationId,
+          fingerprint,
+          fromOrigin,
+        ),
+      ).rejects.toThrow(error);
+    });
+
+    it('should cancel a transaction successfully', async () => {
+      const response = {
+        status: 'approved',
+        signedTransaction: '0x1234',
+      };
+
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+
+      transactionApi.approveSignTransaction.mockResolvedValue(response);
+
+      await transactionService.approveSignTransaction(
+        id,
+        organizationId,
+        fingerprint,
+        fromOrigin,
+      );
+
+      expect(transactionApi.approveSignTransaction).toHaveBeenCalledWith({
+        id,
+        organizationId,
+        timestamp: expect.anything(),
+        stamped: {
+          stampHeaderName: 'name',
+          stampHeaderValue: 'value',
+        },
+      });
+    });
+  });
+
+  describe('rejectSignTransaction', () => {
+    const id = 'id';
+    const organizationId = 'organizationId';
+    const fingerprint = 'fingerprint';
+    const fromOrigin = 'fromOrigin';
+
+    it('should handle errors thrown by the API', async () => {
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+
+      const error = new Error('API Error');
+
+      transactionApi.rejectSignTransaction.mockRejectedValue(error);
+
+      await expect(
+        transactionService.rejectSignTransaction(
+          id,
+          organizationId,
+          fingerprint,
+          fromOrigin,
+        ),
+      ).rejects.toThrow(error);
+    });
+
+    it('should cancel a transaction successfully', async () => {
+      const response = {
+        status: 'approved',
+        signedTransaction: '',
+      };
+
+      jest.spyOn(WebauthnStamper.prototype, 'stamp').mockResolvedValue({
+        stampHeaderName: 'name',
+        stampHeaderValue: 'value',
+      });
+
+      transactionApi.rejectSignTransaction.mockResolvedValue(response);
+
+      await transactionService.rejectSignTransaction(
+        id,
+        organizationId,
+        fingerprint,
+        fromOrigin,
+      );
+
+      expect(transactionApi.rejectSignTransaction).toHaveBeenCalledWith({
+        id,
+        organizationId,
+        timestamp: expect.anything(),
+        stamped: {
+          stampHeaderName: 'name',
+          stampHeaderValue: 'value',
+        },
+      });
     });
   });
 });

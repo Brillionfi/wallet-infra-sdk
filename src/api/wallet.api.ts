@@ -9,6 +9,12 @@ import type {
   IWalletGasConfigurationAPI,
   IWalletGasEstimation,
   IGetGasFeesParameters,
+  IWalletSignTransactionResponse,
+  IExecRecoveryRequest,
+  IWalletNotifications,
+  IWalletPortfolio,
+  IExecRecovery,
+  TApproveAndRejectSignTxRequest,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -16,7 +22,6 @@ import {
   WalletSchema,
   IWalletSignTransaction,
   WalletSignTransactionResponseSchema,
-  IWalletSignTransactionAPI,
   WalletGasConfigurationSchema,
   WalletGasConfigurationResponseSchema,
   WalletGasEstimationSchema,
@@ -24,6 +29,7 @@ import {
   IWalletRecovery,
   WalletPortfolioSchema,
   WalletNotificationsSchema,
+  ExecRecoveryResponseSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -64,14 +70,14 @@ export class WalletApi {
   public async signTransaction(
     address: Address,
     data: IWalletSignTransaction,
-  ): Promise<IWalletSignTransactionAPI> {
+  ): Promise<IWalletSignTransactionResponse> {
     logger.debug(`${this.className}: Signing transaction`);
     try {
-      const response = await this.httpClient.post(
+      const response: AxiosResponse = await this.httpClient.post(
         `/wallets/${address}/sign`,
         data,
       );
-      return WalletSignTransactionResponseSchema.parse(response.data);
+      return WalletSignTransactionResponseSchema.parse(response.data.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
@@ -213,21 +219,37 @@ export class WalletApi {
     }
   }
 
-  public async getPortfolio(address: Address, chainId: ChainId) {
+  public async execRecover(body: IExecRecoveryRequest): Promise<IExecRecovery> {
+    logger.debug(`${this.className}: Wallet Recovery Execute`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        '/wallets/recovery/execute',
+        body,
+      );
+
+      return ExecRecoveryResponseSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async getPortfolio(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<IWalletPortfolio> {
     logger.debug(`${this.className}: Get Wallet Portfolio`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
         `/wallets/portfolio/${address}/${chainId}`,
       );
 
-      const portfolio = WalletPortfolioSchema.parse(response.data.data);
-      return portfolio;
+      return WalletPortfolioSchema.parse(response.data.data);
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  public async getNotifications() {
+  public async getNotifications(): Promise<IWalletNotifications> {
     logger.debug(`${this.className}: Get Wallet Notifications`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
@@ -235,6 +257,38 @@ export class WalletApi {
       );
 
       return WalletNotificationsSchema.parse(response.data.messages);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveSignTransaction(
+    body: TApproveAndRejectSignTxRequest,
+  ): Promise<IWalletSignTransactionResponse> {
+    logger.debug(`${this.className}: Approving transaction`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/${body.address}/sign/${body.fingerprint}/approve`,
+        body,
+      );
+
+      return WalletSignTransactionResponseSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async rejectSignTransaction(
+    body: TApproveAndRejectSignTxRequest,
+  ): Promise<IWalletSignTransactionResponse> {
+    logger.debug(`${this.className}: Rejecting transaction`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/${body.address}/sign/${body.fingerprint}/reject`,
+        body,
+      );
+
+      return WalletSignTransactionResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error);
     }

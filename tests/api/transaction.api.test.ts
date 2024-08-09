@@ -48,6 +48,8 @@ describe('TransactionApi', () => {
             data: '0x',
             chainId: '1',
             status: 'pending',
+            fingerprint: 'fingerprint',
+            organizationId: 'organizationId',
           },
         },
       };
@@ -96,6 +98,8 @@ describe('TransactionApi', () => {
             data: '0x',
             chainId: '1',
             status: 'pending',
+            fingerprint: 'fingerprint',
+            organizationId: 'organizationId',
           },
         },
       };
@@ -142,6 +146,86 @@ describe('TransactionApi', () => {
       await expect(
         transaction.cancelTransaction(transactionId),
       ).rejects.toThrow(error);
+    });
+  });
+
+  describe('approveSignTransaction', () => {
+    const data = {
+      id: 'id',
+      organizationId: 'organizationId',
+      timestamp: 'timestamp',
+      stamped: {
+        stampHeaderName: 'stampHeaderName',
+        stampHeaderValue: 'stampHeaderValue',
+      },
+    };
+
+    it('should handle errors when approving a transaction', async () => {
+      const error = new Error('Failed to cancel transaction');
+      httpClientMock.post.mockRejectedValue(error);
+
+      await expect(transaction.approveSignTransaction(data)).rejects.toThrow(
+        error,
+      );
+    });
+
+    it('should approve transaction', async () => {
+      const response = {
+        data: {
+          status: 'approved',
+          signedTransaction: '0x1234',
+        },
+      };
+
+      httpClientMock.post.mockResolvedValue({
+        data: response,
+      } as AxiosResponse);
+
+      await transaction.approveSignTransaction(data);
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/transactions/${data.id}/approve`,
+        data,
+      );
+    });
+  });
+
+  describe('rejectSignTransaction', () => {
+    const data = {
+      id: 'id',
+      organizationId: 'organizationId',
+      timestamp: 'timestamp',
+      stamped: {
+        stampHeaderName: 'stampHeaderName',
+        stampHeaderValue: 'stampHeaderValue',
+      },
+    };
+
+    it('should handle errors when approving a transaction', async () => {
+      const error = new Error('Failed to cancel transaction');
+      httpClientMock.post.mockRejectedValue(error);
+
+      await expect(transaction.rejectSignTransaction(data)).rejects.toThrow(
+        error,
+      );
+    });
+
+    it('should reject transaction', async () => {
+      const response = {
+        data: {
+          status: 'rejected',
+          signedTransaction: '',
+        },
+      };
+
+      httpClientMock.post.mockResolvedValue({
+        data: response,
+      } as AxiosResponse);
+
+      await transaction.rejectSignTransaction(data);
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/transactions/${data.id}/reject`,
+        data,
+      );
     });
   });
 });

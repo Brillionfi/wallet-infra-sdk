@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import { get as webauthnCredentialGet } from './webauthn-json';
-import { createHash } from 'sha256-uint8array';
+import { createHash } from 'crypto';
 
 // Header name for a webauthn stamp
 const stampHeaderName = 'X-Stamp-Webauthn';
@@ -21,9 +21,6 @@ export type TWebauthnStamperConfig = {
 const defaultTimeout = 5 * 60 * 1000; // five minutes
 const defaultUserVerification = 'preferred';
 
-/**
- * Stamper to use with `@turnkey/http`'s `TurnkeyClient`
- */
 export class WebauthnStamper {
   rpId: string;
   timeout: number;
@@ -68,6 +65,6 @@ export class WebauthnStamper {
 }
 
 function getChallengeFromPayload(payload: string): Uint8Array {
-  const hexString = createHash().update(payload).digest('hex');
+  const hexString = createHash('sha256').update(payload).digest('hex');
   return new TextEncoder().encode(hexString);
 }
