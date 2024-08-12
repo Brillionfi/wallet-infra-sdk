@@ -1,25 +1,26 @@
 import { IdentityClient, buildSignatureMessage } from '@nexeraid/identity-sdk';
-import { useSignMessage } from 'wagmi';
 import { KycApi } from '@api/index';
 import { ChainId } from '@models/common.models';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
+import { WalletService } from './wallet.service';
+import { WalletFormats, WalletTypes } from '@models/wallet.models';
 
 export class KycService {
   private readonly className: string;
   private kycApi: KycApi;
+  private walletService: WalletService;
   private identityClient: IdentityClient;
 
   constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
     this.kycApi = new KycApi(httpClient);
+    this.walletService = new WalletService(httpClient);
     this.identityClient = new IdentityClient();
   }
 
   public async init(walletAddress: string, chainId: ChainId) {
-    const { signMessageAsync } = useSignMessage();
-
     // Get Access Token
     const publicAddress = walletAddress.toLowerCase();
     const accessToken = await this.kycApi.generateAccessToken(
@@ -29,16 +30,39 @@ export class KycService {
 
     // Configure the signing callback.
     this.identityClient.onSignMessage(async (data: { message: string }) => {
-      return await signMessageAsync({ message: data.message });
+      // todo: refine
+      const signedResponse = await this.walletService.signTransaction(
+        walletAddress,
+        {
+          walletFormat: WalletFormats.ETHEREUM,
+          walletType: WalletTypes.EOA,
+          unsignedTransaction: data.message,
+        },
+        'localhost',
+      );
+
+      if (!signedResponse.signedTransaction) {
+        throw new Error('Failed to sign transaction');
+      }
+
+      return signedResponse.signedTransaction;
     });
 
     // Build the signing message and signature
     const signingMessage = buildSignatureMessage(walletAddress.toLowerCase());
-    const signature = await signMessageAsync({ message: signingMessage });
+    const signature = await this.walletService.signTransaction(
+      walletAddress,
+      {
+        walletFormat: WalletFormats.ETHEREUM,
+        walletType: WalletTypes.EOA,
+        unsignedTransaction: signingMessage,
+      },
+      'localhost',
+    );
 
     return await this.identityClient.init({
       accessToken,
-      signature: signature,
+      signature: signature.signedTransaction,
       signingMessage: signingMessage,
     });
   }
