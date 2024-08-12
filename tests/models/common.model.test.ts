@@ -21,5 +21,6 @@ describe('Common Schemas', () => {
 
   it('Should have the correct casing for login methods', () => {
     expect(AuthProvider.GOOGLE).toBe('Google');
+    expect(AuthProvider.SANDBOX).toBe('Sandbox');
   });
 });
