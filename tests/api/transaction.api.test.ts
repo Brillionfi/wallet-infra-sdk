@@ -133,7 +133,7 @@ describe('TransactionApi', () => {
 
       await transaction.cancelTransaction(transactionId);
       expect(httpClientMock.put).toHaveBeenCalledWith(
-        `/transactions/${transactionId}/canacel`,
+        `/transactions/${transactionId}/cancel`,
       );
     });
 

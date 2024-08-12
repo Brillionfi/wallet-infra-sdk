@@ -53,7 +53,7 @@ export class TransactionApi {
   public async cancelTransaction(id: string): Promise<void> {
     logger.debug('TransactionApi: Cancel transaction');
     try {
-      await this.httpClient.put(`/${this.resource}/${id}/canacel`);
+      await this.httpClient.put(`/${this.resource}/${id}/cancel`);
     } catch (error) {
       throw handleError(error as APIError);
     }
