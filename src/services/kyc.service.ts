@@ -5,7 +5,11 @@ import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
 import { WalletService } from './wallet.service';
-import { WalletFormats, WalletTypes } from '@models/wallet.models';
+import {
+  IWalletSignTransaction,
+  WalletFormats,
+  WalletTypes,
+} from '@models/wallet.models';
 
 export class KycService {
   private readonly className: string;
@@ -20,7 +24,7 @@ export class KycService {
     this.identityClient = new IdentityClient();
   }
 
-  public async init(walletAddress: string, chainId: ChainId) {
+  public async init(walletAddress: string, chainId: ChainId, origin: string) {
     // Get Access Token
     const publicAddress = walletAddress.toLowerCase();
     const accessToken = await this.kycApi.generateAccessToken(
@@ -37,8 +41,8 @@ export class KycService {
           walletFormat: WalletFormats.ETHEREUM,
           walletType: WalletTypes.EOA,
           unsignedTransaction: data.message,
-        },
-        'localhost',
+        } as IWalletSignTransaction,
+        origin,
       );
 
       if (!signedResponse.signedTransaction) {
@@ -55,15 +59,15 @@ export class KycService {
       {
         walletFormat: WalletFormats.ETHEREUM,
         walletType: WalletTypes.EOA,
-        unsignedTransaction: signingMessage,
-      },
-      'localhost',
+        unsignedTransaction: signingMessage as string,
+      } as IWalletSignTransaction,
+      origin,
     );
 
     return await this.identityClient.init({
       accessToken,
-      signature: signature.signedTransaction,
-      signingMessage: signingMessage,
+      signature: signature.signedTransaction as string,
+      signingMessage: signingMessage as string,
     });
   }
 
