@@ -13,9 +13,9 @@ import {
 } from '@brillionfi/wallet-infra-sdk/dist/models/wallet.models';
 
 const newWallet: IWallet = {
-  walletType: WalletTypes.EOA,
-  walletName: 'MyFirstWallet',
-  walletFormat: WalletFormats.ETHEREUM,
+  type: WalletTypes.EOA,
+  name: 'MyFirstWallet',
+  format: WalletFormats.ETHEREUM,
   authentication: PasskeyAuthenticationSchema,
 };
 

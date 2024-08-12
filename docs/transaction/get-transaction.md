@@ -5,10 +5,11 @@ This guide provides instructions for retrieving the details of a transaction by 
 To retrieve the details of a transaction, use the `getTransaction()` method:
 
 ```ts
-import { ITransaction } from "@brillionfi/wallet-infra-sdk/dist/models/transaction.models";
+import { ITransaction } from '@brillionfi/wallet-infra-sdk/dist/models/transaction.models';
 
-const transactionId = "your-transaction-id";
-const transaction: ITransaction = await walletInfra.Transaction.getTransaction(transactionId);
+const transactionId = 'your-transaction-id';
+const transaction: ITransaction =
+  await walletInfra.Transaction.getTransactionById(transactionId);
 ```
 
 > [!NOTE]
