@@ -16,6 +16,7 @@ import {
   IWalletNotifications,
   IExecRecovery,
   IWalletSignTransactionResponse,
+  IWalletGasEstimation,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -175,6 +176,27 @@ export class WalletService {
       } else {
         throw handleError(error);
       }
+    }
+  }
+
+  public async getGasFees(
+    chainId: ChainId,
+    from: Address,
+    to: Address,
+    value: string,
+    data: string,
+  ): Promise<IWalletGasEstimation> {
+    logger.info(`${this.className}: Getting Wallet gas estimation`);
+    try {
+      return await this.walletApi.getGasFees({
+        chainId,
+        from,
+        to,
+        value,
+        data,
+      });
+    } catch (error) {
+      throw handleError(error);
     }
   }
 
