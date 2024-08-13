@@ -34,7 +34,6 @@ export class KycService {
 
     // Configure the signing callback.
     this.identityClient.onSignMessage(async (data: { message: string }) => {
-      // todo: refine
       const signedResponse = await this.walletService.signTransaction(
         walletAddress,
         {
@@ -64,7 +63,7 @@ export class KycService {
       origin,
     );
 
-    return await this.identityClient.init({
+    await this.identityClient.init({
       accessToken,
       signature: signature.signedTransaction as string,
       signingMessage: signingMessage as string,
@@ -74,7 +73,7 @@ export class KycService {
   public async startVerification() {
     logger.info(`${this.className}: Start Verification`);
     try {
-      return await this.identityClient.startVerification();
+      return this.identityClient.startVerification();
     } catch (error) {
       throw handleError(error);
     }
