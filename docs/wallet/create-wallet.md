@@ -19,7 +19,19 @@ const newWallet: IWallet = {
   authentication: PasskeyAuthenticationSchema,
 };
 
-await walletInfra.Wallet.createWallet(newWallet);
+const createdWallet = await walletInfra.Wallet.createWallet(newWallet);
+console.log(createdWallet);
+```
+
+**result**
+
+```bash
+{
+    type: "EOA",
+    name: "MyFirstWallet"
+    format: "ethereum",
+    address: "0xEfe58A9CcF0E378C5D136e6b7276eA3d5BEa1e30",
+}
 ```
 
 > [!NOTE]

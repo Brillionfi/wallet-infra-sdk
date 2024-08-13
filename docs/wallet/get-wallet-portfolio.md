@@ -5,13 +5,33 @@ This guide provides instructions for retrieving the portfolio of a wallet on a s
 To retrieve the portfolio information of a wallet, use the `getPortfolio()` method:
 
 ```ts
-import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
-import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
-import { IWalletPortfolio } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
+import { Address, ChainId } from '@brillionfi/wallet-infra-sdk';
+import { SUPPORTED_CHAINS } from '@brillionfi/wallet-infra-sdk/dist/models/common.models';
+import { IWalletPortfolio } from '@brillionfi/wallet-infra-sdk/dist/models/wallet.models';
 
-const walletAddress: Address = "your-wallet-address";
+const walletAddress: Address = 'your-wallet-address';
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
-const walletsPortfolio: IWalletPortfolio = await walletInfra.Wallet.getPortfolio(walletAddress, chainId);
+const walletsPortfolio: IWalletPortfolio =
+  await walletInfra.Wallet.getPortfolio(walletAddress, chainId);
+
+console.log(walletsPortfolio);
+```
+
+**result**
+
+```bash
+{
+    address: "0x3539A4E8577A31BD02c756CAdB326D913e7b89fC",
+    chainId: "11155111",
+    portfolio: [
+        {
+            tokenId: "ETH",
+            balance: "99947881092228999",
+            decimals: 18,
+            tokenPriceUsd: "2637.127448351062"
+        }
+    ]
+}
 ```
 
 ## IWalletPortfolio properties
