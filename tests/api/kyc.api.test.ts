@@ -36,7 +36,7 @@ describe('KYC API', () => {
         '1' as ChainId,
       );
 
-      expect(httpClientMock.post).toHaveBeenCalledWith('/kyc/access-token', {
+      expect(httpClientMock.post).toHaveBeenCalledWith('/kyc', {
         walletAddress: 'walletAddress',
         chainId: '1',
       });

@@ -24,6 +24,15 @@ export class KycService {
     this.identityClient = new IdentityClient();
   }
 
+  public async createKycSession(walletAddress: string, chainId: ChainId) {
+    logger.info(`${this.className}: Create KYC Session`);
+    try {
+      return this.kycApi.generateAccessToken(walletAddress, chainId);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
   public async init(walletAddress: string, chainId: ChainId, origin: string) {
     // Get Access Token
     const publicAddress = walletAddress.toLowerCase();

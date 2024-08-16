@@ -22,7 +22,7 @@ export class KycApi {
     logger.debug(`${this.className}: Generate access token`);
     try {
       const response: AxiosResponse = await this.httpClient.post(
-        `/${this.resource}/access-token`,
+        `/${this.resource}`,
         {
           walletAddress,
           chainId,
