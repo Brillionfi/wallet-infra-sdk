@@ -335,10 +335,10 @@ describe('Wallet', () => {
           from: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
           chainId: SUPPORTED_CHAINS.ETHEREUM,
           to: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
-          value: 1,
-          gasLimit: 1,
-          maxFeePerGas: 1,
-          maxPriorityFeePerGas: 1,
+          value: '1',
+          gasLimit: '1',
+          maxFeePerGas: '1',
+          maxPriorityFeePerGas: '1',
           nonce: 1,
           data: '0x',
           fingerprint: 'fingerprint',
@@ -352,7 +352,7 @@ describe('Wallet', () => {
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
       expect(httpClientMock.get).toHaveBeenCalledWith(
-        `wallets/${address}/chains/${chainId}/transactions`,
+        `wallets/${address}/chains/${chainId}/transactions?=`,
       );
       expect(result).toEqual(response);
     });

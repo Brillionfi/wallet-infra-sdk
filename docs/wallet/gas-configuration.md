@@ -7,19 +7,29 @@ This guide provides instructions for creating and retrieving gas configuration f
 To create gas configuration for a wallet, use the `setGasConfig()` method:
 
 ```ts
-import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
-import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
-import { IWalletGasConfiguration } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
+import { Address, ChainId } from '@brillionfi/wallet-infra-sdk';
+import { SUPPORTED_CHAINS } from '@brillionfi/wallet-infra-sdk/dist/models/common.models';
+import { IWalletGasConfiguration } from '@brillionfi/wallet-infra-sdk/dist/models/wallet.models';
 
-const walletAddress: Address = "your-wallet-address";
+const walletAddress: Address = 'your-wallet-address';
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
 const newGasConfiguration: IWalletGasConfiguration = {
-  gasLimit: "1",
-  maxFeePerGas: "1",
-  maxPriorityFeePerGas: "1",
+  gasLimit: '1',
+  maxFeePerGas: '1',
+  maxPriorityFeePerGas: '1',
 };
 
-await walletInfra.Wallet.setGasConfig(walletAddress, chainId, newGasConfiguration);
+await walletInfra.Wallet.setGasConfig(
+  walletAddress,
+  chainId,
+  newGasConfiguration,
+);
+```
+
+**result**
+
+```bash
+{ status: 'Gas configuration has been successfully updated' }
 ```
 
 ## Get gas configuration
@@ -27,16 +37,26 @@ await walletInfra.Wallet.setGasConfig(walletAddress, chainId, newGasConfiguratio
 To retrieve gas configuration for a wallet, use the `getGasConfig()` method:
 
 ```ts
-import { Address, ChainId } from "@brillionfi/wallet-infra-sdk";
-import { SUPPORTED_CHAINS } from "@brillionfi/wallet-infra-sdk/dist/models/common.models";
-import { IWalletGasConfiguration } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
+import { Address, ChainId } from '@brillionfi/wallet-infra-sdk';
+import { SUPPORTED_CHAINS } from '@brillionfi/wallet-infra-sdk/dist/models/common.models';
+import { IWalletGasConfiguration } from '@brillionfi/wallet-infra-sdk/dist/models/wallet.models';
 
-const walletAddress: Address = "your-wallet-address";
+const walletAddress: Address = 'your-wallet-address';
 const chainId: ChainId = SUPPORTED_CHAINS.ETHEREUM;
-const gasConfiguration: IWalletGasConfiguration = await walletInfra.Wallet.getGasConfig(
-  walletAddress,
-  chainId
-);
+const gasConfiguration: IWalletGasConfiguration =
+  await walletInfra.Wallet.getGasConfig(walletAddress, chainId);
+
+console.log(gasConfiguration);
+```
+
+**result**
+
+```bash
+{
+  gasLimit: "21000",
+  maxFeePerGas: "100000000000",
+  maxPriorityFeePerGas: "500000000000"
+}
 ```
 
 ## IWalletGasConfiguration properties

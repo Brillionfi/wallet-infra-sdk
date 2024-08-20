@@ -5,21 +5,33 @@ This guide provides instructions for creating a new wallet using the Wallet Infr
 To create a wallet for a user, use the `createWallet()` method:
 
 ```ts
-import { IWallet } from "@brillionfi/wallet-infra-sdk";
+import { IWallet } from '@brillionfi/wallet-infra-sdk';
 import {
   WalletTypes,
   WalletFormats,
-  PasskeyAuthenticationSchema
-} from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
+  PasskeyAuthenticationSchema,
+} from '@brillionfi/wallet-infra-sdk/dist/models/wallet.models';
 
 const newWallet: IWallet = {
-  walletType: WalletTypes.EOA,
-  walletName: "MyFirstWallet",
-  walletFormat: WalletFormats.ETHEREUM,
+  type: WalletTypes.EOA,
+  name: 'MyFirstWallet',
+  format: WalletFormats.ETHEREUM,
   authentication: PasskeyAuthenticationSchema,
 };
 
-await walletInfra.Wallet.createWallet(newWallet);
+const createdWallet = await walletInfra.Wallet.createWallet(newWallet);
+console.log(createdWallet);
+```
+
+**result**
+
+```bash
+{
+    type: "EOA",
+    name: "MyFirstWallet"
+    format: "ethereum",
+    address: "0xEfe58A9CcF0E378C5D136e6b7276eA3d5BEa1e30",
+}
 ```
 
 > [!NOTE]

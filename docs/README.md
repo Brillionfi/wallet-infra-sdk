@@ -19,11 +19,11 @@ Visit the Brillion Dashboard to set up your organization and create your first a
 To start using the SDK, you need to initialize it with your API key:
 
 ```ts
-import { WalletInfra } from "@brillionfi/wallet-infra-sdk";
+import { WalletInfra } from '@brillionfi/wallet-infra-sdk';
 
 // Initialize the SDK
-const appId = "your-app-id";
-const baseUrl = "your-base-url";
+const appId = 'your-app-id';
+const baseUrl = 'your-base-url';
 const walletInfra = new WalletInfra(appId, baseUrl);
 ```
 
@@ -72,6 +72,12 @@ The **Transaction** module handles the management of wallet transactions, retrie
 - [Create Unsigned Transaction](transaction/create-transaction.md#create-unsigned-transaction)
 - [Get Transaction](transaction/get-transaction.md)
 - [Cancel Transaction](transaction/cancel-transaction.md)
+
+### 📜 KYC
+
+The **KYC** module handles KYC management to create a KYC session
+
+- [Create KYC Session](Kyc/create-kyc-session.md#create-kyc-session)
 
 ## 👣 Next Steps
 
