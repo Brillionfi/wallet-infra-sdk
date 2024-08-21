@@ -69,14 +69,8 @@ export const EvmReceiptsBodySchema = z.array(EvmReceiptSchema);
 export type TEvmReceiptsBody = z.infer<typeof EvmReceiptsBodySchema>;
 export type TEvmReceipt = z.infer<typeof EvmReceiptSchema>;
 
-export type TEntry = {
-  pk: string;
-  sk: string;
-  createdAt: string;
-  updatedAt: string;
-  updatedBy: string;
-};
-
-export type INotification = TWalletActivity | TEvmReceipt;
-
-export type INotifications = INotification[];
+export const NotificationsSchema = z.object({
+  notifications: WalletActivitiesSchema,
+  transactions: EvmReceiptsBodySchema,
+});
+export type TNotifications = z.infer<typeof NotificationsSchema>;

@@ -36,24 +36,6 @@ export class NotificationsApi {
     }
   }
 
-  public async markTransactionsAsRead(
-    address: Address,
-    chainId: ChainId,
-    blockNumber: string,
-  ): Promise<unknown> {
-    try {
-      logger.debug(`${this.className}: Mark transactions as read`);
-      const response = await this.httpClient.put(`/${this.resource}`, {
-        blockNumber,
-        eoa: address,
-        chainId,
-      });
-      return response.data;
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
   public async getWalletNotifications(): Promise<TWalletActivities> {
     logger.debug(`${this.className}: Get wallet notifications`);
     try {
@@ -61,22 +43,6 @@ export class NotificationsApi {
         `/${this.resource}/notifications`,
       );
       return WalletActivitiesSchema.parse(response.data);
-    } catch (error) {
-      throw handleError(error as APIError);
-    }
-  }
-
-  public async markWalletNotificationsAsRead(
-    address: Address,
-    hashes: string[],
-  ): Promise<unknown> {
-    try {
-      logger.debug(`${this.className}: Mark wallet notifications as read`);
-      const response = await this.httpClient.put(`/${this.resource}`, {
-        notificationIds: hashes,
-        eoa: address,
-      });
-      return response.data;
     } catch (error) {
       throw handleError(error as APIError);
     }
