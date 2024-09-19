@@ -71,6 +71,8 @@ The **Transaction** module handles the management of wallet transactions, retrie
 - [Create Signed Transaction](transaction/create-transaction.md#create-signed-transaction)
 - [Create Unsigned Transaction](transaction/create-transaction.md#create-unsigned-transaction)
 - [Get Transaction](transaction/get-transaction.md)
+- [Approve Sign Transaction](transaction/approve-sign-transaction.md)
+- [Reject Sign Transaction](transaction/reject-sign-transaction.md)
 - [Cancel Transaction](transaction/cancel-transaction.md)
 
 ### 📜 KYC
