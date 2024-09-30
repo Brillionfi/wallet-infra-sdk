@@ -191,7 +191,7 @@ export class WalletApi {
     logger.debug(`${this.className}: Getting Wallets`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
-        `wallets/${address}/chains/${chainId}/transactions?=`,
+        `/wallets/${address}/chains/${chainId}/transactions?=`,
       );
       const wallets = TransactionSchema.array().parse(response.data);
       return wallets;
@@ -212,7 +212,7 @@ export class WalletApi {
         },
       };
       const response: AxiosResponse = await this.httpClient.post(
-        `wallets/${address}/recovery`,
+        `/wallets/${address}/recovery`,
         body,
       );
 
