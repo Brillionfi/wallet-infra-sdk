@@ -200,7 +200,10 @@ export class WalletApi {
     }
   }
 
-  public async recover(targetPublicKey: string): Promise<IWalletRecovery> {
+  public async recover(
+    targetPublicKey: string,
+    address: string,
+  ): Promise<IWalletRecovery> {
     logger.debug(`${this.className}: Wallet Recovery`);
     try {
       const body = {
@@ -209,7 +212,7 @@ export class WalletApi {
         },
       };
       const response: AxiosResponse = await this.httpClient.post(
-        '/wallets/recovery',
+        `wallets/${address}/recovery`,
         body,
       );
 
