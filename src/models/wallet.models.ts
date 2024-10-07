@@ -63,7 +63,7 @@ export const ApiKeyAuthenticationSchema = z.object({
 
 export const WalletSchema = z.object({
   [WalletKeys.ADDRESS]: z.string().optional(),
-  [WalletKeys.TYPE]: WalletTypesSchema,
+  [WalletKeys.TYPE]: WalletTypesSchema.optional(),
   [WalletKeys.NAME]: z.string(),
   [WalletKeys.FORMAT]: WalletFormatsSchema,
   [WalletKeys.OWNER]: z.string().optional(),
@@ -77,9 +77,11 @@ export const WalletSchema = z.object({
 export const WalletSchemaAPI = z.object({
   walletName: z.string(),
   walletFormat: WalletFormatsSchema,
-  signer: z
-    .union([PasskeyAuthenticationSchema, ApiKeyAuthenticationSchema])
-    .optional(),
+  signer: z.object({
+    authentication: z
+      .union([PasskeyAuthenticationSchema, ApiKeyAuthenticationSchema])
+      .optional(),
+  }),
 });
 
 export const WalletResponseSchema = z.object({

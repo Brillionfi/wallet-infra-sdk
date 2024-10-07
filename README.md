@@ -75,10 +75,11 @@ import {
 } from "@brillionfi/wallet-infra-sdk/dist/models/wallet.models";
 
 const newWallet: IWallet = {
-  walletType: WalletTypes.EOA,
-  walletName: "MyFirstWallet",
-  walletFormat: WalletFormats.ETHEREUM,
-  authentication: PasskeyAuthenticationSchema,
+  name: "MyFirstWallet",
+  format: WalletFormats.ETHEREUM,
+  signer: {
+    authentication: PasskeyAuthenticationSchema,
+  }
 };
 
 await walletInfra.Wallet.createWallet(newWallet);
