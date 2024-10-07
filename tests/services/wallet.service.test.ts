@@ -99,7 +99,9 @@ describe('WalletService', () => {
       const data = {
         walletName: 'name',
         walletFormat: WalletFormats.ETHEREUM,
-        [WalletKeys.SIGNER]: apiKey,
+        [WalletKeys.SIGNER]: {
+          authentication: apiKey,
+        },
       } as IWalletAPI;
 
       const response = {
@@ -139,7 +141,7 @@ describe('WalletService', () => {
       const data = {
         walletName: 'name',
         walletFormat: WalletFormats.ETHEREUM,
-        [WalletKeys.SIGNER]: authentication,
+        [WalletKeys.SIGNER]: { authentication },
       } as IWalletAPI;
 
       const response = {
