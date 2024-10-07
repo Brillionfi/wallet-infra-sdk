@@ -61,6 +61,11 @@ const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
 // In your redirect endpoint, authenticate the user with the received JWT
 walletInfra.authenticateUser(receivedJWT);
 ```
+Valid AuthProvider value are: 
+- GOOGLE
+- DISCORD
+- TWITTER
+- APPLE
 
 ### 4. Create a wallet
 
