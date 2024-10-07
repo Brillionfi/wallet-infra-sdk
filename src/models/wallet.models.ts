@@ -14,10 +14,14 @@ export enum WalletKeys {
   FORMAT = 'format',
   OWNER = 'owner',
   AUTHENTICATION = 'authentication',
+  SIGNER = 'signer',
 }
 
 export enum WalletTypes {
   EOA = 'EOA',
+  LIGHT_ACCOUNT_ABSTRACTION = 'LIGHT_ACCOUNT_ABSTRACTION',
+  MULTI_SIGNER_ACCOUNT_ABSTRACTION = 'MULTI_SIGNER_ACCOUNT_ABSTRACTION',
+  MODULAR_ACCOUNT_ABSTRACTION = 'MODULAR_ACCOUNT_ABSTRACTION',
 }
 
 export enum WalletFormats {
@@ -27,7 +31,12 @@ export enum WalletFormats {
   TRON = 'tron',
 }
 
-export const WalletTypesValues = [WalletTypes.EOA] as const;
+export const WalletTypesValues = [
+  WalletTypes.EOA,
+  WalletTypes.LIGHT_ACCOUNT_ABSTRACTION,
+  WalletTypes.MULTI_SIGNER_ACCOUNT_ABSTRACTION,
+  WalletTypes.MODULAR_ACCOUNT_ABSTRACTION,
+] as const;
 export const WalletTypesSchema = z.enum(WalletTypesValues);
 
 export const WalletFormatsValues = [
@@ -58,6 +67,7 @@ export const WalletSchema = z.object({
   [WalletKeys.NAME]: z.string(),
   [WalletKeys.FORMAT]: WalletFormatsSchema,
   [WalletKeys.OWNER]: z.string().optional(),
+  [WalletKeys.SIGNER]: z.string().optional(),
   [WalletKeys.AUTHENTICATION]: z.union([
     PasskeyAuthenticationSchema.optional(),
     ApiKeyAuthenticationSchema.optional(),
@@ -65,28 +75,22 @@ export const WalletSchema = z.object({
 });
 
 export const WalletSchemaAPI = z.object({
-  walletType: z.object({
-    [WalletTypes.EOA.toLocaleLowerCase()]: z
-      .object({
-        walletName: z.string(),
-        walletFormat: WalletFormatsSchema,
-        authentication: z.union([
-          PasskeyAuthenticationSchema,
-          ApiKeyAuthenticationSchema,
-        ]),
-      })
-      .optional(),
-  }),
+  walletName: z.string(),
+  walletFormat: WalletFormatsSchema,
+  signer: z
+    .union([PasskeyAuthenticationSchema, ApiKeyAuthenticationSchema])
+    .optional(),
 });
 
-export const WalletResponseSchema = z.record(
-  z.object({
-    walletAddress: z.string(),
-    walletFormat: WalletFormatsSchema,
-    walletType: WalletTypesSchema,
-    walletName: z.string(),
+export const WalletResponseSchema = z.object({
+  type: WalletTypesSchema,
+  name: z.string(),
+  address: z.string(),
+  signer: z.object({
+    address: z.string(),
+    format: WalletFormatsSchema,
   }),
-);
+});
 
 export const WalletSignTransactionSchema = z.object({
   walletFormat: WalletFormatsSchema,

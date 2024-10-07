@@ -381,13 +381,9 @@ export class WalletService {
   private parseCreateWalletData(data: IWallet): IWalletAPI {
     try {
       return WalletSchemaAPI.parse({
-        walletType: {
-          [data[WalletKeys.TYPE].toLocaleLowerCase()]: {
-            walletName: data[WalletKeys.NAME],
-            walletFormat: data[WalletKeys.FORMAT],
-            authentication: data[WalletKeys.AUTHENTICATION],
-          },
-        },
+        walletName: data[WalletKeys.NAME],
+        walletFormat: data[WalletKeys.FORMAT],
+        signer: data[WalletKeys.AUTHENTICATION],
       });
     } catch (error) {
       throw new CustomError('Failed to parse create wallet data');
@@ -396,14 +392,14 @@ export class WalletService {
 
   private parseCreateWalletResponse(data: IWalletResponse): IWallet {
     try {
-      const walletTypeKey = Object.keys(data)[0];
-      const walletData = data[walletTypeKey];
+      const walletData = data;
 
       return {
-        [WalletKeys.TYPE]: walletData.walletType,
-        [WalletKeys.ADDRESS]: walletData.walletAddress,
-        [WalletKeys.FORMAT]: walletData.walletFormat,
-        [WalletKeys.NAME]: walletData.walletName,
+        [WalletKeys.TYPE]: walletData.type,
+        [WalletKeys.ADDRESS]: walletData.address,
+        [WalletKeys.FORMAT]: walletData.signer.format,
+        [WalletKeys.NAME]: walletData.name,
+        [WalletKeys.SIGNER]: walletData.signer.address,
       };
     } catch (error) {
       throw new CustomError('Failed to create wallet response');

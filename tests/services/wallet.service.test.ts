@@ -97,21 +97,20 @@ describe('WalletService', () => {
       };
 
       const data = {
-        walletType: {
-          [WalletTypes.EOA.toLowerCase()]: {
-            walletName: 'name',
-            walletFormat: WalletFormats.ETHEREUM,
-            [WalletKeys.AUTHENTICATION]: apiKey,
-          },
-        },
+        walletName: 'name',
+        walletFormat: WalletFormats.ETHEREUM,
+        [WalletKeys.SIGNER]: apiKey,
       } as IWalletAPI;
 
       const response = {
-        eoa: {
-          walletAddress: 'walletAddress',
-          walletFormat: WalletFormats.ETHEREUM,
-          walletType: WalletTypes.EOA,
-          walletName: 'name',
+        address: '1',
+        name: 'name',
+        type: 'EOA',
+        signer: {
+          address: '2',
+          walletId: '3',
+          format: 'ethereum',
+          organizationId: '4',
         },
       };
 
@@ -122,9 +121,10 @@ describe('WalletService', () => {
       expect(walletApi.createWallet).toHaveBeenCalledWith(data);
       expect(result).toEqual({
         [WalletKeys.TYPE]: WalletTypes.EOA,
-        [WalletKeys.ADDRESS]: 'walletAddress',
+        [WalletKeys.ADDRESS]: '1',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.NAME]: 'name',
+        [WalletKeys.SIGNER]: '2',
       });
     });
 
@@ -137,21 +137,20 @@ describe('WalletService', () => {
       };
 
       const data = {
-        walletType: {
-          [WalletTypes.EOA.toLowerCase()]: {
-            walletName: 'name',
-            walletFormat: WalletFormats.ETHEREUM,
-            [WalletKeys.AUTHENTICATION]: authentication,
-          },
-        },
+        walletName: 'name',
+        walletFormat: WalletFormats.ETHEREUM,
+        [WalletKeys.SIGNER]: authentication,
       } as IWalletAPI;
 
       const response = {
-        eoa: {
-          walletAddress: 'walletAddress',
-          walletFormat: WalletFormats.ETHEREUM,
-          walletType: WalletTypes.EOA,
-          walletName: 'name',
+        address: '1',
+        name: 'name',
+        type: 'EOA',
+        signer: {
+          address: '2',
+          walletId: '3',
+          format: 'ethereum',
+          organizationId: '4',
         },
       };
 
@@ -162,9 +161,10 @@ describe('WalletService', () => {
       expect(walletApi.createWallet).toHaveBeenCalledWith(data);
       expect(result).toEqual({
         [WalletKeys.TYPE]: WalletTypes.EOA,
-        [WalletKeys.ADDRESS]: 'walletAddress',
+        [WalletKeys.ADDRESS]: '1',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
         [WalletKeys.NAME]: 'name',
+        [WalletKeys.SIGNER]: '2',
       });
     });
 
