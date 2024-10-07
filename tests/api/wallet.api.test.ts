@@ -68,21 +68,20 @@ describe('Wallet', () => {
 
     it('should call post on HttpClient when createWallet is called', async () => {
       const data = {
-        walletType: {
-          [WalletTypes.EOA]: {
-            walletName,
-            walletFormat: WalletFormats.ETHEREUM,
-            authentication,
-          },
-        },
+        walletName,
+        walletFormat: WalletFormats.ETHEREUM,
+        signer: authentication,
       } as IWalletAPI;
 
       const response = {
-        [WalletTypes.EOA]: {
-          walletName: '1',
-          walletFormat: WalletFormats.ETHEREUM,
-          walletType: WalletTypes.EOA,
-          walletAddress: '4',
+        address: '1',
+        name: 'wallet6',
+        type: 'EOA',
+        signer: {
+          address: '2',
+          walletId: '3',
+          format: 'ethereum',
+          organizationId: '4',
         },
       };
 
@@ -92,7 +91,15 @@ describe('Wallet', () => {
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Creating Wallet');
       expect(httpClientMock.post).toHaveBeenCalledWith('/wallets', data);
-      expect(result).toEqual(response);
+      expect(result).toEqual({
+        address: '1',
+        name: 'wallet6',
+        type: 'EOA',
+        signer: {
+          address: '2',
+          format: 'ethereum',
+        },
+      });
     });
   });
 
