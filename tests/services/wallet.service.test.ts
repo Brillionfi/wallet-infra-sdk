@@ -226,9 +226,11 @@ describe('WalletService', () => {
         {
           name: 'testName',
           type: WalletTypes.EOA,
-          format: WalletFormats.ETHEREUM,
-          owner: 'testOwner',
           address: '0xtestAddress',
+          signer: {
+            address: '0xtestAddress',
+            format: WalletFormats.ETHEREUM,
+          },
         },
       ];
       const exampleService = [
@@ -236,8 +238,8 @@ describe('WalletService', () => {
           [WalletKeys.NAME]: 'testName',
           [WalletKeys.TYPE]: WalletTypes.EOA,
           [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-          [WalletKeys.OWNER]: 'testOwner',
           [WalletKeys.ADDRESS]: '0xtestAddress',
+          [WalletKeys.SIGNER]: '0xtestAddress',
         },
       ];
 

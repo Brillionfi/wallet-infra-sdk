@@ -54,8 +54,10 @@ export class WalletService {
   public async getWallets(): Promise<IWallet[]> {
     logger.info(`${this.className}: Getting Wallets`);
     try {
-      const wallets: IWallet[] = await this.walletApi.getWallets();
-      return wallets;
+      const wallets: IWalletResponse[] = await this.walletApi.getWallets();
+      return wallets.map((wallet: IWalletResponse) =>
+        this.parseCreateWalletResponse(wallet),
+      );
     } catch (error) {
       throw handleError(error);
     }

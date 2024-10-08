@@ -113,11 +113,13 @@ describe('Wallet', () => {
     it('should call get on HttpClient when getWallets is called', async () => {
       const response = [
         {
-          name: 'name',
-          type: WalletTypes.EOA,
-          format: WalletFormats.ETHEREUM,
-          owner: 'owner',
-          address: 'address',
+          name: 'wallet6',
+          type: 'LIGHT_ACCOUNT_ABSTRACTION',
+          address: '0x4F7132300EC15E2Ce820B363228B31be34cBD192',
+          signer: {
+            address: '0x9e96EEcc7A82A084e487073d3F15c8eaeA006CAF',
+            format: 'ethereum',
+          },
         },
       ];
 
