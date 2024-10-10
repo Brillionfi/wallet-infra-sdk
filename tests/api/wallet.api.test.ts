@@ -361,7 +361,7 @@ describe('Wallet', () => {
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
       expect(httpClientMock.get).toHaveBeenCalledWith(
-        `wallets/${address}/chains/${chainId}/transactions?=`,
+        `/wallets/${address}/chains/${chainId}/transactions?=`,
       );
       expect(result).toEqual(response);
     });
@@ -437,7 +437,7 @@ describe('Wallet', () => {
 
       httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
 
-      await expect(wallet.recover(publicKey)).rejects.toThrow('error');
+      await expect(wallet.recover(publicKey, address)).rejects.toThrow('error');
     });
 
     it('should call post on HttpClient when recovery is called', async () => {
@@ -457,14 +457,17 @@ describe('Wallet', () => {
 
       httpClientMock.post = jest.fn().mockResolvedValue({ data: response });
 
-      const result = await wallet.recover(publicKey);
+      const result = await wallet.recover(publicKey, address);
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Wallet Recovery');
-      expect(httpClientMock.post).toHaveBeenCalledWith(`/wallets/recovery`, {
-        eoa: {
-          targetPublicKey: publicKey,
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        `/wallets/${address}/recovery`,
+        {
+          eoa: {
+            targetPublicKey: publicKey,
+          },
         },
-      });
+      );
       expect(result).toEqual(response.data);
     });
   });

@@ -524,9 +524,12 @@ describe('WalletService', () => {
 
       walletApi.recover.mockResolvedValue(recoveryData);
 
-      const result = await walletService.initRecovery();
+      const result = await walletService.initRecovery('address');
 
-      expect(walletApi.recover).toHaveBeenCalledWith(expect.anything());
+      expect(walletApi.recover).toHaveBeenCalledWith(
+        expect.anything(),
+        'address',
+      );
       expect(result).toEqual(recoveryData);
       expect(logger.info).toHaveBeenCalledWith(
         'WalletService: Wallet recovery initiated',
@@ -536,7 +539,9 @@ describe('WalletService', () => {
     it('should throw an error when recovery api fails', async () => {
       walletApi.recover.mockRejectedValueOnce(new Error());
 
-      await expect(walletService.initRecovery()).rejects.toThrow(Error);
+      await expect(walletService.initRecovery('address')).rejects.toThrow(
+        Error,
+      );
       expect(walletApi.recover).toHaveBeenCalled();
     });
   });

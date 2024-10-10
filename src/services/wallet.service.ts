@@ -212,11 +212,14 @@ export class WalletService {
     }
   }
 
-  public async initRecovery(): Promise<IWalletRecovery> {
+  public async initRecovery(address: string): Promise<IWalletRecovery> {
     logger.info(`${this.className}: Wallet recovery initiated`);
     try {
       await this.bundleStamper.init();
-      return await this.walletApi.recover(this.bundleStamper.publicKey());
+      return await this.walletApi.recover(
+        this.bundleStamper.publicKey(),
+        address,
+      );
     } catch (error) {
       throw handleError(error);
     }
