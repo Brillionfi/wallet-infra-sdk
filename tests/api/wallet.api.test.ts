@@ -68,21 +68,20 @@ describe('Wallet', () => {
 
     it('should call post on HttpClient when createWallet is called', async () => {
       const data = {
-        walletType: {
-          [WalletTypes.EOA]: {
-            walletName,
-            walletFormat: WalletFormats.ETHEREUM,
-            authentication,
-          },
-        },
+        walletName,
+        walletFormat: WalletFormats.ETHEREUM,
+        signer: authentication,
       } as IWalletAPI;
 
       const response = {
-        [WalletTypes.EOA]: {
-          walletName: '1',
-          walletFormat: WalletFormats.ETHEREUM,
-          walletType: WalletTypes.EOA,
-          walletAddress: '4',
+        address: '1',
+        name: 'wallet6',
+        type: 'EOA',
+        signer: {
+          address: '2',
+          walletId: '3',
+          format: 'ethereum',
+          organizationId: '4',
         },
       };
 
@@ -92,7 +91,15 @@ describe('Wallet', () => {
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Creating Wallet');
       expect(httpClientMock.post).toHaveBeenCalledWith('/wallets', data);
-      expect(result).toEqual(response);
+      expect(result).toEqual({
+        address: '1',
+        name: 'wallet6',
+        type: 'EOA',
+        signer: {
+          address: '2',
+          format: 'ethereum',
+        },
+      });
     });
   });
 
@@ -106,11 +113,13 @@ describe('Wallet', () => {
     it('should call get on HttpClient when getWallets is called', async () => {
       const response = [
         {
-          name: 'name',
-          type: WalletTypes.EOA,
-          format: WalletFormats.ETHEREUM,
-          owner: 'owner',
-          address: 'address',
+          name: 'wallet6',
+          type: 'LIGHT_ACCOUNT_ABSTRACTION',
+          address: '0x4F7132300EC15E2Ce820B363228B31be34cBD192',
+          signer: {
+            address: '0x9e96EEcc7A82A084e487073d3F15c8eaeA006CAF',
+            format: 'ethereum',
+          },
         },
       ];
 

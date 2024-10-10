@@ -1,7 +1,6 @@
 import { Address, ChainId } from '@models/common.models';
 import { ITransaction, TransactionSchema } from '@models/transaction.models';
 import type {
-  IWallet,
   IWalletAPI,
   IWalletResponse,
   IWalletNonceAPI,
@@ -19,7 +18,6 @@ import type {
 import {
   WalletResponseSchema,
   WalletNonceResponseSchema,
-  WalletSchema,
   IWalletSignTransaction,
   WalletSignTransactionResponseSchema,
   WalletGasConfigurationSchema,
@@ -56,11 +54,11 @@ export class WalletApi {
     }
   }
 
-  public async getWallets(): Promise<IWallet[]> {
+  public async getWallets(): Promise<IWalletResponse[]> {
     logger.debug(`${this.className}: Getting Wallets`);
     try {
       const response: AxiosResponse = await this.httpClient.get('/wallets');
-      const wallets = WalletSchema.array().parse(response.data);
+      const wallets = WalletResponseSchema.array().parse(response.data);
       return wallets;
     } catch (error) {
       throw handleError(error as APIError);
