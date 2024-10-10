@@ -48,7 +48,9 @@ describe('Token API', () => {
       httpClientMock.get.mockResolvedValue(response as AxiosResponse);
 
       const result = await token.getTokens(SUPPORTED_CHAINS.ETHEREUM);
-      expect(httpClientMock.get).toHaveBeenCalledWith('/tokens/1');
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        '/tokens/chains/1/tokens-list',
+      );
       expect(result).toEqual(response.data.data);
     });
 
