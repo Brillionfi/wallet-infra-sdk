@@ -20,7 +20,7 @@ export class TokenApi {
     logger.debug(`${this.className}: Get all tokens by chain`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
-        `/${this.resource}/${chainId}`,
+        `/${this.resource}/chains/${chainId}/tokens-list`,
       );
 
       return TokenSchema.array().parse(response.data.data);
