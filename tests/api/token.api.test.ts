@@ -29,7 +29,7 @@ describe('Token API', () => {
             {
               chainId: '1',
               tokenId: '0xTokenId',
-              status: 'Active',
+              status: 'ACTIVE',
               name: 'TokenName',
               address: '0xTokenAddress',
               type: 'ERC20',
@@ -48,9 +48,7 @@ describe('Token API', () => {
       httpClientMock.get.mockResolvedValue(response as AxiosResponse);
 
       const result = await token.getTokens(SUPPORTED_CHAINS.ETHEREUM);
-      expect(httpClientMock.get).toHaveBeenCalledWith(
-        '/tokens/chains/1/tokens-list',
-      );
+      expect(httpClientMock.get).toHaveBeenCalledWith('/chains/1/tokens-list');
       expect(result).toEqual(response.data.data);
     });
 
