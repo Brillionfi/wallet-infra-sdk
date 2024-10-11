@@ -2,12 +2,12 @@ import z from 'zod';
 import { ChainIdSchema } from './common.models';
 
 export enum TokenStatusKeys {
-  ACTIVE = 'Active',
-  INACTIVE = 'Inactive',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
 }
 
 export enum TokenTypeKeys {
-  NATIVE = 'Native',
+  NATIVE = 'NATIVE',
   ERC20 = 'ERC20',
   ERC721 = 'ERC721',
   ERC1155 = 'ERC1155',

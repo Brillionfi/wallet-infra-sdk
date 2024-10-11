@@ -20,10 +20,25 @@ export class TokenApi {
     logger.debug(`${this.className}: Get all tokens by chain`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
-        `/${this.resource}/chains/${chainId}/tokens-list`,
+        `/chains/${chainId}/tokens-list`,
       );
 
       return TokenSchema.array().parse(response.data.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+  public async getTokenBySymbol(
+    chainId: ChainId,
+    symbol: string,
+  ): Promise<IToken> {
+    logger.debug(`${this.className}: Get all tokens by chain and symbol`);
+    try {
+      const response: AxiosResponse = await this.httpClient.get(
+        `/chains/${chainId}/tokens/${symbol}`,
+      );
+
+      return TokenSchema.parse(response.data.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
