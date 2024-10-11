@@ -795,7 +795,7 @@
     zod "^3.23.8"
     zod-to-json-schema "^3.23.2"
 
-"@nexeraid/identity-sdk@^1.2.32":
+"@nexeraid/identity-sdk@1.2.32":
   version "1.2.32"
   resolved "https://registry.yarnpkg.com/@nexeraid/identity-sdk/-/identity-sdk-1.2.32.tgz#36ea318ee6e74ed0d617054f077f5db083da9ba1"
   integrity sha512-3VCyf84wu4r6AX0AR196edg3rEwUbrTGUfHMr7HLmdDRlZ9dMLCYR9EaPaOseNOkdpIMGFbbvlkI+q2EP7Yd1g==
