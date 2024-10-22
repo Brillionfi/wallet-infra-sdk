@@ -45,7 +45,7 @@ const walletInfra = new WalletInfra(appId, baseUrl);
 > [!NOTE]
 > Make sure to replace `"your-app-id"` with the actual API key you obtained from the Brillion Dashboard.
 
-### 3. Authenticate user
+### 3-1. Authenticate user with social login
 
 Create or authenticate a user using your preferred provider:
 
@@ -66,6 +66,28 @@ Valid AuthProvider value are:
 - DISCORD
 - TWITTER
 - APPLE
+
+### 3-2. Authenticate user with Walletconnect
+
+Create or authenticate a user using your preferred provider:
+
+```ts
+import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
+
+// Generate authentication URL
+const redirectUrl = "your-redirect-url";
+const walletConnectProjectId = "your-wallet-connect-project-id"
+const uri = walletInfra.generateWalletConnectUri(walletConnectProjectId, redirectUrl);
+
+// listen to onConnectWallet Event  and redirect user to authUrl when it triggered
+walletInfra.onConnectWallet((authUrl: string)=>{})
+
+//Show uri to user and ask to connect
+// WalletConnectQRCodeModal.open(uri, ()=>{});
+
+// In your redirect endpoint, authenticate the user with the received JWT
+walletInfra.authenticateUser(receivedJWT);
+```
 
 ### 4. Create a wallet
 
