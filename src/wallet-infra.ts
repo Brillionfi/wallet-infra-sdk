@@ -72,7 +72,12 @@ export class WalletInfra {
   public async generateWalletConnectUri(
     wcProjectId: string,
     redirectUrl: string,
-    metadata?: { name: string; description: string; url: string; icons: [] },
+    metadata?: {
+      name: string;
+      description: string;
+      url: string;
+      icons: string[];
+    },
   ): Promise<string | undefined> {
     this.client = await SignClient.init({
       relayUrl: 'wss://relay.walletconnect.com',
