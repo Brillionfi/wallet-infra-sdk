@@ -338,22 +338,26 @@ describe('Wallet', () => {
     });
 
     it('should call get on HttpClient when getTransactionHistory is called', async () => {
-      const response = [
-        {
-          transactionId: uuidv4(),
-          from: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
-          chainId: SUPPORTED_CHAINS.ETHEREUM,
-          to: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
-          value: '1',
-          gasLimit: '1',
-          maxFeePerGas: '1',
-          maxPriorityFeePerGas: '1',
-          nonce: 1,
-          data: '0x',
-          fingerprint: 'fingerprint',
-          organizationId: 'organizationId',
-        },
-      ];
+      const queryParams = { page: 0 };
+      const response = {
+        currentPage: 0,
+        transactions: [
+          {
+            transactionId: uuidv4(),
+            from: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+            chainId: SUPPORTED_CHAINS.ETHEREUM,
+            to: '0x4dEf358B35F169e94781EA0d3853dB5A477f92CB',
+            value: '1',
+            gasLimit: '1',
+            maxFeePerGas: '1',
+            maxPriorityFeePerGas: '1',
+            nonce: 1,
+            data: '0x',
+            fingerprint: 'fingerprint',
+            organizationId: 'organizationId',
+          },
+        ],
+      };
 
       httpClientMock.get = jest.fn().mockResolvedValue({ data: response });
 
@@ -361,7 +365,7 @@ describe('Wallet', () => {
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
       expect(httpClientMock.get).toHaveBeenCalledWith(
-        `/wallets/${address}/chains/${chainId}/transactions?=`,
+        `/wallets/${address}/chains/${chainId}/transactions?page=${queryParams.page}`,
       );
       expect(result).toEqual(response);
     });
