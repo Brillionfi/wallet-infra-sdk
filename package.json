@@ -1,6 +1,6 @@
 {
   "name": "@brillionfi/wallet-infra-sdk",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "description": "an sdk for wallet-infra-api",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "build:watch": "tsc --watch",
-    "start:dev": "ts-node src/index.ts",
+    "start:dev": "ts-node src/test.ts",
     "start:prod": "node dist/index.js",
     "lint": "eslint src/.",
     "lint:fix": "eslint src/. --fix",
