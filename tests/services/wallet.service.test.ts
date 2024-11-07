@@ -347,7 +347,7 @@ describe('WalletService', () => {
       expect(walletApi.getTransactionHistory).toHaveBeenCalled();
     });
 
-    it('should get wallets', async () => {
+    it('should get wallets transactions', async () => {
       const example = [
         {
           transactionId: uuidv4(),
@@ -370,16 +370,20 @@ describe('WalletService', () => {
 
       mockedAxios.get.mockResolvedValue({
         data: {
-          example,
+          transactions: example,
+          currentPage: 0,
         },
       });
 
-      walletApi.getTransactionHistory.mockResolvedValueOnce(example);
+      walletApi.getTransactionHistory.mockResolvedValueOnce({
+        transactions: example,
+        currentPage: 0,
+      });
 
       const result = await walletService.getTransactionHistory(wallet, chainId);
 
       expect(walletApi.getTransactionHistory).toHaveBeenCalled();
-      expect(result).toEqual(example);
+      expect(result).toEqual({ transactions: example, currentPage: 0 });
     });
   });
 
