@@ -11,6 +11,7 @@ export enum TransactionStatusKeys {
   QUEUED = 'queued',
   PENDING = 'pending',
   SUCCESS = 'success',
+  PUBLISHED = 'published',
   FAILED = 'failed',
   CANCELED = 'canceled',
   REJECTED = 'rejected',
