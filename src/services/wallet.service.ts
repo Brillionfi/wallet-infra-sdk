@@ -107,16 +107,16 @@ export class WalletService {
   public async getTransactionHistory(
     address: Address,
     chainId: ChainId,
-    indexer: 'internal' | 'external',
     page = 0,
+    indexer?: 'internal' | 'external',
   ): Promise<{ transactions: Partial<ITransaction>[]; currentPage: number }> {
     logger.info(`${this.className}: Getting Wallet transaction history`);
     try {
       return await this.walletApi.getTransactionHistory(
         address,
         chainId,
-        indexer ? indexer : 'internal',
         page,
+        indexer ? indexer : 'internal',
       );
     } catch (error) {
       throw handleError(error);

@@ -365,7 +365,7 @@ describe('Wallet', () => {
 
       expect(logger.debug).toHaveBeenCalledWith('WalletApi: Getting Wallets');
       expect(httpClientMock.get).toHaveBeenCalledWith(
-        `/wallets/${address}/chains/${chainId}/transactions?page=${queryParams.page}`,
+        `/wallets/${address}/chains/${chainId}/transactions?page=${queryParams.page}&&indexer=internal`,
       );
       expect(result).toEqual(response);
     });
