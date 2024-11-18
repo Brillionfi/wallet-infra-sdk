@@ -108,10 +108,16 @@ export class WalletService {
     address: Address,
     chainId: ChainId,
     page = 0,
+    indexer?: 'internal' | 'external',
   ): Promise<{ transactions: Partial<ITransaction>[]; currentPage: number }> {
     logger.info(`${this.className}: Getting Wallet transaction history`);
     try {
-      return await this.walletApi.getTransactionHistory(address, chainId, page);
+      return await this.walletApi.getTransactionHistory(
+        address,
+        chainId,
+        page,
+        indexer ? indexer : 'internal',
+      );
     } catch (error) {
       throw handleError(error);
     }

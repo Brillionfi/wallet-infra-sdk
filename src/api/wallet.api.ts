@@ -186,11 +186,12 @@ export class WalletApi {
     address: Address,
     chainId: ChainId,
     page = 0,
+    indexer?: 'internal' | 'external',
   ): Promise<{ transactions: Partial<ITransaction>[]; currentPage: number }> {
     logger.debug(`${this.className}: Getting Wallets`);
     try {
       const response: AxiosResponse = await this.httpClient.get(
-        `/wallets/${address}/chains/${chainId}/transactions?page=${page}`,
+        `/wallets/${address}/chains/${chainId}/transactions?page=${page}&&indexer=${indexer ? indexer : 'internal'}`,
       );
 
       const transactions = TransactionSchema.partial()
