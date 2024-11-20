@@ -58,6 +58,7 @@ export const TransactionStatusSchema = z.enum([
   TransactionStatusKeys.PENDING,
   TransactionStatusKeys.SUCCESS,
   TransactionStatusKeys.FAILED,
+  TransactionStatusKeys.PUBLISHED,
   TransactionStatusKeys.CANCELED,
   TransactionStatusKeys.REJECTED,
   TransactionStatusKeys.APPROVED,
