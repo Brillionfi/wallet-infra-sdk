@@ -36,6 +36,7 @@ export enum TransactionKeys {
   MESSAGE_ID = 'messageId',
   RECEIPT_HANDLE = 'receiptHandle',
   STATUS = 'status',
+  REASON = 'reason',
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
   UPDATED_BY = 'updatedBy',
@@ -43,6 +44,8 @@ export enum TransactionKeys {
   AUTHENTICATED_METHOD = 'authenticationMethod',
   FINGERPRINT = 'fingerprint',
   ORGANIZATION_ID = 'organizationId',
+  USER_ADDRESS = 'userAddress',
+  WALLET_ID = 'walletId',
 }
 
 export const TransactionTypeSchema = z.union([
@@ -78,10 +81,13 @@ export const TransactionSchema = z.object({
   [TransactionKeys.MESSAGE_ID]: z.string().optional(),
   [TransactionKeys.RECEIPT_HANDLE]: z.string().optional(),
   [TransactionKeys.STATUS]: TransactionStatusSchema.optional(),
+  [TransactionKeys.REASON]: z.string().optional(),
   [TransactionKeys.AUTHENTICATED_BY]: z.string().optional(),
   [TransactionKeys.AUTHENTICATED_METHOD]: z.string().optional(),
   [TransactionKeys.FINGERPRINT]: z.string(),
   [TransactionKeys.ORGANIZATION_ID]: z.string(),
+  [TransactionKeys.USER_ADDRESS]: z.string(),
+  [TransactionKeys.WALLET_ID]: z.string(),
 });
 
 export const TransactionSignedSchema = z.object({

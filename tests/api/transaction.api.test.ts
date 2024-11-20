@@ -50,6 +50,8 @@ describe('TransactionApi', () => {
             status: 'pending',
             fingerprint: 'fingerprint',
             organizationId: 'organizationId',
+            walletId: 'walletId',
+            userAddress: 'address',
           },
         },
       };
@@ -100,6 +102,8 @@ describe('TransactionApi', () => {
             status: 'pending',
             fingerprint: 'fingerprint',
             organizationId: 'organizationId',
+            walletId: 'walletId',
+            userAddress: 'address',
           },
         },
       };

@@ -60,6 +60,8 @@ describe('TransactionService', () => {
         status: TransactionStatusKeys.PENDING,
         organizationId: 'organizationId',
         fingerprint: 'fingerprint',
+        walletId: 'id',
+        userAddress: 'address',
       };
 
       transactionApi.createTransaction = jest
@@ -100,6 +102,8 @@ describe('TransactionService', () => {
         status: TransactionStatusKeys.PENDING,
         organizationId: 'organizationId',
         fingerprint: 'fingerprint',
+        walletId: 'id',
+        userAddress: 'address',
       };
 
       transactionApi.createTransaction = jest
@@ -146,6 +150,8 @@ describe('TransactionService', () => {
         status: TransactionStatusKeys.PENDING,
         organizationId: 'organizationId',
         fingerprint: 'fingerprint',
+        userAddress: 'address',
+        walletId: 'id',
       };
 
       transactionApi.getTransactionById.mockResolvedValue(transaction);
