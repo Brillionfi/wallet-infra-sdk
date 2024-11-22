@@ -3,7 +3,7 @@ import { TransactionService } from '@services/transaction.service';
 import { KycService } from '@services/kyc.service';
 import { HttpClient } from './utils';
 import { Config } from './config';
-import { IAuthURLParams } from '@models/auth.models';
+import { AuthProvider, AuthProviderSchema } from '@models/auth.models';
 import { TokenService } from '@services/token.service';
 import { NotificationsService } from '@services/notifications.service';
 import Client, { SignClient } from '@walletconnect/sign-client';
@@ -40,15 +40,10 @@ export class WalletInfra {
   public onConnectWallet(listener: (authUrl: unknown) => void): void {
     this.event.on('onWalletConnect', listener);
   }
-  public generateAuthUrl(params: IAuthURLParams): string {
-    const query = new URLSearchParams({
-      ...params,
-      loginType: 'WALLET_USER',
-      appId: this.appId,
-    });
-    return `${this.baseURL}/users/login?${query.toString()}`;
+  public generateAuthUrl(redirectUrl: string, provider: AuthProvider): string {
+    const parsedProvider = AuthProviderSchema.parse(provider);
+    return `${this.baseURL}/users/login?provider=${parsedProvider}&loginType=WALLET_USER&redirectUrl=${redirectUrl}&appId=${this.appId}`;
   }
-
   //eslint-disable-next-line
   private async walletConnectCallback(redirectUrl: string, session: any) {
     const sessionId = crypto.randomBytes(16).toString('hex');
