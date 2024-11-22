@@ -3,7 +3,7 @@ import { TransactionService } from '@services/transaction.service';
 import { KycService } from '@services/kyc.service';
 import { HttpClient } from './utils';
 import { Config } from './config';
-import { IAuthURLParams } from '@models/auth.models';
+import { AuthProvider } from '@models/auth.models';
 import { TokenService } from '@services/token.service';
 import { NotificationsService } from '@services/notifications.service';
 import Client, { SignClient } from '@walletconnect/sign-client';
@@ -40,12 +40,29 @@ export class WalletInfra {
   public onConnectWallet(listener: (authUrl: unknown) => void): void {
     this.event.on('onWalletConnect', listener);
   }
-  public generateAuthUrl(params: IAuthURLParams): string {
+
+  public generateAuthUrl(
+    provider: AuthProvider,
+    redirectUrl: string,
+    email?: string,
+    sessionId?: string,
+    signedMessage?: string,
+  ): string {
+    if (provider === AuthProvider.EMAIL && !email) {
+      throw new Error('Email is required for Email login');
+    }
+
     const query = new URLSearchParams({
-      ...params,
+      provider,
+      redirectUrl,
       loginType: 'WALLET_USER',
       appId: this.appId,
     });
+
+    if (email) query.set('email', email);
+    if (sessionId) query.set('sessionId', sessionId);
+    if (signedMessage) query.set('signedMessage', signedMessage);
+
     return `${this.baseURL}/users/login?${query.toString()}`;
   }
 
@@ -74,6 +91,7 @@ export class WalletInfra {
       this.event.emit('onWalletConnect', authUrl);
     }
   }
+
   public async generateWalletConnectUri(
     wcProjectId: string,
     redirectUrl: string,
