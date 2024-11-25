@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ChainIdSchema } from './common.models';
 import { stampedActivitySchema } from './wallet.models';
+import { TokenSchema } from './token.model';
 
 export enum TransactionTypeKeys {
   SIGNED = 'signed',
@@ -46,6 +47,7 @@ export enum TransactionKeys {
   ORGANIZATION_ID = 'organizationId',
   USER_ADDRESS = 'userAddress',
   WALLET_ID = 'walletId',
+  TOKEN_INFO = 'tokenInfo',
 }
 
 export const TransactionTypeSchema = z.union([
@@ -89,6 +91,7 @@ export const TransactionSchema = z.object({
   [TransactionKeys.ORGANIZATION_ID]: z.string(),
   [TransactionKeys.USER_ADDRESS]: z.string(),
   [TransactionKeys.WALLET_ID]: z.string(),
+  [TransactionKeys.TOKEN_INFO]: TokenSchema.partial(),
 });
 
 export const TransactionSignedSchema = z.object({
