@@ -53,8 +53,8 @@ Create or authenticate a user using your preferred provider:
 import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
 
 // Generate authentication URL
-const redirectUrl = "your-redirect-url";
-const authUrl = walletInfra.generateAuthUrl(redirectUrl, AuthProvider.GOOGLE);
+const params = {redirectUrl: "your-redirect-url",provider: AuthProvider.Google } ;
+const authUrl = walletInfra.generateAuthUrl(params);
 
 // Redirect user to authUrl for identity verification
 

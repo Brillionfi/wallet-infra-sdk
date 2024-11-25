@@ -1,7 +1,7 @@
 import { TokenService } from './services/token.service';
 import { TransactionService } from './services/transaction.service';
 import { WalletService } from './services/wallet.service';
-import { AuthProvider } from './models/auth.models';
+import { AuthProvider, IAuthURLParams } from './models/auth.models';
 import {
   ITransactionSigned,
   ITransactionUnsigned,
@@ -23,7 +23,7 @@ declare module '@brillionfi/wallet-infra-sdk' {
 
     constructor(appId: string);
 
-    public generateAuthUrl(redirectUrl: string, provider: AuthProvider): string;
+    public generateAuthUrl(params: IAuthURLParams): string;
     public authenticateUser(jwt: string): void;
   }
 
