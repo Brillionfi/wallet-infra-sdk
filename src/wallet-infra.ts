@@ -3,12 +3,14 @@ import { TransactionService } from '@services/transaction.service';
 import { KycService } from '@services/kyc.service';
 import { HttpClient } from './utils';
 import { Config } from './config';
-import { IAuthURLParams } from '@models/auth.models';
+import { AuthProvider, IAuthURLParams } from '@models/auth.models';
 import { TokenService } from '@services/token.service';
 import { NotificationsService } from '@services/notifications.service';
 import Client, { SignClient } from '@walletconnect/sign-client';
 import crypto from 'crypto';
 import { SimpleEventEmitter } from '@utils/simpleEvent';
+import MetaMaskSDK from '@metamask/sdk';
+import logger from 'loglevel';
 
 export class WalletInfra {
   public Notifications: NotificationsService;
@@ -40,13 +42,44 @@ export class WalletInfra {
   public onConnectWallet(listener: (authUrl: unknown) => void): void {
     this.event.on('onWalletConnect', listener);
   }
-  public generateAuthUrl(params: IAuthURLParams): string {
+
+  public async generateAuthUrl(params: IAuthURLParams): Promise<string> {
+    if (params.provider === AuthProvider.METAMASK) {
+      params.signedMessage =
+        await this.promptMetamaskAccountAndGetSignedMessage();
+    }
     const query = new URLSearchParams({
       ...params,
       loginType: 'WALLET_USER',
       appId: this.appId,
     });
     return `${this.baseURL}/users/login?${query.toString()}`;
+  }
+
+  private async promptMetamaskAccountAndGetSignedMessage() {
+    const sdk = new MetaMaskSDK();
+    try {
+      const ethereum = sdk.getProvider();
+      if (ethereum === undefined) {
+        throw new Error('Couldnt get Metamask');
+      }
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+      if (!Array.isArray(accounts)) {
+        throw new Error('No account available');
+      }
+      const signedMessage = await ethereum.request({
+        method: 'personal_sign',
+        params: ['Brillionfi', accounts[0]],
+      });
+      if (typeof signedMessage !== 'string') {
+        throw new Error('Not a string');
+      }
+      return signedMessage;
+    } catch (error) {
+      logger.error('Message signing failed:', error);
+    }
   }
 
   //eslint-disable-next-line
