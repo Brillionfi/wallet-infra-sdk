@@ -91,7 +91,7 @@ export const TransactionSchema = z.object({
   [TransactionKeys.ORGANIZATION_ID]: z.string(),
   [TransactionKeys.USER_ADDRESS]: z.string(),
   [TransactionKeys.WALLET_ID]: z.string(),
-  [TransactionKeys.TOKEN_INFO]: TokenSchema.partial(),
+  [TransactionKeys.TOKEN_INFO]: TokenSchema.partial().optional(),
 });
 
 export const TransactionSignedSchema = z.object({
