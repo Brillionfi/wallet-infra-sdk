@@ -27,6 +27,7 @@ export enum TokenKeys {
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
   UPDATED_BY = 'updatedBy',
+  TOKEN_PRICE_USD = 'tokenPriceUsd',
 }
 
 export const TokenSchema = z.object({
@@ -43,6 +44,7 @@ export const TokenSchema = z.object({
   [TokenKeys.CREATED_AT]: z.string(),
   [TokenKeys.UPDATED_AT]: z.string(),
   [TokenKeys.UPDATED_BY]: z.string(),
+  [TokenKeys.TOKEN_PRICE_USD]: z.string().optional(),
 });
 
 export type IToken = z.infer<typeof TokenSchema>;
