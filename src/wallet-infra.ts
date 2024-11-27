@@ -45,8 +45,12 @@ export class WalletInfra {
 
   public async generateAuthUrl(params: IAuthURLParams): Promise<string> {
     if (params.provider === AuthProvider.METAMASK) {
-      params.signedMessage =
-        await this.promptMetamaskAccountAndGetSignedMessage();
+      const result = await this.promptMetamaskAccountAndGetSignedMessage();
+      if (result === undefined) {
+        throw new Error('No signed message obtained');
+      }
+      params.signedMessage = result.signedMessage;
+      params.sessionId = result.sessionId;
     }
     const query = new URLSearchParams({
       ...params,
@@ -59,8 +63,17 @@ export class WalletInfra {
   private async promptMetamaskAccountAndGetSignedMessage() {
     const sdk = new MetaMaskSDK();
     try {
-      const signedMessage = await sdk.connectAndSign({ msg: 'Brillion' });
-      return String(signedMessage);
+      const results = await sdk.connect();
+      if (results.length === 0) {
+        throw new Error('Please pick an account');
+      }
+      if (results.length > 1) {
+        throw new Error('Please select only one account');
+      }
+      const sessionId = crypto.randomBytes(16).toString('hex');
+      const msg = `Login to Brillion Wallet via Your account, session ID: ${sessionId}`;
+      const signedMessage = await sdk.connectAndSign({ msg });
+      return { signedMessage: String(signedMessage), sessionId };
     } catch (error) {
       logger.error('Message signing failed:', error);
     }
