@@ -59,24 +59,8 @@ export class WalletInfra {
   private async promptMetamaskAccountAndGetSignedMessage() {
     const sdk = new MetaMaskSDK();
     try {
-      const ethereum = sdk.getProvider();
-      if (ethereum === undefined) {
-        throw new Error('Couldnt get Metamask');
-      }
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      if (!Array.isArray(accounts)) {
-        throw new Error('No account available');
-      }
-      const signedMessage = await ethereum.request({
-        method: 'personal_sign',
-        params: ['Brillionfi', accounts[0]],
-      });
-      if (typeof signedMessage !== 'string') {
-        throw new Error('Not a string');
-      }
-      return signedMessage;
+      const signedMessage = await sdk.connectAndSign({ msg: 'Brillion' });
+      return String(signedMessage);
     } catch (error) {
       logger.error('Message signing failed:', error);
     }
