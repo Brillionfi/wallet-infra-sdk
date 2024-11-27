@@ -249,7 +249,6 @@ export class WalletService {
         publicKey: {
           authenticatorSelection: {
             residentKey: 'preferred',
-            requireResidentKey: false,
             userVerification: 'preferred',
           },
           rp: {
