@@ -14,7 +14,7 @@ Generate a login URL based on the authentication method you want to offer. The S
 import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
 
 const params = {redirectUrl: "your-redirect-url",provider: AuthProvider.Google } ;
-const authUrl = walletInfra.generateAuthUrl(params);
+const authUrl = await walletInfra.generateAuthUrl(params);
 ```
 
 ## 2. Redirect user to authentication provider

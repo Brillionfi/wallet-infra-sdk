@@ -3,12 +3,14 @@ import { TransactionService } from '@services/transaction.service';
 import { KycService } from '@services/kyc.service';
 import { HttpClient } from './utils';
 import { Config } from './config';
-import { IAuthURLParams } from '@models/auth.models';
+import { AuthProvider, IAuthURLParams } from '@models/auth.models';
 import { TokenService } from '@services/token.service';
 import { NotificationsService } from '@services/notifications.service';
 import Client, { SignClient } from '@walletconnect/sign-client';
 import crypto from 'crypto';
 import { SimpleEventEmitter } from '@utils/simpleEvent';
+import MetaMaskSDK from '@metamask/sdk';
+import logger from 'loglevel';
 
 export class WalletInfra {
   public Notifications: NotificationsService;
@@ -40,13 +42,41 @@ export class WalletInfra {
   public onConnectWallet(listener: (authUrl: unknown) => void): void {
     this.event.on('onWalletConnect', listener);
   }
-  public generateAuthUrl(params: IAuthURLParams): string {
+
+  public async generateAuthUrl(params: IAuthURLParams): Promise<string> {
+    if (params.provider === AuthProvider.METAMASK) {
+      const result = await this.promptMetamaskAccountAndGetSignedMessage();
+      if (result === undefined) {
+        throw new Error('No signed message obtained');
+      }
+      params.signedMessage = result.signedMessage;
+      params.sessionId = result.sessionId;
+    }
     const query = new URLSearchParams({
       ...params,
       loginType: 'WALLET_USER',
       appId: this.appId,
     });
     return `${this.baseURL}/users/login?${query.toString()}`;
+  }
+
+  private async promptMetamaskAccountAndGetSignedMessage() {
+    const sdk = new MetaMaskSDK();
+    try {
+      const results = await sdk.connect();
+      if (results.length === 0) {
+        throw new Error('Please pick an account');
+      }
+      if (results.length > 1) {
+        throw new Error('Please select only one account');
+      }
+      const sessionId = crypto.randomBytes(16).toString('hex');
+      const msg = `Login to Brillion Wallet via Your account, session ID: ${sessionId}`;
+      const signedMessage = await sdk.connectAndSign({ msg });
+      return { signedMessage: String(signedMessage), sessionId };
+    } catch (error) {
+      logger.error('Message signing failed:', error);
+    }
   }
 
   //eslint-disable-next-line
