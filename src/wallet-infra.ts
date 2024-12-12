@@ -133,7 +133,11 @@ export class WalletInfra {
         },
       },
     });
-    approval().then(this.walletConnectCallback.bind(this, redirectUrl));
+    approval()
+      .then(this.walletConnectCallback.bind(this, redirectUrl))
+      .catch((error) => {
+        throw new Error(`WalletConnect approval failed: ${error.message}`);
+      });
     return uri;
   }
 
