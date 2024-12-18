@@ -24,23 +24,26 @@ describe('Notifications API', () => {
 
   it('should get transactions', async () => {
     const response = {
-      data: [
-        {
-          blockHash: '',
-          blockNumber: '',
-          contractAddress: '',
-          cumulativeGasUsed: '',
-          effectiveGasPrice: '',
-          from: '',
-          gasUsed: '',
-          logsBloom: '',
-          status: '',
-          to: '',
-          transactionHash: '',
-          transactionIndex: '',
-          type: '',
-        },
-      ],
+      data: {
+        currentPage: 0,
+        transactions: [
+          {
+            blockHash: '',
+            blockNumber: '',
+            contractAddress: '',
+            cumulativeGasUsed: '',
+            effectiveGasPrice: '',
+            from: '',
+            gasUsed: '',
+            logsBloom: '',
+            status: '',
+            to: '',
+            transactionHash: '',
+            transactionIndex: '',
+            type: '',
+          },
+        ],
+      },
     };
 
     httpClientMock.get.mockResolvedValue(response as AxiosResponse);
@@ -53,7 +56,7 @@ describe('Notifications API', () => {
     expect(httpClientMock.get).toHaveBeenCalledWith(
       '/wallets/walletAddress/chains/1/transactions',
     );
-    expect(result).toEqual(response.data);
+    expect(result).toEqual(response.data.transactions);
   });
 
   it('should get wallet notifications', async () => {
