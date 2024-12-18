@@ -30,7 +30,7 @@ export class NotificationsApi {
       const response: AxiosResponse = await this.httpClient.get(
         `/${this.resource}/${address}/chains/${chainId}/transactions`,
       );
-      return EvmReceiptsBodySchema.parse(response.data);
+      return EvmReceiptsBodySchema.parse(response.data.transactions);
     } catch (error) {
       throw handleError(error as APIError);
     }
