@@ -48,7 +48,6 @@ export enum TransactionKeys {
   USER_ADDRESS = 'userAddress',
   WALLET_ID = 'walletId',
   TOKEN_INFO = 'tokenInfo',
-  DIRECTION = 'direction',
   PUBLISHED_AT = 'publishedAt',
 }
 
@@ -94,7 +93,7 @@ export const TransactionSchema = z.object({
   [TransactionKeys.USER_ADDRESS]: z.string(),
   [TransactionKeys.WALLET_ID]: z.string(),
   [TransactionKeys.TOKEN_INFO]: TokenSchema.partial().optional(),
-  [TransactionKeys.DIRECTION]: z.string().optional(),
+  [TransactionKeys.CREATED_AT]: z.string().optional(),
   [TransactionKeys.PUBLISHED_AT]: z.string().optional(),
 });
 
