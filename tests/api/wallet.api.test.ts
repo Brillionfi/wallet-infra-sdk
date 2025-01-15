@@ -665,4 +665,35 @@ describe('Wallet', () => {
       expect(result).toEqual(response);
     });
   });
+
+  describe('providerRequest', () => {
+    it('should throw error if providerRequest fails', async () => {
+      httpClientMock.post = jest.fn().mockRejectedValue(new Error('error'));
+
+      await expect(
+        wallet.providerRequest({
+          method: 'eth_getBalance',
+          chainId: SUPPORTED_CHAINS.ETHEREUM,
+        }),
+      ).rejects.toThrow('error');
+    });
+
+    it('should call post on HttpClient when createWallet is called', async () => {
+      httpClientMock.post = jest.fn().mockResolvedValue({ data: 'response' });
+
+      const result = await wallet.providerRequest({
+        method: 'eth_getBalance',
+        chainId: SUPPORTED_CHAINS.ETHEREUM,
+      });
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'WalletApi: Wallet provider request',
+      );
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        '/wallets/provider-request',
+        { method: 'eth_getBalance', chainId: SUPPORTED_CHAINS.ETHEREUM },
+      );
+      expect(result).toEqual('response');
+    });
+  });
 });
