@@ -17,6 +17,8 @@ import {
   IExecRecovery,
   IWalletSignTransactionResponse,
   IWalletGasEstimation,
+  IWalletProviderResponse,
+  IWalletProviderRequest,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -384,6 +386,17 @@ export class WalletService {
     logger.info(`${this.className}: Getting Wallet notifications`);
     try {
       return await this.walletApi.getNotifications();
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async providerRequest(
+    data: IWalletProviderRequest,
+  ): Promise<IWalletProviderResponse> {
+    logger.info(`${this.className}: Getting Wallet notifications`);
+    try {
+      return await this.walletApi.providerRequest(data);
     } catch (error) {
       throw handleError(error);
     }

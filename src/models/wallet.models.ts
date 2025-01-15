@@ -237,6 +237,25 @@ export const ApproveAndRejectSignTxSchema = z.object({
   stamped: stampedActivitySchema,
 });
 
+export const WalletProviderRequest = z.object({
+  chainId: ChainIdSchema,
+  method: z.enum([
+    'eth_blockNumber',
+    'eth_getBalance',
+    'eth_call',
+    'eth_getTransactionReceipt',
+    'net_version',
+  ]),
+  params: z.array(z.object({}).passthrough()),
+});
+export const WalletProviderResponse = z.union([
+  z.string(),
+  z.object({}).passthrough(),
+  z.array(z.object({}).passthrough()),
+]);
+export type IWalletProviderRequest = z.infer<typeof WalletProviderRequest>;
+export type IWalletProviderResponse = z.infer<typeof WalletProviderResponse>;
+
 export type TApproveAndRejectSignTxRequest = z.infer<
   typeof ApproveAndRejectSignTxSchema
 >;
