@@ -246,7 +246,7 @@ export const WalletProviderRequest = z.object({
     'eth_getTransactionReceipt',
     'net_version',
   ]),
-  params: z.array(z.object({}).passthrough()),
+  params: z.array(z.object({}).passthrough()).optional(),
 });
 export const WalletProviderResponse = z.union([
   z.string(),
