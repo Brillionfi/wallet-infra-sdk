@@ -14,6 +14,8 @@ import type {
   IWalletPortfolio,
   IExecRecovery,
   TApproveAndRejectSignTxRequest,
+  IWalletProviderResponse,
+  IWalletProviderRequest,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -28,6 +30,7 @@ import {
   WalletPortfolioSchema,
   WalletNotificationsSchema,
   ExecRecoveryResponseSchema,
+  WalletProviderResponse,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -264,6 +267,22 @@ export class WalletApi {
       );
 
       return WalletNotificationsSchema.parse(response.data.messages);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async providerRequest(
+    body: IWalletProviderRequest,
+  ): Promise<IWalletProviderResponse> {
+    logger.debug(`${this.className}: Wallet provider request`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/provider-request`,
+        body,
+      );
+
+      return WalletProviderResponse.parse(response.data);
     } catch (error) {
       throw handleError(error);
     }
