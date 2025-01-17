@@ -17,8 +17,9 @@ import {
   IExecRecovery,
   IWalletSignTransactionResponse,
   IWalletGasEstimation,
-  IWalletProviderResponse,
-  IWalletProviderRequest,
+  IRpcResponse,
+  IRpcBodyRequest,
+  IRpcParamsRequest,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -391,12 +392,13 @@ export class WalletService {
     }
   }
 
-  public async providerRequest(
-    data: IWalletProviderRequest,
-  ): Promise<IWalletProviderResponse> {
+  public async rpcRequest(
+    body: IRpcBodyRequest,
+    params: IRpcParamsRequest,
+  ): Promise<IRpcResponse> {
     logger.info(`${this.className}: Getting Wallet notifications`);
     try {
-      return await this.walletApi.providerRequest(data);
+      return await this.walletApi.rpcRequest(body, params);
     } catch (error) {
       throw handleError(error);
     }

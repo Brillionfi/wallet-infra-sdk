@@ -237,8 +237,7 @@ export const ApproveAndRejectSignTxSchema = z.object({
   stamped: stampedActivitySchema,
 });
 
-export const WalletProviderRequest = z.object({
-  chainId: ChainIdSchema,
+export const RpcBodyRequest = z.object({
   method: z.enum([
     'eth_blockNumber',
     'eth_getBalance',
@@ -248,13 +247,17 @@ export const WalletProviderRequest = z.object({
   ]),
   params: z.array(z.union([z.object({}).passthrough(), z.string()])).optional(),
 });
-export const WalletProviderResponse = z.union([
+export const RpcParamsRequest = z.object({
+  chainId: ChainIdSchema,
+});
+export const RpcResponse = z.union([
   z.string(),
   z.object({}).passthrough(),
   z.array(z.object({}).passthrough()),
 ]);
-export type IWalletProviderRequest = z.infer<typeof WalletProviderRequest>;
-export type IWalletProviderResponse = z.infer<typeof WalletProviderResponse>;
+export type IRpcBodyRequest = z.infer<typeof RpcBodyRequest>;
+export type IRpcParamsRequest = z.infer<typeof RpcParamsRequest>;
+export type IRpcResponse = z.infer<typeof RpcResponse>;
 
 export type TApproveAndRejectSignTxRequest = z.infer<
   typeof ApproveAndRejectSignTxSchema

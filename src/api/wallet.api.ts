@@ -14,8 +14,9 @@ import type {
   IWalletPortfolio,
   IExecRecovery,
   TApproveAndRejectSignTxRequest,
-  IWalletProviderResponse,
-  IWalletProviderRequest,
+  IRpcParamsRequest,
+  IRpcBodyRequest,
+  IRpcResponse,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -30,7 +31,7 @@ import {
   WalletPortfolioSchema,
   WalletNotificationsSchema,
   ExecRecoveryResponseSchema,
-  WalletProviderResponse,
+  RpcResponse,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -272,17 +273,18 @@ export class WalletApi {
     }
   }
 
-  public async providerRequest(
-    body: IWalletProviderRequest,
-  ): Promise<IWalletProviderResponse> {
+  public async rpcRequest(
+    body: IRpcBodyRequest,
+    params: IRpcParamsRequest,
+  ): Promise<IRpcResponse> {
     logger.debug(`${this.className}: Wallet provider request`);
     try {
       const response: AxiosResponse = await this.httpClient.post(
-        `/wallets/provider-request`,
+        `/rpc/chainId/${params.chainId}`,
         body,
       );
 
-      return WalletProviderResponse.parse(response.data);
+      return RpcResponse.parse(response.data);
     } catch (error) {
       throw handleError(error);
     }
