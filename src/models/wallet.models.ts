@@ -249,13 +249,16 @@ export const RpcBodyRequest = z.object({
     'eth_gasPrice',
     'net_version',
   ]),
-  params: z.array(z.union([z.object({}).passthrough(), z.string()])).optional(),
+  params: z
+    .array(z.union([z.object({}).passthrough(), z.string(), z.number()]))
+    .optional(),
 });
 export const RpcParamsRequest = z.object({
   chainId: ChainIdSchema,
 });
 export const RpcResponse = z.union([
   z.string(),
+  z.number(),
   z.object({}).passthrough(),
   z.array(z.object({}).passthrough()),
 ]);
