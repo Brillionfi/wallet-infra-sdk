@@ -54,6 +54,8 @@ export enum TransactionKeys {
 export const TransactionTypeSchema = z.union([
   z.literal('signed'),
   z.literal('unsigned'),
+  z.literal('send'),
+  z.literal('receive'),
 ]);
 
 export const TransactionStatusSchema = z.enum([
