@@ -76,8 +76,11 @@ import { AuthProvider } from "@brillionfi/wallet-infra-sdk";
 
 // Generate authentication URL
 const redirectUrl = "your-redirect-url";
-const walletConnectProjectId = "your-wallet-connect-project-id"
-const uri = walletInfra.generateWalletConnectUri(walletConnectProjectId, redirectUrl);
+const projectId = "your-wallet-connect-project-id"
+const uri = walletInfra.generateWalletConnectUri({
+  projectId, 
+  redirectUrl
+});
 
 // listen to onConnectWallet Event  and redirect user to authUrl when it triggered
 walletInfra.onConnectWallet((authUrl: string)=>{})
