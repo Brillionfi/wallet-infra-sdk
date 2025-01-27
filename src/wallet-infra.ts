@@ -113,6 +113,11 @@ export class WalletInfra {
       url: string;
       icons: string[];
     },
+    eip155?: {
+      methods: string[];
+      chains: string[];
+      events: string[];
+    },
   ): Promise<string | undefined> {
     this.client = await SignClient.init({
       relayUrl: 'wss://relay.walletconnect.com',
@@ -126,7 +131,7 @@ export class WalletInfra {
     });
     const { uri, approval } = await this.client.connect({
       requiredNamespaces: {
-        eip155: {
+        eip155: eip155 ?? {
           methods: ['personal_sign'],
           chains: ['eip155:1'],
           events: ['connect', 'disconnect'],
