@@ -84,10 +84,11 @@ export class WalletInfra {
     const sessionId = crypto.randomBytes(16).toString('hex');
     const message = `Login to Brillion Wallet via Your account, session ID: ${sessionId}`;
     const address = session.namespaces.eip155.accounts[0].split(':')[2];
+    const chain = session.namespaces.eip155.chains[0];
     if (this.client) {
       const signedMessage = await this.client.request({
         topic: session.topic,
-        chainId: 'eip155:1',
+        chainId: chain,
         request: {
           method: 'personal_sign',
           params: [message, address],
