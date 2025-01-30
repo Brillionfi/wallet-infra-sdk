@@ -79,7 +79,14 @@ const redirectUrl = "your-redirect-url";
 const projectId = "your-wallet-connect-project-id"
 const uri = walletInfra.generateWalletConnectUri({
   projectId, 
-  redirectUrl
+  redirectUrl,
+  requiredNamespaces: {
+    eip155: {
+      methods: ['personal_sign'],
+      chains: ['eip155:1'],
+      events: ['connect', 'disconnect'],
+    },
+  },
 });
 
 // listen to onConnectWallet Event  and redirect user to authUrl when it triggered
