@@ -409,9 +409,6 @@ export class WalletService {
       return WalletSchemaAPI.parse({
         walletName: data[WalletKeys.NAME],
         walletFormat: data[WalletKeys.FORMAT],
-        signer: {
-          authentication: data[WalletKeys.AUTHENTICATION],
-        },
       });
     } catch (error) {
       throw new CustomError('Failed to parse create wallet data');
