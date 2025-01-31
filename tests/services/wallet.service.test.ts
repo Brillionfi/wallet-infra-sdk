@@ -71,10 +71,6 @@ describe('WalletService', () => {
     attestation,
   };
 
-  const apiKey = {
-    publicKey: 'fakePublicKey',
-  };
-
   beforeEach(() => {
     walletApi = new WalletApi(new HttpClient('')) as jest.Mocked<WalletApi>;
 
@@ -93,15 +89,11 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION]: apiKey,
       };
 
       const data = {
         walletName: 'name',
         walletFormat: WalletFormats.ETHEREUM,
-        [WalletKeys.SIGNER]: {
-          authentication: apiKey,
-        },
       } as IWalletAPI;
 
       const response = {
@@ -135,13 +127,11 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const data = {
         walletName: 'name',
         walletFormat: WalletFormats.ETHEREUM,
-        [WalletKeys.SIGNER]: { authentication },
       } as IWalletAPI;
 
       const response = {
@@ -175,7 +165,6 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       jest.spyOn(WalletSchemaAPI, 'parse').mockImplementation(() => {
@@ -192,7 +181,6 @@ describe('WalletService', () => {
         [WalletKeys.TYPE]: WalletTypes.EOA,
         [WalletKeys.NAME]: 'name',
         [WalletKeys.FORMAT]: WalletFormats.ETHEREUM,
-        [WalletKeys.AUTHENTICATION]: authentication,
       };
 
       const error = new Error('Failed to create wallet');
