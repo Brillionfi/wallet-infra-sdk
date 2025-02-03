@@ -17,6 +17,9 @@ import type {
   IRpcParamsRequest,
   IRpcBodyRequest,
   IRpcResponse,
+  IWalletAuthenticator,
+  IWalletAuthenticatorResponse,
+  ICreateWalletAuthenticatorResponse,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -32,6 +35,8 @@ import {
   WalletNotificationsSchema,
   ExecRecoveryResponseSchema,
   RpcResponse,
+  WalletAuthenticatorResponse,
+  CreateWalletAuthenticatorResponse,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -57,7 +62,31 @@ export class WalletApi {
       throw handleError(error as APIError);
     }
   }
-
+  public async createWalletAuthenticator(
+    authenticator: IWalletAuthenticator,
+  ): Promise<ICreateWalletAuthenticatorResponse> {
+    logger.debug(`${this.className}: Creating authenticator`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        '/wallets/auth',
+        authenticator,
+      );
+      return CreateWalletAuthenticatorResponse.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+  public async getWalletAuthenticator(): Promise<IWalletAuthenticatorResponse> {
+    logger.debug(`${this.className}: Getting Wallets`);
+    try {
+      const response: AxiosResponse =
+        await this.httpClient.get('/wallets/auth');
+      const authenticators = WalletAuthenticatorResponse.parse(response.data);
+      return authenticators;
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
   public async getWallets(): Promise<IWalletResponse[]> {
     logger.debug(`${this.className}: Getting Wallets`);
     try {

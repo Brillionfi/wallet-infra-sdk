@@ -76,6 +76,32 @@ export const WalletSchema = z.object({
     .optional(),
 });
 
+export const WalletAuthenticator = z.object({
+  name: z.string(),
+  authenticator: z.union([
+    PasskeyAuthenticationSchema.optional(),
+    ApiKeyAuthenticationSchema.optional(),
+  ]),
+});
+
+export const WalletAuthenticatorResponse = z.object({
+  authenticators: z.array(
+    z.object({
+      authenticatorId: z.string(),
+      authenticatorName: z.string(),
+      model: z.string(),
+    }),
+  ),
+});
+
+export const CreateWalletAuthenticatorResponse = z.object({
+  name: z.string(),
+  authenticator: z.union([
+    PasskeyAuthenticationSchema.optional(),
+    ApiKeyAuthenticationSchema.optional(),
+  ]),
+});
+
 export const WalletSchemaAPI = z.object({
   walletName: z.string(),
   walletFormat: WalletFormatsSchema,
@@ -290,3 +316,10 @@ export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;
 export type TStampedActivitySchema = z.infer<typeof stampedActivitySchema>;
 export type IExecRecoveryRequest = z.infer<typeof ExecRecoverySchema>;
 export type IExecRecovery = z.infer<typeof ExecRecoveryResponseSchema>;
+export type IWalletAuthenticator = z.infer<typeof WalletAuthenticator>;
+export type ICreateWalletAuthenticatorResponse = z.infer<
+  typeof CreateWalletAuthenticatorResponse
+>;
+export type IWalletAuthenticatorResponse = z.infer<
+  typeof WalletAuthenticatorResponse
+>;

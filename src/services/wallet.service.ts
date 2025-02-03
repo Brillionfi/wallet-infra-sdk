@@ -20,6 +20,9 @@ import {
   IRpcResponse,
   IRpcBodyRequest,
   IRpcParamsRequest,
+  IWalletAuthenticator,
+  IWalletAuthenticatorResponse,
+  ICreateWalletAuthenticatorResponse,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -49,6 +52,26 @@ export class WalletService {
       const parsedWallet = this.parseCreateWalletResponse(createdWallet);
 
       return parsedWallet;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async createWalletAuthenticator(
+    authenticator: IWalletAuthenticator,
+  ): Promise<ICreateWalletAuthenticatorResponse> {
+    logger.info(`${this.className}: Creating authenticator`);
+    try {
+      return await this.walletApi.createWalletAuthenticator(authenticator);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getWalletAuthenticator(): Promise<IWalletAuthenticatorResponse> {
+    logger.info(`${this.className}: get authenticators`);
+    try {
+      return await this.walletApi.getWalletAuthenticator();
     } catch (error) {
       throw handleError(error);
     }
