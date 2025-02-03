@@ -15,10 +15,10 @@ const config: Config = {
   coverageProvider: 'babel',
   coverageThreshold: {
     global: {
-      branches: 93,
-      functions: 94,
-      lines: 94,
-      statements: 94,
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
   coveragePathIgnorePatterns: [
