@@ -95,11 +95,11 @@ export const WalletAuthenticatorResponse = z.object({
 });
 
 export const CreateWalletAuthenticatorResponse = z.object({
-  name: z.string(),
-  authenticator: z.union([
-    PasskeyAuthenticationSchema.optional(),
-    ApiKeyAuthenticationSchema.optional(),
-  ]),
+  status: z.string(),
+  organizationId: z.string(),
+  needsApproval: z.boolean(),
+  fingerprint: z.string().optional(),
+  activityId: z.string().optional(),
 });
 
 export const WalletSchemaAPI = z.object({
