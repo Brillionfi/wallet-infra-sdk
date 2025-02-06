@@ -1,9 +1,12 @@
 import { TransactionApi } from '@api/transaction.api';
 import {
   ISignTransactionResponse,
+  ISignTransactionWithPasskey,
+  IStamped,
   ITransaction,
   ITransactionSigned,
   ITransactionUnsigned,
+  TransactionTypeActivityKeys,
 } from '@models/transaction.models';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -51,27 +54,11 @@ export class TransactionService {
   public async approveSignTransaction(
     id: string,
     organizationId: string,
-    fingerprint: string,
-    fromOrigin: string,
+    timestamp: string,
+    stamped: IStamped,
   ): Promise<ISignTransactionResponse> {
-    logger.info(`${this.className}: Cancelling Transaction ${id}`);
+    logger.info(`${this.className}: Approving Transaction ${id}`);
     try {
-      const stamper = new WebauthnStamper({
-        rpId: fromOrigin,
-      });
-
-      const timestamp = Date.now().toString();
-
-      const request = {
-        type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-        timestampMs: timestamp,
-        organizationId: organizationId,
-        parameters: {
-          fingerprint,
-        },
-      };
-      const stamped = await stamper.stamp(JSON.stringify(request));
-
       return await this.transactionApi.approveSignTransaction({
         id,
         organizationId,
@@ -86,33 +73,58 @@ export class TransactionService {
   public async rejectSignTransaction(
     id: string,
     organizationId: string,
-    fingerprint: string,
-    fromOrigin: string,
+    timestamp: string,
+    stamped: IStamped,
   ): Promise<ISignTransactionResponse> {
     logger.info(`${this.className}: Cancelling Transaction ${id}`);
     try {
-      const stamper = new WebauthnStamper({
-        rpId: fromOrigin,
-      });
-
-      const timestamp = Date.now().toString();
-
-      const request = {
-        type: 'ACTIVITY_TYPE_REJECT_ACTIVITY',
-        timestampMs: timestamp,
-        organizationId: organizationId,
-        parameters: {
-          fingerprint,
-        },
-      };
-      const stamped = await stamper.stamp(JSON.stringify(request));
-
       return await this.transactionApi.rejectSignTransaction({
         id,
         organizationId,
         timestamp,
         stamped,
       });
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async signWithPasskey(
+    credentialId: string,
+    organizationId: string,
+    fingerprint: string,
+    fromOrigin: string,
+    type: TransactionTypeActivityKeys,
+  ): Promise<ISignTransactionWithPasskey> {
+    try {
+      const id = Buffer.from(credentialId, 'base64');
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+        allowCredentials: [
+          {
+            id: id,
+            type: 'public-key',
+          },
+        ],
+        userVerification: 'preferred',
+      });
+
+      const timestamp = Date.now().toString();
+
+      const request = {
+        type,
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
+          fingerprint,
+        },
+      };
+      const stamped = await stamper.stamp(JSON.stringify(request));
+
+      return {
+        stamped,
+        timestamp,
+      };
     } catch (error) {
       throw handleError(error);
     }
