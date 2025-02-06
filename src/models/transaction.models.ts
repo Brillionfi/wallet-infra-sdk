@@ -51,6 +51,11 @@ export enum TransactionKeys {
   PUBLISHED_AT = 'publishedAt',
 }
 
+export enum TransactionTypeActivityKeys {
+  ACTIVITY_TYPE_APPROVE_ACTIVITY = 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+  ACTIVITY_TYPE_REJECT_ACTIVITY = 'ACTIVITY_TYPE_REJECT_ACTIVITY',
+}
+
 export const TransactionTypeSchema = z.union([
   z.literal('signed'),
   z.literal('unsigned'),
@@ -125,6 +130,20 @@ export const SignTransactionResponseSchema = z.object({
   signedTransaction: z.string().optional(),
 });
 
+export const StampedSchema = z.object({
+  stampHeaderName: z.string(),
+  stampHeaderValue: z.string(),
+});
+
+export const signTransactionWithPasskeySchema = z.object({
+  stamped: StampedSchema,
+  timestamp: z.string(),
+});
+
+export type IStamped = z.infer<typeof StampedSchema>;
+export type ISignTransactionWithPasskey = z.infer<
+  typeof signTransactionWithPasskeySchema
+>;
 export type ITransaction = z.infer<typeof TransactionSchema>;
 export type ITransactionSigned = z.infer<typeof TransactionSignedSchema>;
 export type ITransactionUnsigned = z.infer<typeof TransactionUnsignedSchema>;

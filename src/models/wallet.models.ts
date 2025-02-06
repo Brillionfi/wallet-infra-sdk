@@ -89,6 +89,7 @@ export const WalletAuthenticatorResponse = z.object({
     z.object({
       authenticatorId: z.string(),
       authenticatorName: z.string(),
+      credentialId: z.string(),
       model: z.string(),
     }),
   ),
