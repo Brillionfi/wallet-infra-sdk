@@ -118,30 +118,24 @@ export const WalletResponseSchema = z.object({
   }),
 });
 
+const typeData = z.object({
+  name: z.string(),
+  type: z.string(),
+});
+
+const TypesSchema = z
+  .record(z.string(), z.array(typeData))
+  .refine((obj) => 'EIP712Domain' in obj, {
+    message: 'The object must include "EIP712Domain" as a key.',
+  });
+
 export const WalletSignMessageSchema = z.object({
   address: z.string(),
   data: z.object({
     payload: z.string().optional(),
     typedData: z
       .object({
-        types: z.object({
-          properties: z.object({
-            EIP712Domain: z.array(
-              z.object({
-                name: z.string(),
-                type: z.string(),
-              }),
-            ),
-          }),
-          additionalProperties: z
-            .array(
-              z.object({
-                name: z.string(),
-                type: z.string(),
-              }),
-            )
-            .optional(),
-        }),
+        types: TypesSchema,
         primaryType: z.string(),
         domain: z.object({}).passthrough(),
         message: z.object({}).passthrough(),
