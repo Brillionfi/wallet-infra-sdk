@@ -23,6 +23,8 @@ import {
   IWalletAuthenticator,
   IWalletAuthenticatorResponse,
   ICreateWalletAuthenticatorResponse,
+  IWalletSignMessageResponse,
+  IWalletSignMessage,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -84,6 +86,18 @@ export class WalletService {
       return wallets.map((wallet: IWalletResponse) =>
         this.parseCreateWalletResponse(wallet),
       );
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async signMessage(
+    address: Address,
+    data: IWalletSignMessage,
+  ): Promise<IWalletSignMessageResponse> {
+    logger.info(`${this.className}: Wallet sign message`);
+    try {
+      return await this.walletApi.rawSignMessage(address, data);
     } catch (error) {
       throw handleError(error);
     }

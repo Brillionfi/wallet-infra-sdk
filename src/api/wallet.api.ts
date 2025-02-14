@@ -20,6 +20,8 @@ import type {
   IWalletAuthenticator,
   IWalletAuthenticatorResponse,
   ICreateWalletAuthenticatorResponse,
+  IWalletSignMessage,
+  IWalletSignMessageResponse,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -37,6 +39,7 @@ import {
   RpcResponse,
   WalletAuthenticatorResponse,
   CreateWalletAuthenticatorResponse,
+  WalletSignMessageResponseSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -93,6 +96,22 @@ export class WalletApi {
       const response: AxiosResponse = await this.httpClient.get('/wallets');
       const wallets = WalletResponseSchema.array().parse(response.data);
       return wallets;
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async rawSignMessage(
+    address: Address,
+    data: IWalletSignMessage,
+  ): Promise<IWalletSignMessageResponse> {
+    logger.debug(`${this.className}: Signing transaction`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/${address}/raw-sign`,
+        data,
+      );
+      return WalletSignMessageResponseSchema.parse(response.data.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
