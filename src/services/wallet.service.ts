@@ -34,6 +34,7 @@ import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
 import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
+import { ethers } from 'ethers';
 
 export class WalletService {
   private readonly className: string;
@@ -97,6 +98,10 @@ export class WalletService {
   ): Promise<IWalletSignMessageResponse> {
     logger.info(`${this.className}: Wallet sign message`);
     try {
+      if (data.payload && !data.payload?.startsWith('0x')) {
+        const payload = ethers.encodeBytes32String(data.payload);
+        return await this.walletApi.rawSignMessage(address, { payload });
+      }
       return await this.walletApi.rawSignMessage(address, data);
     } catch (error) {
       throw handleError(error);

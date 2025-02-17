@@ -130,18 +130,15 @@ const TypesSchema = z
   });
 
 export const WalletSignMessageSchema = z.object({
-  address: z.string(),
-  data: z.object({
-    payload: z.string().optional(),
-    typedData: z
-      .object({
-        types: TypesSchema,
-        primaryType: z.string(),
-        domain: z.object({}).passthrough(),
-        message: z.object({}).passthrough(),
-      })
-      .optional(),
-  }),
+  payload: z.string().optional(),
+  typedData: z
+    .object({
+      types: TypesSchema,
+      primaryType: z.string(),
+      domain: z.object({}).passthrough(),
+      message: z.object({}).passthrough(),
+    })
+    .optional(),
 });
 
 export const WalletSignTransactionSchema = z.object({
