@@ -98,11 +98,26 @@ export class WalletService {
   ): Promise<IWalletSignMessageResponse> {
     logger.info(`${this.className}: Wallet sign message`);
     try {
-      if (data.payload && !data.payload?.startsWith('0x')) {
-        const payload = ethers.encodeBytes32String(data.payload);
-        return await this.walletApi.rawSignMessage(address, { payload });
+      if (data.message && !data.message?.startsWith('0x')) {
+        const message = ethers.hashMessage(data.message);
+        return await this.walletApi.rawSignMessage(address, { message });
       }
-      return await this.walletApi.rawSignMessage(address, data);
+      if (data.typedData) {
+        const domainSeparator = ethers.TypedDataEncoder.hashDomain(
+          data.typedData.domain,
+        );
+        const messageHash = ethers.TypedDataEncoder.from(
+          data.typedData.types,
+        ).hash(data.typedData.message);
+        const digest = ethers.solidityPackedKeccak256(
+          ['string', 'bytes32', 'bytes32'],
+          ['\x19\x01', domainSeparator, messageHash],
+        );
+        return await this.walletApi.rawSignMessage(address, {
+          message: digest,
+        });
+      }
+      throw new Error('Invalid data to sign');
     } catch (error) {
       throw handleError(error);
     }

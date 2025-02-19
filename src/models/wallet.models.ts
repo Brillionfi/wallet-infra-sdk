@@ -123,14 +123,10 @@ const typeData = z.object({
   type: z.string(),
 });
 
-const TypesSchema = z
-  .record(z.string(), z.array(typeData))
-  .refine((obj) => 'EIP712Domain' in obj, {
-    message: 'The object must include "EIP712Domain" as a key.',
-  });
+const TypesSchema = z.record(z.string(), z.array(typeData));
 
 export const WalletSignMessageSchema = z.object({
-  payload: z.string().optional(),
+  message: z.string().optional(),
   typedData: z
     .object({
       types: TypesSchema,
