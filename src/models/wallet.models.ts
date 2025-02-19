@@ -118,6 +118,25 @@ export const WalletResponseSchema = z.object({
   }),
 });
 
+const typeData = z.object({
+  name: z.string(),
+  type: z.string(),
+});
+
+const TypesSchema = z.record(z.string(), z.array(typeData));
+
+export const WalletSignMessageSchema = z.object({
+  message: z.string().optional(),
+  typedData: z
+    .object({
+      types: TypesSchema,
+      primaryType: z.string(),
+      domain: z.object({}).passthrough(),
+      message: z.object({}).passthrough(),
+    })
+    .optional(),
+});
+
 export const WalletSignTransactionSchema = z.object({
   walletFormat: WalletFormatsSchema,
   walletType: WalletTypesSchema,
@@ -131,6 +150,20 @@ export const ActivityResponseSchema = z.object({
   fingerprint: z.string(),
   activityId: z.string(),
 });
+
+export const WalletSignMessageResponseSchema = ActivityResponseSchema.merge(
+  z.object({
+    rawSignature: z
+      .object({
+        /** Components of an ECSDA signature. */
+        r: z.string(),
+        s: z.string(),
+        v: z.string(),
+      })
+      .optional(),
+    finalSignature: z.string().optional(),
+  }),
+);
 
 export const WalletSignTransactionResponseSchema = ActivityResponseSchema.merge(
   z.object({
@@ -296,6 +329,10 @@ export type TApproveAndRejectSignTxRequest = z.infer<
 export type IWallet = z.infer<typeof WalletSchema>;
 export type IWalletAPI = z.infer<typeof WalletSchemaAPI>;
 export type IWalletResponse = z.infer<typeof WalletResponseSchema>;
+export type IWalletSignMessage = z.infer<typeof WalletSignMessageSchema>;
+export type IWalletSignMessageResponse = z.infer<
+  typeof WalletSignMessageResponseSchema
+>;
 export type IWalletSignTransaction = z.infer<
   typeof WalletSignTransactionSchema
 >;

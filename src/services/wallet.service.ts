@@ -23,6 +23,8 @@ import {
   IWalletAuthenticator,
   IWalletAuthenticatorResponse,
   ICreateWalletAuthenticatorResponse,
+  IWalletSignMessageResponse,
+  IWalletSignMessage,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -32,6 +34,7 @@ import { BundleStamper } from '@utils/stampers';
 import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
 import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
+import { ethers } from 'ethers';
 
 export class WalletService {
   private readonly className: string;
@@ -84,6 +87,37 @@ export class WalletService {
       return wallets.map((wallet: IWalletResponse) =>
         this.parseCreateWalletResponse(wallet),
       );
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async signMessage(
+    address: Address,
+    data: IWalletSignMessage,
+  ): Promise<IWalletSignMessageResponse> {
+    logger.info(`${this.className}: Wallet sign message`);
+    try {
+      if (data.message && !data.message?.startsWith('0x')) {
+        const message = ethers.hashMessage(data.message);
+        return await this.walletApi.rawSignMessage(address, { message });
+      }
+      if (data.typedData) {
+        const domainSeparator = ethers.TypedDataEncoder.hashDomain(
+          data.typedData.domain,
+        );
+        const messageHash = ethers.TypedDataEncoder.from(
+          data.typedData.types,
+        ).hash(data.typedData.message);
+        const digest = ethers.solidityPackedKeccak256(
+          ['string', 'bytes32', 'bytes32'],
+          ['\x19\x01', domainSeparator, messageHash],
+        );
+        return await this.walletApi.rawSignMessage(address, {
+          message: digest,
+        });
+      }
+      throw new Error('Invalid data to sign');
     } catch (error) {
       throw handleError(error);
     }

@@ -324,6 +324,82 @@ describe('WalletService', () => {
     });
   });
 
+  describe('signMessage', () => {
+    const address = '0x31de954dFe316d78703501A0689612aA790370Eb';
+    const data = {
+      message: 'Message to sign',
+    };
+    const typedData = {
+      types: {
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallet', type: 'address' },
+        ],
+      },
+      primaryType: 'Person',
+      domain: {
+        name: 'MyApp',
+        version: '1',
+        chainId: 1,
+        verifyingContract: '0x5C29Ea3018A5Db404b708e0bd66F89933ADdfA5C',
+      },
+      message: {
+        name: 'John Doe',
+        wallet: '0x31de954dFe316d78703501A0689612aA790370Eb',
+      },
+    };
+
+    it('should catch if not data sent', async () => {
+      await expect(walletService.signMessage(address, {})).rejects.toThrow(
+        'Invalid data to sign',
+      );
+    });
+
+    it('should return signed tx with no quorum required', async () => {
+      const response = {
+        status: 'string',
+        organizationId: 'organizationId',
+        needsApproval: false,
+        fingerprint: 'fingerprint',
+        activityId: 'activityId',
+        rawSignature: {
+          r: 'r',
+          s: 's',
+          v: 'v',
+        },
+        finalSignature: 'finalSignature',
+      };
+      walletApi.rawSignMessage.mockResolvedValueOnce(response);
+
+      const result = await walletService.signMessage(wallet, { typedData });
+
+      expect(walletApi.rawSignMessage).toHaveBeenCalled();
+      expect(result).toEqual(response);
+    });
+
+    it('should return signed tx with no quorum required', async () => {
+      const response = {
+        status: 'string',
+        organizationId: 'organizationId',
+        needsApproval: false,
+        fingerprint: 'fingerprint',
+        activityId: 'activityId',
+        rawSignature: {
+          r: 'r',
+          s: 's',
+          v: 'v',
+        },
+        finalSignature: 'finalSignature',
+      };
+      walletApi.rawSignMessage.mockResolvedValueOnce(response);
+
+      const result = await walletService.signMessage(wallet, data);
+
+      expect(walletApi.rawSignMessage).toHaveBeenCalled();
+      expect(result).toEqual(response);
+    });
+  });
+
   describe('getTransactionHistory', () => {
     it('should throw an error when walletApi.getTransactionHistory fails', async () => {
       const error = new Error('Failed to fetch wallets');
