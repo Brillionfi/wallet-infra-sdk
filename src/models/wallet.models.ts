@@ -319,6 +319,26 @@ export const RpcResponse = z.union([
   z.object({}).passthrough(),
   z.array(z.object({}).passthrough()),
 ]);
+
+export const WalletAuthenticatorConsentSchema = z.object({
+  fingerprint: z.string(),
+  organizationId: z.string(),
+  timestamp: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export const WalletAuthenticatorConsentResponseSchema = z.object({
+  status: z.string(),
+});
+
+export type IWalletAuthenticatorConsentSchema = z.infer<
+  typeof WalletAuthenticatorConsentSchema
+>;
+
+export type IWalletAuthenticatorConsentResponseSchema = z.infer<
+  typeof WalletAuthenticatorConsentResponseSchema
+>;
+
 export type IRpcBodyRequest = z.infer<typeof RpcBodyRequest>;
 export type IRpcParamsRequest = z.infer<typeof RpcParamsRequest>;
 export type IRpcResponse = z.infer<typeof RpcResponse>;

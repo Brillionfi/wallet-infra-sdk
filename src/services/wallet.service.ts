@@ -25,6 +25,7 @@ import {
   ICreateWalletAuthenticatorResponse,
   IWalletSignMessageResponse,
   IWalletSignMessage,
+  IWalletAuthenticatorConsentResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -57,6 +58,39 @@ export class WalletService {
       return parsedWallet;
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async approveCreateWalletAuthenticator(
+    organizationId: string,
+    fingerprint: string,
+    fromOrigin: string,
+  ): Promise<IWalletAuthenticatorConsentResponseSchema> {
+    try {
+      const stamper = new WebauthnStamper({
+        rpId: fromOrigin,
+      });
+
+      const timestamp = Date.now().toString();
+      const requestBody = {
+        type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
+          fingerprint,
+        },
+      };
+
+      const stamped = await stamper.stamp(JSON.stringify(requestBody));
+
+      return await this.walletApi.approveCreateWalletAuthenticator({
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
     }
   }
 
