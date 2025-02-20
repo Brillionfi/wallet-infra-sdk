@@ -98,17 +98,26 @@ export class WalletService {
   ): Promise<IWalletSignMessageResponse> {
     logger.info(`${this.className}: Wallet sign message`);
     try {
-      if (data.message && !data.message?.startsWith('0x')) {
-        const message = ethers.hashMessage(data.message);
-        return await this.walletApi.rawSignMessage(address, { message });
+      if (data.message) {
+        if (!data.message?.startsWith('0x')) {
+          const message = ethers.hashMessage(data.message);
+          return await this.walletApi.rawSignMessage(address, { message });
+        }
+        return await this.walletApi.rawSignMessage(address, {
+          message: data.message,
+        });
       }
       if (data.typedData) {
+        //removes EIP712Domain just in case theres any
+        const { EIP712Domain, ...rest } = data.typedData.types;
+        logger.info(`Cleaning up ${EIP712Domain}`);
+
         const domainSeparator = ethers.TypedDataEncoder.hashDomain(
           data.typedData.domain,
         );
-        const messageHash = ethers.TypedDataEncoder.from(
-          data.typedData.types,
-        ).hash(data.typedData.message);
+        const messageHash = ethers.TypedDataEncoder.from(rest).hash(
+          data.typedData.message,
+        );
         const digest = ethers.solidityPackedKeccak256(
           ['string', 'bytes32', 'bytes32'],
           ['\x19\x01', domainSeparator, messageHash],
