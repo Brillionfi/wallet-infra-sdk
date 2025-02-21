@@ -22,6 +22,7 @@ import type {
   ICreateWalletAuthenticatorResponse,
   IWalletSignMessage,
   IWalletSignMessageResponse,
+  IWalletAuthenticatorConsentSchema,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -125,6 +126,21 @@ export class WalletApi {
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/wallets/${address}/sign`,
+        data,
+      );
+      return WalletSignTransactionResponseSchema.parse(response.data.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async approveCreateWalletAuthenticator(
+    data: IWalletAuthenticatorConsentSchema,
+  ): Promise<IWalletSignTransactionResponse> {
+    logger.debug(`${this.className}: Signing transaction`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/auth/approve`,
         data,
       );
       return WalletSignTransactionResponseSchema.parse(response.data.data);
