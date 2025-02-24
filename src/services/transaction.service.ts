@@ -14,6 +14,7 @@ import {
   WebauthnStamper,
   WalletStamper,
   BaseWalletInterface,
+  WalletType,
 } from '@utils/stampers';
 import { ethers } from 'ethers';
 import logger from 'loglevel';
@@ -144,9 +145,13 @@ export class TransactionService {
     try {
       const wallet = ethers.Wallet.fromPhrase(mnemonic);
 
-      const stamper = new WalletStamper(
-        wallet as unknown as BaseWalletInterface,
-      );
+      const walletInterface: BaseWalletInterface = {
+        type: WalletType.Ethereum,
+        signMessage: async (message: string) => wallet.signMessage(message),
+        getPublicKey: async () => wallet.publicKey,
+      };
+
+      const stamper = new WalletStamper(walletInterface);
 
       const timestamp = Date.now().toString();
       const request = {
