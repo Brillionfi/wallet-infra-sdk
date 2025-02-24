@@ -135,7 +135,6 @@ export class TransactionService {
     mnemonic: string,
     organizationId: string,
     fingerprint: string,
-    fromOrigin: string,
     type: TransactionTypeActivityKeys,
   ): Promise<ISignTransactionWithPasskey> {
     try {
