@@ -141,7 +141,7 @@ export class WalletApi {
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/wallets/auth/approve`,
-        data,
+        { ...data, fingerPrint: data.fingerprint }, //TODO fix uppercase in API
       );
       return WalletSignTransactionResponseSchema.parse(response.data.data);
     } catch (error) {
