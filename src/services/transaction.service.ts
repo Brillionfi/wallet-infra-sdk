@@ -10,7 +10,11 @@ import {
 } from '@models/transaction.models';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import { ApiKeyStamper, WebauthnStamper } from '@utils/stampers';
+import {
+  WebauthnStamper,
+  WalletStamper,
+  BaseWalletInterface,
+} from '@utils/stampers';
 import { ethers } from 'ethers';
 import logger from 'loglevel';
 
@@ -140,10 +144,9 @@ export class TransactionService {
     try {
       const wallet = ethers.Wallet.fromPhrase(mnemonic);
 
-      const stamper = new ApiKeyStamper({
-        apiPublicKey: wallet.publicKey,
-        apiPrivateKey: wallet.privateKey,
-      });
+      const stamper = new WalletStamper(
+        wallet as unknown as BaseWalletInterface,
+      );
 
       const timestamp = Date.now().toString();
       const request = {
