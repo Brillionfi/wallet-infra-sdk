@@ -145,7 +145,7 @@ export class WalletApi {
         `/wallets/auth/approve`,
         { ...data, fingerPrint: data.fingerprint }, //TODO fix uppercase in API
       );
-      return WalletAuthenticatorConsentResponseSchema.parse(response.data.data);
+      return WalletAuthenticatorConsentResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
