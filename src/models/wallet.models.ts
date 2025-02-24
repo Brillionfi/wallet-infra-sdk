@@ -101,6 +101,7 @@ export const WalletAuthenticatorResponse = z.object({
           'CREDENTIAL_TYPE_WEBAUTHN_AUTHENTICATOR',
           'CREDENTIAL_TYPE_API_KEY_P256',
           'CREDENTIAL_TYPE_RECOVER_USER_KEY_P256',
+          'CREDENTIAL_TYPE_API_KEY_SECP256K1',
         ]),
       }),
       apiKeyId: z.string(),
