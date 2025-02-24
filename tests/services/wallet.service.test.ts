@@ -20,7 +20,7 @@ import { AxiosError, AxiosResponse, HttpStatusCode } from 'axios';
 import { HttpClient } from '@utils/http-client';
 import { v4 as uuidv4 } from 'uuid';
 import logger from 'loglevel';
-import { BundleStamper, WebauthnStamper } from '@utils/encoding';
+import { BundleStamper, WebauthnStamper } from '@utils/stampers';
 import * as BundleUtils from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 import axios from 'axios';
 import { PublicKeyCredentialWithAttestationJSON } from '@utils/stampers/webAuthnStamper/webauthn-json';

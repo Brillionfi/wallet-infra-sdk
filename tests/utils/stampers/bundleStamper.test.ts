@@ -1,4 +1,4 @@
-import { BundleStamper } from '@utils/encoding';
+import { BundleStamper } from '@utils/stampers';
 import * as util from '@utils/stampers/bundleStamper/utils';
 
 describe('BundleStamper', () => {

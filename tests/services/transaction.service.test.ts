@@ -8,7 +8,7 @@ import {
   TransactionTypeKeys,
 } from '@models/transaction.models';
 import { HttpClient } from '@utils/http-client';
-import { WebauthnStamper } from '@utils/encoding';
+import { WebauthnStamper } from '@utils/stampers';
 
 jest.mock('@api/transaction.api');
 jest.mock('@utils/http-client');

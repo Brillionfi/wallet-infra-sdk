@@ -1,4 +1,4 @@
-import { WebauthnStamper } from '@utils/encoding';
+import { WebauthnStamper } from '@utils/stampers';
 import * as util from '@utils/stampers/webAuthnStamper/webauthn-json';
 
 describe('webAuthnStamper.test', () => {
