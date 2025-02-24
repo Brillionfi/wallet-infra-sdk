@@ -153,7 +153,7 @@ function isP256CurvePoint(x: bigint, y: bigint): boolean {
   const a = p - BigInt(3);
   const b = getB();
   const rhs = ((x * x + a) * x + b) % p;
-  const lhs = y ** BigInt(2) % p;
+  const lhs = modPow(y, BigInt(2), p);
   return lhs === rhs;
 }
 
