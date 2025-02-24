@@ -93,6 +93,20 @@ export const WalletAuthenticatorResponse = z.object({
       model: z.string(),
     }),
   ),
+  apiKeys: z.array(
+    z.object({
+      credential: z.object({
+        publicKey: z.string(),
+        type: z.enum([
+          'CREDENTIAL_TYPE_WEBAUTHN_AUTHENTICATOR',
+          'CREDENTIAL_TYPE_API_KEY_P256',
+          'CREDENTIAL_TYPE_RECOVER_USER_KEY_P256',
+        ]),
+      }),
+      apiKeyId: z.string(),
+      apiKeyName: z.string(),
+    }),
+  ),
 });
 
 export const CreateWalletAuthenticatorResponse = z.object({
