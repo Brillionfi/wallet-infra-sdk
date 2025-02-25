@@ -1,6 +1,6 @@
 import { WalletApi } from '@api/wallet.api';
 import { Address, ChainId } from '@models/common.models';
-import { ITransaction } from '@models/transaction.models';
+import { IStamped, ITransaction } from '@models/transaction.models';
 import {
   WalletSchemaAPI,
   IWalletAPI,
@@ -62,27 +62,12 @@ export class WalletService {
   }
 
   public async approveCreateWalletAuthenticator(
-    organizationId: string,
     fingerprint: string,
-    fromOrigin: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
   ): Promise<IWalletAuthenticatorConsentResponseSchema> {
     try {
-      const stamper = new WebauthnStamper({
-        rpId: fromOrigin,
-      });
-
-      const timestamp = Date.now().toString();
-      const requestBody = {
-        type: 'ACTIVITY_TYPE_APPROVE_ACTIVITY',
-        timestampMs: timestamp,
-        organizationId,
-        parameters: {
-          fingerprint,
-        },
-      };
-
-      const stamped = await stamper.stamp(JSON.stringify(requestBody));
-
       return await this.walletApi.approveCreateWalletAuthenticator({
         timestamp,
         organizationId,

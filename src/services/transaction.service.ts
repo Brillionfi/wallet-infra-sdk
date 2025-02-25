@@ -10,7 +10,13 @@ import {
 } from '@models/transaction.models';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
-import { WebauthnStamper } from '@utils/stampers';
+import {
+  WebauthnStamper,
+  WalletStamper,
+  BaseWalletInterface,
+  WalletType,
+} from '@utils/stampers';
+import { ethers } from 'ethers';
 import logger from 'loglevel';
 
 export class TransactionService {
@@ -111,6 +117,43 @@ export class TransactionService {
 
       const timestamp = Date.now().toString();
 
+      const request = {
+        type,
+        timestampMs: timestamp,
+        organizationId,
+        parameters: {
+          fingerprint,
+        },
+      };
+      const stamped = await stamper.stamp(JSON.stringify(request));
+
+      return {
+        stamped,
+        timestamp,
+      };
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async signWithMnemonic(
+    mnemonic: string,
+    organizationId: string,
+    fingerprint: string,
+    type: TransactionTypeActivityKeys,
+  ): Promise<ISignTransactionWithPasskey> {
+    try {
+      const wallet = ethers.Wallet.fromPhrase(mnemonic);
+
+      const walletInterface: BaseWalletInterface = {
+        type: WalletType.Ethereum,
+        signMessage: async (message: string) => wallet.signMessage(message),
+        getPublicKey: async () => wallet.publicKey,
+      };
+
+      const stamper = new WalletStamper(walletInterface);
+
+      const timestamp = Date.now().toString();
       const request = {
         type,
         timestampMs: timestamp,
