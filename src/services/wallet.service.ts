@@ -26,6 +26,8 @@ import {
   IWalletSignMessageResponse,
   IWalletSignMessage,
   IWalletAuthenticatorConsentResponseSchema,
+  IWalletRecoveryByEmailStatus,
+  ISetRecoveryByEmailStatusResponse,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -307,14 +309,31 @@ export class WalletService {
     }
   }
 
-  public async initRecovery(address: string): Promise<IWalletRecovery> {
+  public async initRecovery(): Promise<IWalletRecovery> {
     logger.info(`${this.className}: Wallet recovery initiated`);
     try {
       await this.bundleStamper.init();
-      return await this.walletApi.recover(
-        this.bundleStamper.publicKey(),
-        address,
-      );
+      return await this.walletApi.recover(this.bundleStamper.publicKey());
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getRecoveryByEmailStatus(): Promise<IWalletRecoveryByEmailStatus> {
+    logger.info(`${this.className}: get Wallet recovery by email status`);
+    try {
+      return await this.walletApi.getRecoveryByEmailStatus();
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async setRecoveryByEmailStatus(
+    recoverByEmail: boolean,
+  ): Promise<ISetRecoveryByEmailStatusResponse> {
+    logger.info(`${this.className}: set recovery by email`);
+    try {
+      return await this.walletApi.setRecoveryByEmailStatus(recoverByEmail);
     } catch (error) {
       throw handleError(error);
     }

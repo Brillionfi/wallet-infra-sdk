@@ -118,6 +118,14 @@ export const CreateWalletAuthenticatorResponse = z.object({
   activityId: z.string().optional(),
 });
 
+export const SetRecoveryByEmailStatusResponse = z.object({
+  status: z.string(),
+  organizationId: z.string(),
+  needsApproval: z.boolean(),
+  fingerprint: z.string().optional(),
+  activityId: z.string().optional(),
+});
+
 export const WalletSchemaAPI = z.object({
   walletName: z.string(),
   walletFormat: WalletFormatsSchema,
@@ -238,6 +246,10 @@ export const WalletRecoverySchema = z.object({
     fingerprint: z.string(),
     activityId: z.string(),
   }),
+});
+
+export const WalletRecoveryByEmailStatus = z.object({
+  status: z.enum(['ENABLE', 'DISABLE']),
 });
 
 export const WalletPortfolioSchema = z.object({
@@ -384,6 +396,9 @@ export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
 export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
+export type IWalletRecoveryByEmailStatus = z.infer<
+  typeof WalletRecoveryByEmailStatus
+>;
 export type IWalletPortfolio = z.infer<typeof WalletPortfolioSchema>;
 export type IWalletNotifications = z.infer<typeof WalletNotificationsSchema>;
 export type TStampedActivitySchema = z.infer<typeof stampedActivitySchema>;
@@ -395,4 +410,7 @@ export type ICreateWalletAuthenticatorResponse = z.infer<
 >;
 export type IWalletAuthenticatorResponse = z.infer<
   typeof WalletAuthenticatorResponse
+>;
+export type ISetRecoveryByEmailStatusResponse = z.infer<
+  typeof SetRecoveryByEmailStatusResponse
 >;

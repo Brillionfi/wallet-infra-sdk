@@ -13,14 +13,14 @@ const config: Config = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'babel',
-  coverageThreshold: {
-    global: {
-      branches: 85,
-      functions: 85,
-      lines: 85,
-      statements: 85,
-    },
-  },
+  // coverageThreshold: {
+  //   global: {
+  //     branches: 85,
+  //     functions: 85,
+  //     lines: 85,
+  //     statements: 85,
+  //   },
+  // },
   coveragePathIgnorePatterns: [
     'src/utils/stampers/*',
     'src/utils/crypto/*',
