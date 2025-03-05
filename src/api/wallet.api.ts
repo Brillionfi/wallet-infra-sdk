@@ -24,6 +24,8 @@ import type {
   IWalletSignMessageResponse,
   IWalletAuthenticatorConsentSchema,
   IWalletAuthenticatorConsentResponseSchema,
+  IWalletRecoveryByEmailStatus,
+  ISetRecoveryByEmailStatusResponse,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -43,6 +45,8 @@ import {
   CreateWalletAuthenticatorResponse,
   WalletSignMessageResponseSchema,
   WalletAuthenticatorConsentResponseSchema,
+  WalletRecoveryByEmailStatus,
+  SetRecoveryByEmailStatusResponse,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -273,11 +277,36 @@ export class WalletApi {
       throw handleError(error);
     }
   }
+  public async getRecoveryByEmailStatus(): Promise<IWalletRecoveryByEmailStatus> {
+    logger.debug(`${this.className}: get wallet recovery by email`);
+    try {
+      const response: AxiosResponse = await this.httpClient.get(
+        `/wallets/recovery/status`,
+      );
+      return WalletRecoveryByEmailStatus.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
 
-  public async recover(
-    targetPublicKey: string,
-    address: string,
-  ): Promise<IWalletRecovery> {
+  public async setRecoveryByEmailStatus(
+    recoverRequestByBrillion: boolean,
+  ): Promise<ISetRecoveryByEmailStatusResponse> {
+    logger.debug(`${this.className}: set recovery by email status`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/recovery/status`,
+        {
+          recoverRequestByBrillion,
+        },
+      );
+      return SetRecoveryByEmailStatusResponse.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async recover(targetPublicKey: string): Promise<IWalletRecovery> {
     logger.debug(`${this.className}: Wallet Recovery`);
     try {
       const body = {
@@ -286,7 +315,7 @@ export class WalletApi {
         },
       };
       const response: AxiosResponse = await this.httpClient.post(
-        `/wallets/${address}/recovery`,
+        `/wallets/recovery`,
         body,
       );
 
