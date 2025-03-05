@@ -26,6 +26,8 @@ import type {
   IWalletAuthenticatorConsentResponseSchema,
   IWalletRecoveryByEmailStatus,
   ISetRecoveryByEmailStatusResponse,
+  IWalletRecoveryApproveResponseSchema,
+  IWalletRecoveryApproveSchema,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -47,6 +49,7 @@ import {
   WalletAuthenticatorConsentResponseSchema,
   WalletRecoveryByEmailStatus,
   SetRecoveryByEmailStatusResponse,
+  WalletRecoveryApproveResponseSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -147,7 +150,7 @@ export class WalletApi {
     try {
       const response: AxiosResponse = await this.httpClient.post(
         `/wallets/auth/approve`,
-        { ...data, fingerPrint: data.fingerprint }, //TODO fix uppercase in API
+        data,
       );
       return WalletAuthenticatorConsentResponseSchema.parse(response.data);
     } catch (error) {
@@ -301,6 +304,21 @@ export class WalletApi {
         },
       );
       return SetRecoveryByEmailStatusResponse.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async approveSetRecoveryByEmailStatus(
+    data: IWalletRecoveryApproveSchema,
+  ): Promise<IWalletRecoveryApproveResponseSchema> {
+    logger.debug(`${this.className}: Signing transaction`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/recovery/approve`,
+        data,
+      );
+      return WalletRecoveryApproveResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }

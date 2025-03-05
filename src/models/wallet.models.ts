@@ -354,7 +354,18 @@ export const WalletAuthenticatorConsentSchema = z.object({
   stamped: stampedActivitySchema,
 });
 
+export const WalletRecoveryApproveSchema = z.object({
+  fingerprint: z.string(),
+  organizationId: z.string(),
+  timestamp: z.string(),
+  stamped: stampedActivitySchema,
+});
+
 export const WalletAuthenticatorConsentResponseSchema = z.object({
+  status: z.string(),
+});
+
+export const WalletRecoveryApproveResponseSchema = z.object({
   status: z.string(),
 });
 
@@ -362,8 +373,16 @@ export type IWalletAuthenticatorConsentSchema = z.infer<
   typeof WalletAuthenticatorConsentSchema
 >;
 
+export type IWalletRecoveryApproveSchema = z.infer<
+  typeof WalletRecoveryApproveSchema
+>;
+
 export type IWalletAuthenticatorConsentResponseSchema = z.infer<
   typeof WalletAuthenticatorConsentResponseSchema
+>;
+
+export type IWalletRecoveryApproveResponseSchema = z.infer<
+  typeof WalletRecoveryApproveResponseSchema
 >;
 
 export type IRpcBodyRequest = z.infer<typeof RpcBodyRequest>;

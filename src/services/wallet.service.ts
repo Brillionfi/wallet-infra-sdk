@@ -28,6 +28,7 @@ import {
   IWalletAuthenticatorConsentResponseSchema,
   IWalletRecoveryByEmailStatus,
   ISetRecoveryByEmailStatusResponse,
+  IWalletRecoveryApproveResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -336,6 +337,24 @@ export class WalletService {
       return await this.walletApi.setRecoveryByEmailStatus(recoverByEmail);
     } catch (error) {
       throw handleError(error);
+    }
+  }
+
+  public async approveSetRecoveryByEmailStatus(
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<IWalletRecoveryApproveResponseSchema> {
+    try {
+      return await this.walletApi.approveSetRecoveryByEmailStatus({
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
     }
   }
 
