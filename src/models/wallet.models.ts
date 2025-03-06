@@ -84,6 +84,10 @@ export const WalletAuthenticator = z.object({
   ]),
 });
 
+export const DeleteWalletAuthenticator = z.object({
+  authenticatorsIds: z.array(z.string()),
+});
+
 export const WalletAuthenticatorResponse = z.object({
   authenticators: z.array(
     z.object({
@@ -110,21 +114,19 @@ export const WalletAuthenticatorResponse = z.object({
   ),
 });
 
-export const CreateWalletAuthenticatorResponse = z.object({
+export const ActivityResponseSchema = z.object({
   status: z.string(),
   organizationId: z.string(),
   needsApproval: z.boolean(),
-  fingerprint: z.string().optional(),
-  activityId: z.string().optional(),
+  fingerprint: z.string(),
+  activityId: z.string(),
 });
 
-export const SetRecoveryByEmailStatusResponse = z.object({
-  status: z.string(),
-  organizationId: z.string(),
-  needsApproval: z.boolean(),
-  fingerprint: z.string().optional(),
-  activityId: z.string().optional(),
-});
+export const CreateWalletAuthenticatorResponse = ActivityResponseSchema;
+
+export const DeleteWalletAuthenticatorResponse = ActivityResponseSchema;
+
+export const SetRecoveryByEmailStatusResponse = ActivityResponseSchema;
 
 export const WalletSchemaAPI = z.object({
   walletName: z.string(),
@@ -164,14 +166,6 @@ export const WalletSignTransactionSchema = z.object({
   walletFormat: WalletFormatsSchema,
   walletType: WalletTypesSchema,
   unsignedTransaction: non0xString,
-});
-
-export const ActivityResponseSchema = z.object({
-  status: z.string(),
-  organizationId: z.string(),
-  needsApproval: z.boolean(),
-  fingerprint: z.string(),
-  activityId: z.string(),
 });
 
 export const WalletSignMessageResponseSchema = ActivityResponseSchema.merge(
@@ -424,11 +418,17 @@ export type TStampedActivitySchema = z.infer<typeof stampedActivitySchema>;
 export type IExecRecoveryRequest = z.infer<typeof ExecRecoverySchema>;
 export type IExecRecovery = z.infer<typeof ExecRecoveryResponseSchema>;
 export type IWalletAuthenticator = z.infer<typeof WalletAuthenticator>;
+export type IDeleteWalletAuthenticator = z.infer<
+  typeof DeleteWalletAuthenticator
+>;
 export type ICreateWalletAuthenticatorResponse = z.infer<
   typeof CreateWalletAuthenticatorResponse
 >;
 export type IWalletAuthenticatorResponse = z.infer<
   typeof WalletAuthenticatorResponse
+>;
+export type IDeleteWalletAuthenticatorResponse = z.infer<
+  typeof DeleteWalletAuthenticatorResponse
 >;
 export type ISetRecoveryByEmailStatusResponse = z.infer<
   typeof SetRecoveryByEmailStatusResponse

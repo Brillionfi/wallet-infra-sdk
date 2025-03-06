@@ -28,6 +28,8 @@ import type {
   ISetRecoveryByEmailStatusResponse,
   IWalletRecoveryApproveResponseSchema,
   IWalletRecoveryApproveSchema,
+  IDeleteWalletAuthenticator,
+  IDeleteWalletAuthenticatorResponse,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -50,6 +52,7 @@ import {
   WalletRecoveryByEmailStatus,
   SetRecoveryByEmailStatusResponse,
   WalletRecoveryApproveResponseSchema,
+  DeleteWalletAuthenticatorResponse,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -85,6 +88,20 @@ export class WalletApi {
         authenticator,
       );
       return CreateWalletAuthenticatorResponse.parse(response.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+  public async deleteWalletAuthenticator(
+    data: IDeleteWalletAuthenticator,
+  ): Promise<IDeleteWalletAuthenticatorResponse> {
+    logger.debug(`${this.className}: Creating authenticator`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        '/wallets/auth/delete',
+        data,
+      );
+      return DeleteWalletAuthenticatorResponse.parse(response.data);
     } catch (error) {
       throw handleError(error as APIError);
     }
