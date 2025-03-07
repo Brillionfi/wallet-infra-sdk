@@ -29,6 +29,8 @@ import {
   IWalletRecoveryByEmailStatus,
   ISetRecoveryByEmailStatusResponse,
   IWalletRecoveryApproveResponseSchema,
+  IDeleteWalletAuthenticator,
+  IDeleteWalletAuthenticatorResponse,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -88,6 +90,17 @@ export class WalletService {
     logger.info(`${this.className}: Creating authenticator`);
     try {
       return await this.walletApi.createWalletAuthenticator(authenticator);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async deleteWalletAuthenticator(
+    data: IDeleteWalletAuthenticator,
+  ): Promise<IDeleteWalletAuthenticatorResponse> {
+    logger.info(`${this.className}: Creating authenticator`);
+    try {
+      return await this.walletApi.deleteWalletAuthenticator(data);
     } catch (error) {
       throw handleError(error);
     }
