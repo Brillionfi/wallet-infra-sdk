@@ -85,7 +85,7 @@ export const WalletAuthenticator = z.object({
 });
 
 export const DeleteWalletAuthenticator = z.object({
-  authenticatorsIds: z.array(z.string()),
+  authenticators: z.array(z.string()),
 });
 
 export const WalletAuthenticatorResponse = z.object({
