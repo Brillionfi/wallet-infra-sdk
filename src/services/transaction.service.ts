@@ -18,6 +18,8 @@ import {
 } from '@utils/stampers';
 import { ethers } from 'ethers';
 import logger from 'loglevel';
+import { Address, ChainId } from '@models/common.models';
+import { TEvmReceiptsBody } from '@models/notifications.model';
 
 export class TransactionService {
   private readonly className: string;
@@ -34,6 +36,18 @@ export class TransactionService {
     logger.info(`${this.className}: Creating Transaction`);
     try {
       return await this.transactionApi.createTransaction(transaction);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async getTransactions(
+    address: Address,
+    chainId: ChainId,
+  ): Promise<TEvmReceiptsBody> {
+    logger.info(`${this.className}: Getting notifications`);
+    try {
+      return await this.transactionApi.getTransactions(address, chainId);
     } catch (error) {
       throw handleError(error);
     }
