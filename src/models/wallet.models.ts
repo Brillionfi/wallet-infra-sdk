@@ -201,6 +201,7 @@ export const WalletTransactionSchema = z.object({
 
 export const WalletGasConfigurationSchema = z.object({
   gasLimit: z.string(),
+  baseFee: z.string(),
   maxFeePerGas: z.string(),
   maxPriorityFeePerGas: z.string(),
 });
