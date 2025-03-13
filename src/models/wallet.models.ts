@@ -133,6 +133,11 @@ export const WalletSchemaAPI = z.object({
   walletFormat: WalletFormatsSchema,
 });
 
+export const stampedActivitySchema = z.object({
+  stampHeaderName: z.string(),
+  stampHeaderValue: z.string(),
+});
+
 export const WalletResponseSchema = z.object({
   type: WalletTypesSchema,
   name: z.string(),
@@ -243,6 +248,28 @@ export const WalletRecoverySchema = z.object({
   }),
 });
 
+export const WalletExportSchema = z.object({
+  eoa: z.object({
+    organizationId: z.string(),
+    userId: z.string(),
+    needsApproval: z.boolean(),
+    fingerprint: z.string(),
+    exportBundle: z.string().optional(),
+  }),
+});
+
+export const ApproveExportWalletSchema = z.object({
+  timestamp: z.string(),
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export const ApproveExportWalletResponseSchema = z.object({
+  status: z.string(),
+  exportBundle: z.string().optional(),
+});
+
 export const WalletRecoveryByEmailStatus = z.object({
   status: z.enum(['ENABLE', 'DISABLE']),
 });
@@ -288,11 +315,6 @@ export const WalletNotificationsSchema = z.array(
     notificationStatus: z.string(),
   }),
 );
-
-export const stampedActivitySchema = z.object({
-  stampHeaderName: z.string(),
-  stampHeaderValue: z.string(),
-});
 
 export const ExecRecoverySchema = z.object({
   timestamp: z.string(),
@@ -410,6 +432,13 @@ export type IWalletNonceAPI = z.infer<typeof WalletNonceResponseSchema>;
 export type IWalletTransaction = z.infer<typeof WalletTransactionSchema>;
 export type IWalletGasEstimation = z.infer<typeof WalletGasEstimationSchema>;
 export type IWalletRecovery = z.infer<typeof WalletRecoverySchema>;
+export type IWalletExport = z.infer<typeof WalletExportSchema>;
+export type IApproveExportWalletSchema = z.infer<
+  typeof ApproveExportWalletSchema
+>;
+export type IApproveExportWalletResponseSchema = z.infer<
+  typeof ApproveExportWalletResponseSchema
+>;
 export type IWalletRecoveryByEmailStatus = z.infer<
   typeof WalletRecoveryByEmailStatus
 >;

@@ -31,6 +31,8 @@ import {
   IWalletRecoveryApproveResponseSchema,
   IDeleteWalletAuthenticator,
   IDeleteWalletAuthenticatorResponse,
+  IWalletExport,
+  IApproveExportWalletResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -536,6 +538,36 @@ export class WalletService {
     logger.info(`${this.className}: Getting Wallet notifications`);
     try {
       return await this.walletApi.rpcRequest(body, params);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async exportWallet(): Promise<IWalletExport> {
+    logger.info(`${this.className}: Wallet recovery initiated`);
+    try {
+      await this.bundleStamper.init();
+      return await this.walletApi.exportWallet(this.bundleStamper.publicKey());
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveExportWallet(): Promise<IApproveExportWalletResponseSchema> {
+    logger.info(`${this.className}: Wallet recovery initiated`);
+    try {
+      // TODO stamp data
+      const data = {
+        timestamp: '',
+        organizationId: '',
+        fingerprint: '',
+        stamped: {
+          stampHeaderName: '',
+          stampHeaderValue: '',
+        },
+      };
+      return await this.walletApi.approveExportWallet(data);
+      // TODO decript exportBundle
     } catch (error) {
       throw handleError(error);
     }

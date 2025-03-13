@@ -30,6 +30,9 @@ import type {
   IWalletRecoveryApproveSchema,
   IDeleteWalletAuthenticator,
   IDeleteWalletAuthenticatorResponse,
+  IWalletExport,
+  IApproveExportWalletSchema,
+  IApproveExportWalletResponseSchema,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -53,6 +56,8 @@ import {
   SetRecoveryByEmailStatusResponse,
   WalletRecoveryApproveResponseSchema,
   DeleteWalletAuthenticatorResponse,
+  WalletExportSchema,
+  ApproveExportWalletResponseSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -447,6 +452,41 @@ export class WalletApi {
       );
 
       return WalletSignTransactionResponseSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async exportWallet(targetPublicKey: string): Promise<IWalletExport> {
+    logger.debug(`${this.className}: Wallet Export`);
+    try {
+      const body = {
+        eoa: {
+          targetPublicKey,
+        },
+      };
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/export`,
+        body,
+      );
+
+      return WalletExportSchema.parse(response.data.data);
+    } catch (error) {
+      throw handleError(error as APIError);
+    }
+  }
+
+  public async approveExportWallet(
+    body: IApproveExportWalletSchema,
+  ): Promise<IApproveExportWalletResponseSchema> {
+    logger.debug(`${this.className}: Approving transaction`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/export/approve`,
+        body,
+      );
+
+      return ApproveExportWalletResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error);
     }
