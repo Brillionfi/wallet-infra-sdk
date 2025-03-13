@@ -24,6 +24,8 @@ export enum SUPPORTED_CHAINS {
   AVALANCHE_FUJI_TESTNET = '43113',
   ARBITRUM = '42161',
   ARBITRUM_TESTNET = '421614',
+  TANGLE = '5845',
+  TANGLE_TESTNET = '3799',
 }
 
 export const EthereumAddressSchema = z
