@@ -187,6 +187,7 @@ describe('Wallet', () => {
     it('should call get on HttpClient when getGasConfig is called', async () => {
       const response = {
         gasLimit: '1',
+        baseFee: '1',
         maxFeePerGas: '1',
         maxPriorityFeePerGas: '1',
       };
@@ -208,6 +209,7 @@ describe('Wallet', () => {
   describe('createGasConfig', () => {
     const gasData = {
       gasLimit: '1',
+      baseFee: '1',
       maxFeePerGas: '1',
       maxPriorityFeePerGas: '1',
     };
@@ -241,6 +243,7 @@ describe('Wallet', () => {
   describe('updateGasConfig', () => {
     const gasData = {
       gasLimit: '1',
+      baseFee: '1',
       maxFeePerGas: '1',
       maxPriorityFeePerGas: '1',
     };
