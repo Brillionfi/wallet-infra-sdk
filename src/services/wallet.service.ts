@@ -553,20 +553,20 @@ export class WalletService {
     }
   }
 
-  public async approveExportWallet(): Promise<IApproveExportWalletResponseSchema> {
+  public async approveExportWallet(
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<IApproveExportWalletResponseSchema> {
     logger.info(`${this.className}: Wallet recovery initiated`);
     try {
-      // TODO stamp data
-      const data = {
-        timestamp: '',
-        organizationId: '',
-        fingerprint: '',
-        stamped: {
-          stampHeaderName: '',
-          stampHeaderValue: '',
-        },
-      };
-      return await this.walletApi.approveExportWallet(data);
+      return await this.walletApi.approveExportWallet({
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
       // TODO decript exportBundle
     } catch (error) {
       throw handleError(error);
