@@ -1,11 +1,9 @@
 import { NotificationsService } from '@services/notifications.service';
 import { NotificationsApi } from '@api/notifications.api';
-import { SUPPORTED_CHAINS } from '@models/common.models';
 import { HttpClient } from '@utils/http-client';
 import {
   EActivityLevel,
   EActivityStatus,
-  TEvmReceiptsBody,
   TWalletActivities,
 } from '@models/notifications.model';
 
@@ -38,23 +36,6 @@ describe('NotificationsService', () => {
   });
 
   it('should get all notifications', async () => {
-    const transactions: TEvmReceiptsBody = [
-      {
-        blockHash: '',
-        blockNumber: '',
-        contractAddress: '',
-        cumulativeGasUsed: '',
-        effectiveGasPrice: '',
-        from: '',
-        gasUsed: '',
-        logsBloom: '',
-        status: '',
-        to: '',
-        transactionHash: '',
-        transactionIndex: '',
-        type: '',
-      },
-    ];
     const notifications: TWalletActivities = [
       {
         id: '',
@@ -72,22 +53,12 @@ describe('NotificationsService', () => {
       },
     ];
 
-    notificationsApi.getTransactions = jest
-      .fn()
-      .mockResolvedValue(transactions);
     notificationsApi.getWalletNotifications = jest
       .fn()
       .mockResolvedValue(notifications);
 
-    const result = await notificationsService.getNotifications(
-      '0x1',
-      SUPPORTED_CHAINS.ETHEREUM,
-    );
-    expect(notificationsApi.getTransactions).toHaveBeenCalledWith(
-      '0x1',
-      SUPPORTED_CHAINS.ETHEREUM,
-    );
+    const result = await notificationsService.getNotifications();
     expect(notificationsApi.getWalletNotifications).toHaveBeenCalled();
-    expect(result).toStrictEqual({ transactions, notifications });
+    expect(result).toStrictEqual(notifications);
   });
 });

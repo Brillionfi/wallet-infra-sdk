@@ -6,6 +6,7 @@ import {
 } from '@models/transaction.models';
 import { AxiosResponse } from 'axios';
 import { TransactionApi } from '@api/transaction.api';
+import { ChainId } from 'index';
 
 jest.mock('@utils/http-client');
 jest.mock('loglevel', () => ({
@@ -81,6 +82,43 @@ describe('TransactionApi', () => {
   });
 
   describe('getTransactionById', () => {
+    it('should get transactions', async () => {
+      const response = {
+        data: {
+          currentPage: 0,
+          transactions: [
+            {
+              blockHash: '',
+              blockNumber: '',
+              contractAddress: '',
+              cumulativeGasUsed: '',
+              effectiveGasPrice: '',
+              from: '',
+              gasUsed: '',
+              logsBloom: '',
+              status: '',
+              to: '',
+              transactionHash: '',
+              transactionIndex: '',
+              type: '',
+            },
+          ],
+        },
+      };
+
+      httpClientMock.get.mockResolvedValue(response as AxiosResponse);
+
+      const result = await transaction.getTransactions(
+        'walletAddress',
+        '1' as ChainId,
+      );
+
+      expect(httpClientMock.get).toHaveBeenCalledWith(
+        '/transactions/walletAddress/chains/1/transactions',
+      );
+      expect(result).toEqual(response.data.transactions);
+    });
+
     it('should get a transaction by ID', async () => {
       const transactionId = '1234';
 

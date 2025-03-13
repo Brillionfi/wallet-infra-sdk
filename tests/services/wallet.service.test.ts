@@ -42,6 +42,7 @@ describe('WalletService', () => {
   const wallet = '0xe6d0c561728eFeA5EEFbCdF0A5d0C945e3697bEA';
   const chainId = SUPPORTED_CHAINS.ETHEREUM;
   const gasData = {
+    baseFee: '1',
     gasLimit: '1',
     maxFeePerGas: '1',
     maxPriorityFeePerGas: '1',
@@ -507,6 +508,7 @@ describe('WalletService', () => {
 
     it('should delete wallet gas config if all values are 0', async () => {
       const deleteGasData = {
+        baseFee: '0',
         gasLimit: '0',
         maxFeePerGas: '0',
         maxPriorityFeePerGas: '0',
@@ -526,6 +528,7 @@ describe('WalletService', () => {
 
     it('should throw an error when delete gas configuration fails', async () => {
       const deleteGasData = {
+        baseFee: '0',
         gasLimit: '0',
         maxFeePerGas: '0',
         maxPriorityFeePerGas: '0',
