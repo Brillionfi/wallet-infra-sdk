@@ -1,5 +1,5 @@
 import { NotificationsApi } from '@api/index';
-import { Address, ChainId, TNotifications } from '@models/index';
+import { TWalletActivities } from '@models/index';
 import { handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
 import logger from 'loglevel';
@@ -13,19 +13,10 @@ export class NotificationsService {
     this.notificationsApi = new NotificationsApi(httpClient);
   }
 
-  public async getNotifications(
-    address: Address,
-    chainId: ChainId,
-  ): Promise<TNotifications> {
+  public async getNotifications(): Promise<TWalletActivities> {
     logger.info(`${this.className}: Getting notifications`);
     try {
-      const transactions = await this.notificationsApi.getTransactions(
-        address,
-        chainId,
-      );
-      const notifications =
-        await this.notificationsApi.getWalletNotifications();
-      return { transactions, notifications };
+      return await this.notificationsApi.getWalletNotifications();
     } catch (error) {
       throw handleError(error);
     }
