@@ -262,6 +262,7 @@ export class WalletService {
       // delete gas configuration if all values are 0
       if (
         parseInt(configuration.gasLimit) === 0 &&
+        parseInt(configuration.baseFee) === 0 &&
         parseInt(configuration.maxFeePerGas) === 0 &&
         parseInt(configuration.maxPriorityFeePerGas) === 0
       ) {
