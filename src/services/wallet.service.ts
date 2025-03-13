@@ -32,7 +32,6 @@ import {
   IDeleteWalletAuthenticator,
   IDeleteWalletAuthenticatorResponse,
   IWalletExport,
-  IApproveExportWalletResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -43,16 +42,27 @@ import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
 import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 import { ethers } from 'ethers';
+import {
+  decryptExportBundle,
+  generateP256KeyPair,
+  KeyPair,
+} from '@utils/crypto';
 
 export class WalletService {
   private readonly className: string;
   private walletApi: WalletApi;
   private bundleStamper: BundleStamper;
+  private exportWalletKeys: KeyPair;
 
   constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
     this.walletApi = new WalletApi(httpClient);
     this.bundleStamper = new BundleStamper();
+    this.exportWalletKeys = {
+      privateKey: '',
+      publicKey: '',
+      publicKeyUncompressed: '',
+    };
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
@@ -546,8 +556,11 @@ export class WalletService {
   public async exportWallet(): Promise<IWalletExport> {
     logger.info(`${this.className}: Wallet recovery initiated`);
     try {
-      await this.bundleStamper.init();
-      return await this.walletApi.exportWallet(this.bundleStamper.publicKey());
+      this.exportWalletKeys = generateP256KeyPair();
+
+      return await this.walletApi.exportWallet(
+        this.exportWalletKeys.publicKeyUncompressed,
+      );
     } catch (error) {
       throw handleError(error);
     }
@@ -558,16 +571,26 @@ export class WalletService {
     organizationId: string,
     timestamp: string,
     stamped: IStamped,
-  ): Promise<IApproveExportWalletResponseSchema> {
+  ): Promise<{ data: string }> {
     logger.info(`${this.className}: Wallet recovery initiated`);
     try {
-      return await this.walletApi.approveExportWallet({
+      const response = await this.walletApi.approveExportWallet({
         timestamp,
         organizationId,
         fingerprint,
         stamped,
       });
-      // TODO decript exportBundle
+      if (response.exportBundle) {
+        const data = await decryptExportBundle({
+          exportBundle: response.exportBundle,
+          embeddedKey: this.exportWalletKeys.privateKey,
+          organizationId: organizationId,
+          returnMnemonic: true,
+        });
+        return { data };
+      } else {
+        throw new CustomError('Failed to decrypt export bundle');
+      }
     } catch (error) {
       throw handleError(error);
     }
