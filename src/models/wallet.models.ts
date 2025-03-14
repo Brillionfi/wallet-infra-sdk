@@ -118,8 +118,8 @@ export const ActivityResponseSchema = z.object({
   status: z.string(),
   organizationId: z.string(),
   needsApproval: z.boolean(),
-  fingerprint: z.string(),
-  activityId: z.string(),
+  fingerprint: z.string().optional(),
+  activityId: z.string().optional(),
 });
 
 export const CreateWalletAuthenticatorResponse = ActivityResponseSchema;

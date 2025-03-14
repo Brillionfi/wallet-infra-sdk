@@ -209,7 +209,7 @@ export class WalletService {
           address,
           timestamp,
           organizationId: response.organizationId,
-          fingerprint: response.fingerprint,
+          fingerprint: response.fingerprint!,
           stamped,
         });
       } else {
