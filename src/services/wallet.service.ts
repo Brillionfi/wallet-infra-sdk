@@ -596,7 +596,8 @@ export class WalletService {
           exportBundle: response.exportBundle,
           embeddedKey: this.exportWalletKeys.privateKey,
           organizationId: organizationId,
-          returnMnemonic: true,
+          returnMnemonic: false,
+          keyFormat: 'HEXADECIMAL',
         });
         return { privateKey: `0x${data}`, needsApproval: false };
       } else {
