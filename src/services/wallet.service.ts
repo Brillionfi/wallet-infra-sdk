@@ -553,14 +553,25 @@ export class WalletService {
     }
   }
 
-  public async exportWallet(): Promise<IWalletExport> {
-    logger.info(`${this.className}: Wallet recovery initiated`);
+  public async exportWallet(): Promise<IWalletExport | { privateKey: string }> {
+    logger.info(`${this.className}: Export Wallet initiated`);
     try {
       this.exportWalletKeys = generateP256KeyPair();
 
-      return await this.walletApi.exportWallet(
+      const response = await this.walletApi.exportWallet(
         this.exportWalletKeys.publicKeyUncompressed,
       );
+      if (response.eoa.exportBundle) {
+        const data = await decryptExportBundle({
+          exportBundle: response.eoa.exportBundle,
+          embeddedKey: this.exportWalletKeys.privateKey,
+          organizationId: response.eoa.organizationId,
+          returnMnemonic: false,
+          keyFormat: 'HEXADECIMAL',
+        });
+        return { privateKey: `0x${data}` };
+      }
+      return response;
     } catch (error) {
       throw handleError(error);
     }
@@ -571,8 +582,8 @@ export class WalletService {
     organizationId: string,
     timestamp: string,
     stamped: IStamped,
-  ): Promise<{ data: string }> {
-    logger.info(`${this.className}: Wallet recovery initiated`);
+  ): Promise<{ privateKey: string }> {
+    logger.info(`${this.className}: Approve Export Wallet initiated`);
     try {
       const response = await this.walletApi.approveExportWallet({
         timestamp,
@@ -587,7 +598,7 @@ export class WalletService {
           organizationId: organizationId,
           returnMnemonic: true,
         });
-        return { data };
+        return { privateKey: `0x${data}` };
       } else {
         throw new CustomError('Failed to decrypt export bundle');
       }

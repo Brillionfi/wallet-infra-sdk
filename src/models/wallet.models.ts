@@ -251,7 +251,7 @@ export const WalletRecoverySchema = z.object({
 export const WalletExportSchema = z.object({
   eoa: z.object({
     organizationId: z.string(),
-    userId: z.string(),
+    activityId: z.string(),
     needsApproval: z.boolean(),
     fingerprint: z.string(),
     exportBundle: z.string().optional(),
