@@ -23,23 +23,23 @@ import {
   SUITE_ID_2,
 } from './constants';
 
-interface HpkeDecryptParams {
+export interface HpkeDecryptParams {
   ciphertextBuf: Uint8Array;
   encappedKeyBuf: Uint8Array;
   receiverPriv: string;
 }
 
-interface HpkeEncryptParams {
+export interface HpkeEncryptParams {
   plainTextBuf: Uint8Array;
   targetKeyBuf: Uint8Array;
 }
-interface HpkeAuthEncryptParams {
+export interface HpkeAuthEncryptParams {
   plainTextBuf: Uint8Array;
   targetKeyBuf: Uint8Array;
   senderPriv: string;
 }
 
-interface KeyPair {
+export interface KeyPair {
   privateKey: string;
   publicKey: string;
   publicKeyUncompressed: string;

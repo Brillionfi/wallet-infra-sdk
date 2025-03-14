@@ -31,6 +31,7 @@ import {
   IWalletRecoveryApproveResponseSchema,
   IDeleteWalletAuthenticator,
   IDeleteWalletAuthenticatorResponse,
+  IWalletExport,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -41,16 +42,27 @@ import { base64UrlEncode, generateRandomBuffer } from '@utils/common';
 import { WebauthnStamper } from '@utils/stampers/webAuthnStamper';
 import { create as webAuthCreation } from '@utils/stampers/webAuthnStamper/webauthn-json/api';
 import { ethers } from 'ethers';
+import {
+  decryptExportBundle,
+  generateP256KeyPair,
+  KeyPair,
+} from '@utils/crypto';
 
 export class WalletService {
   private readonly className: string;
   private walletApi: WalletApi;
   private bundleStamper: BundleStamper;
+  private exportWalletKeys: KeyPair;
 
   constructor(httpClient: HttpClient) {
     this.className = this.constructor.name;
     this.walletApi = new WalletApi(httpClient);
     this.bundleStamper = new BundleStamper();
+    this.exportWalletKeys = {
+      privateKey: '',
+      publicKey: '',
+      publicKeyUncompressed: '',
+    };
   }
 
   public async createWallet(data: IWallet): Promise<IWallet> {
@@ -197,7 +209,7 @@ export class WalletService {
           address,
           timestamp,
           organizationId: response.organizationId,
-          fingerprint: response.fingerprint,
+          fingerprint: response.fingerprint!,
           stamped,
         });
       } else {
@@ -536,6 +548,61 @@ export class WalletService {
     logger.info(`${this.className}: Getting Wallet notifications`);
     try {
       return await this.walletApi.rpcRequest(body, params);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async exportWallet(): Promise<Partial<IWalletExport['eoa']>> {
+    logger.info(`${this.className}: Export Wallet initiated`);
+    try {
+      this.exportWalletKeys = generateP256KeyPair();
+
+      const response = await this.walletApi.exportWallet(
+        this.exportWalletKeys.publicKeyUncompressed,
+      );
+      if (response.eoa.exportBundle) {
+        const data = await decryptExportBundle({
+          exportBundle: response.eoa.exportBundle,
+          embeddedKey: this.exportWalletKeys.privateKey,
+          organizationId: response.eoa.organizationId,
+          returnMnemonic: false,
+          keyFormat: 'HEXADECIMAL',
+        });
+        return { privateKey: `0x${data}`, needsApproval: false };
+      }
+      return response.eoa;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveExportWallet(
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<Partial<IWalletExport['eoa']>> {
+    logger.info(`${this.className}: Approve Export Wallet initiated`);
+    try {
+      const response = await this.walletApi.approveExportWallet({
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+      if (response.exportBundle) {
+        const data = await decryptExportBundle({
+          exportBundle: response.exportBundle,
+          embeddedKey: this.exportWalletKeys.privateKey,
+          organizationId: organizationId,
+          returnMnemonic: false,
+          keyFormat: 'HEXADECIMAL',
+        });
+        return { privateKey: `0x${data}`, needsApproval: false };
+      } else {
+        throw new CustomError('Failed to decrypt export bundle');
+      }
     } catch (error) {
       throw handleError(error);
     }
