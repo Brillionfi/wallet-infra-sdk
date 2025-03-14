@@ -255,6 +255,7 @@ export const WalletExportSchema = z.object({
     needsApproval: z.boolean(),
     fingerprint: z.string(),
     exportBundle: z.string().optional(),
+    privateKey: z.string().optional(),
   }),
 });
 

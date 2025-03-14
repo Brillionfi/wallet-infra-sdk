@@ -553,7 +553,7 @@ export class WalletService {
     }
   }
 
-  public async exportWallet(): Promise<IWalletExport | { privateKey: string }> {
+  public async exportWallet(): Promise<Partial<IWalletExport['eoa']>> {
     logger.info(`${this.className}: Export Wallet initiated`);
     try {
       this.exportWalletKeys = generateP256KeyPair();
@@ -569,9 +569,9 @@ export class WalletService {
           returnMnemonic: false,
           keyFormat: 'HEXADECIMAL',
         });
-        return { privateKey: `0x${data}` };
+        return { privateKey: `0x${data}`, needsApproval: false };
       }
-      return response;
+      return response.eoa;
     } catch (error) {
       throw handleError(error);
     }
@@ -582,7 +582,7 @@ export class WalletService {
     organizationId: string,
     timestamp: string,
     stamped: IStamped,
-  ): Promise<{ privateKey: string }> {
+  ): Promise<Partial<IWalletExport['eoa']>> {
     logger.info(`${this.className}: Approve Export Wallet initiated`);
     try {
       const response = await this.walletApi.approveExportWallet({
@@ -598,7 +598,7 @@ export class WalletService {
           organizationId: organizationId,
           returnMnemonic: true,
         });
-        return { privateKey: `0x${data}` };
+        return { privateKey: `0x${data}`, needsApproval: false };
       } else {
         throw new CustomError('Failed to decrypt export bundle');
       }
