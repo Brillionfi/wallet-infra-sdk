@@ -451,6 +451,46 @@ export class WalletService {
     }
   }
 
+  public async approveActivity(
+    address: string,
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<IWalletAuthenticatorConsentResponseSchema> {
+    try {
+      return await this.walletApi.approveSignTransaction({
+        address,
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
+  public async rejectActivity(
+    address: string,
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<IWalletAuthenticatorConsentResponseSchema> {
+    try {
+      return await this.walletApi.rejectSignTransaction({
+        address,
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw new CustomError('Failed to make a decision');
+    }
+  }
+
   public async approveTransaction(
     address: string,
     organizationId: string,
