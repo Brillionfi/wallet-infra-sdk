@@ -280,11 +280,11 @@ export const ApproveActivitySchema = z.object({
 
 export const ApproveActivityResponseSchema = z.object({
   status: z.string(),
-  needsApproval: z.string(),
+  needsApproval: z.boolean(),
   organizationId: z.string(),
   fingerprint: z.string(),
   activityId: z.string(),
-  data: z.object({}).passthrough(),
+  data: z.object({}).passthrough().optional(),
 });
 
 export const RejectActivitySchema = z.object({
@@ -296,11 +296,11 @@ export const RejectActivitySchema = z.object({
 
 export const RejectActivityResponseSchema = z.object({
   status: z.string(),
-  needsApproval: z.string(),
+  needsApproval: z.boolean(),
   organizationId: z.string(),
   fingerprint: z.string(),
   activityId: z.string(),
-  data: z.object({}).passthrough(),
+  data: z.object({}).passthrough().optional(),
 });
 
 export const WalletRecoveryByEmailStatus = z.object({
