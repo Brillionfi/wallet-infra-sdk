@@ -271,6 +271,38 @@ export const ApproveExportWalletResponseSchema = z.object({
   exportBundle: z.string().optional(),
 });
 
+export const ApproveActivitySchema = z.object({
+  timestamp: z.string(),
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export const ApproveActivityResponseSchema = z.object({
+  status: z.string(),
+  needsApproval: z.boolean(),
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  activityId: z.string(),
+  data: z.object({}).passthrough().nullable(),
+});
+
+export const RejectActivitySchema = z.object({
+  timestamp: z.string(),
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  stamped: stampedActivitySchema,
+});
+
+export const RejectActivityResponseSchema = z.object({
+  status: z.string(),
+  needsApproval: z.boolean(),
+  organizationId: z.string(),
+  fingerprint: z.string(),
+  activityId: z.string(),
+  data: z.object({}).passthrough().nullable(),
+});
+
 export const WalletRecoveryByEmailStatus = z.object({
   status: z.enum(['ENABLE', 'DISABLE']),
 });
@@ -440,6 +472,16 @@ export type IApproveExportWalletSchema = z.infer<
 export type IApproveExportWalletResponseSchema = z.infer<
   typeof ApproveExportWalletResponseSchema
 >;
+
+export type IApproveActivitySchema = z.infer<typeof ApproveActivitySchema>;
+export type IApproveActivityResponseSchema = z.infer<
+  typeof ApproveActivityResponseSchema
+>;
+export type IRejectActivitySchema = z.infer<typeof RejectActivitySchema>;
+export type IRejectActivityResponseSchema = z.infer<
+  typeof RejectActivityResponseSchema
+>;
+
 export type IWalletRecoveryByEmailStatus = z.infer<
   typeof WalletRecoveryByEmailStatus
 >;

@@ -33,6 +33,10 @@ import type {
   IWalletExport,
   IApproveExportWalletSchema,
   IApproveExportWalletResponseSchema,
+  IApproveActivitySchema,
+  IApproveActivityResponseSchema,
+  IRejectActivitySchema,
+  IRejectActivityResponseSchema,
 } from '@models/wallet.models';
 import {
   WalletResponseSchema,
@@ -58,6 +62,8 @@ import {
   DeleteWalletAuthenticatorResponse,
   WalletExportSchema,
   ApproveExportWalletResponseSchema,
+  ApproveActivityResponseSchema,
+  RejectActivityResponseSchema,
 } from '@models/wallet.models';
 import { APIError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -487,6 +493,38 @@ export class WalletApi {
       );
 
       return ApproveExportWalletResponseSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveActivity(
+    body: IApproveActivitySchema,
+  ): Promise<IApproveActivityResponseSchema> {
+    logger.debug(`${this.className}: Approving activity`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/activity/approve`,
+        body,
+      );
+
+      return ApproveActivityResponseSchema.parse(response.data);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async rejectActivity(
+    body: IRejectActivitySchema,
+  ): Promise<IRejectActivityResponseSchema> {
+    logger.debug(`${this.className}: Rejecting activity`);
+    try {
+      const response: AxiosResponse = await this.httpClient.post(
+        `/wallets/activity/reject`,
+        body,
+      );
+
+      return RejectActivityResponseSchema.parse(response.data);
     } catch (error) {
       throw handleError(error);
     }
