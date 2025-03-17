@@ -284,7 +284,7 @@ export const ApproveActivityResponseSchema = z.object({
   organizationId: z.string(),
   fingerprint: z.string(),
   activityId: z.string(),
-  data: z.object({}).passthrough().optional(),
+  data: z.object({}).passthrough().nullable(),
 });
 
 export const RejectActivitySchema = z.object({
@@ -300,7 +300,7 @@ export const RejectActivityResponseSchema = z.object({
   organizationId: z.string(),
   fingerprint: z.string(),
   activityId: z.string(),
-  data: z.object({}).passthrough().optional(),
+  data: z.object({}).passthrough().nullable(),
 });
 
 export const WalletRecoveryByEmailStatus = z.object({
