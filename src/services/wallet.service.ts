@@ -32,6 +32,7 @@ import {
   IDeleteWalletAuthenticator,
   IDeleteWalletAuthenticatorResponse,
   IWalletExport,
+  IApproveActivityResponseSchema,
 } from '@models/wallet.models';
 import { CustomError, handleError } from '@utils/errors';
 import { HttpClient } from '@utils/http-client';
@@ -603,6 +604,44 @@ export class WalletService {
       } else {
         throw new CustomError('Failed to decrypt export bundle');
       }
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async approveActivity(
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<IApproveActivityResponseSchema> {
+    logger.info(`${this.className}: Approve activity initiated`);
+    try {
+      return await this.walletApi.approveActivity({
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  public async rejectActivity(
+    fingerprint: string,
+    organizationId: string,
+    timestamp: string,
+    stamped: IStamped,
+  ): Promise<IApproveActivityResponseSchema> {
+    logger.info(`${this.className}: Reject activity initiated`);
+    try {
+      return await this.walletApi.rejectActivity({
+        timestamp,
+        organizationId,
+        fingerprint,
+        stamped,
+      });
     } catch (error) {
       throw handleError(error);
     }
